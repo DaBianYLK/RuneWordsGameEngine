@@ -48,5 +48,13 @@ public interface Graphics {
 		}
 	}
 	
+	public DisplayMode getDisplayMode();
+	public boolean setDisplayMode(DisplayMode displayMode);
 	
+	public BufferFormat getBufferFormat();
+	
+	public int getWidth();
+	public int getHeight();
+	public int getRefreshRate();
+	public int getBitPerPixel();
 }

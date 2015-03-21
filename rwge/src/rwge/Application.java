@@ -4,4 +4,8 @@ package rwge;
 
 public interface Application {
 	public Graphics getGraphics();
+	public Input getInput();
+	public Audio getAudio();
+	public Files getFiles();
+	public Net getNet();
 }
