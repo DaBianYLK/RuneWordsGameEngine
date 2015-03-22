@@ -1,11 +1,12 @@
 package rwge.math;
 
 import java.io.Serializable;
-import java.util.Map;
 
 /** A 3D vector. */
 
 public class Vector3 implements Serializable, Vector<Vector3>{
+	private static final long serialVersionUID = 8138745047737380774L;
+	
 	public float x;
 	public float y;
 	public float z;
@@ -79,7 +80,7 @@ public class Vector3 implements Serializable, Vector<Vector3>{
 	}
 	
 	public Vector3 crs(Vector3 v) {
-		
+		return this.set(this.y * v.z - this.z * v.y, this.z * v.x - this.x * v.z, this.x * v.y - this.y * v.x);
 	}
 	
 	public Vector3 scl(float scalar) {
