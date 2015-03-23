@@ -6,14 +6,13 @@ import java.io.Serializable;
 
 public class Vector2 implements Serializable, Vector<Vector2> {
 	private static final long serialVersionUID = -2666239485448854614L;
-
+	
+	public static final Vector2 X = new Vector2(1, 0);
+	public static final Vector2 Y = new Vector2(0, 1);
+	public static final Vector2 Zero = new Vector2(0, 0);
+	
 	public float x;
 	public float y;
-	
-	public final static Vector2 X = new Vector2(1, 0);
-	public final static Vector2 Y = new Vector2(0, 1);
-	public final static Vector2 Zero = new Vector2(0, 0);
-	
 	
 	Vector2() {
 		this.set(Zero);

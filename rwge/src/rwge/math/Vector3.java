@@ -11,10 +11,10 @@ public class Vector3 implements Serializable, Vector<Vector3>{
 	public float y;
 	public float z;
 	
-	public final static Vector3 X = new Vector3(1, 0, 0);
-	public final static Vector3 Y = new Vector3(0, 1, 0);
-	public final static Vector3 Z = new Vector3(0, 0, 1);
-	public final static Vector3 Zero = new Vector3(0, 0, 0);
+	public static final Vector3 X = new Vector3(1, 0, 0);
+	public static final Vector3 Y = new Vector3(0, 1, 0);
+	public static final Vector3 Z = new Vector3(0, 0, 1);
+	public static final Vector3 Zero = new Vector3(0, 0, 0);
 	
 	
 	Vector3() {
