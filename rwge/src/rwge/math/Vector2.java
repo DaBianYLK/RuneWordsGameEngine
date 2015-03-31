@@ -73,13 +73,13 @@ public class Vector2 implements Serializable, Vector<Vector2> {
 		return this.x * v.x + this.y * v.y;
 	}
 	
-	public float crs(Vector2 v) {
+	public float cross(Vector2 v) {
 		return this.x * v.y - v.x * this.y;
 	}
 	
-	public Vector2 scl(float scalar) {
-		this.x = this.x * scalar;
-		this.y = this.y * scalar;
+	public Vector2 scale(float s) {
+		this.x *= s;
+		this.y *= s;
 		
 		return this;
 	}

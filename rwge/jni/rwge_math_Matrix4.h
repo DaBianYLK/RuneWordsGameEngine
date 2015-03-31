@@ -49,6 +49,14 @@ extern "C" {
 JNIEXPORT void JNICALL Java_rwge_math_Matrix4_multiply
   (JNIEnv *, jobject, jfloatArray, jfloatArray);
 
+/*
+ * Class:     rwge_math_Matrix4
+ * Method:    multiplyVector
+ * Signature: ([F[F)V
+ */
+JNIEXPORT void JNICALL Java_rwge_math_Matrix4_multiplyVector
+  (JNIEnv *, jobject, jfloatArray, jfloatArray);
+
 #ifdef __cplusplus
 }
 #endif

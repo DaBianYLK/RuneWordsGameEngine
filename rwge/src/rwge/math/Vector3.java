@@ -79,14 +79,14 @@ public class Vector3 implements Serializable, Vector<Vector3>{
 		return this.x * v.x + this.y * v.y + this.z * v.z;
 	}
 	
-	public Vector3 crs(Vector3 v) {
+	public Vector3 cross(Vector3 v) {
 		return this.set(this.y * v.z - this.z * v.y, this.z * v.x - this.x * v.z, this.x * v.y - this.y * v.x);
 	}
 	
-	public Vector3 scl(float scalar) {
-		this.x = this.x * scalar;
-		this.y = this.y * scalar;
-		this.z = this.z * scalar;
+	public Vector3 scale(float s) {
+		this.x *= s;
+		this.y *= s;
+		this.z *= s;
 		
 		return this;
 	}

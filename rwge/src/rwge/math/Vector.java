@@ -12,6 +12,6 @@ public interface Vector<T extends Vector<T>> {
 	public T add(T v);
 	public T sub(T v);
 	public float dot(T v);
-	// T crs(T v);
-	public T scl(float scalar);
+	// T cross(T v);
+	public T scale(float s);
 }

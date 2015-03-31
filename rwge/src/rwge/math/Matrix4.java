@@ -13,6 +13,8 @@ import java.io.Serializable;
  * 		M10	M11	M12	M13
  * 		M20	M21	M22	M23
  * 		M30	M31	M32	M33
+ * 
+ * Transform formula is Matrix * oldVector = newVector.
  * */
 
 public class Matrix4 implements Serializable {
@@ -65,10 +67,58 @@ public class Matrix4 implements Serializable {
 		return this;
 	}
 
-	/** @return the backing float array */
+	/** @return the float array */
 	public float[] getValues() {
 		return values;
 	}
 	
+	/** Scale the matrix in three dimensions. */
+	public Matrix4 scale(Vector3 vector) {
+		values[M00] *= vector.x;
+		values[M11] *= vector.y;
+		values[M22] *= vector.z;
+		
+		return this;
+	}
+	
+	/** Scale the matrix in three dimensions. */
+	public Matrix4 scale(float x, float y, float z) {
+		values[M00] *= x;
+		values[M11] *= y;
+		values[M22] *= z;
+		
+		return this;
+	}
+	
+	/** Scale the matrix in three dimensions. */
+	public Matrix4 scale(float s) {
+		values[M00] *= s;
+		values[M11] *= s;
+		values[M22] *= s;
+		
+		return this;
+	}
+	
+	public Matrix4 translate(Vector3 vector) {
+		values[M03] += vector.x;
+		values[M13] += vector.y;
+		values[M23] += vector.z;
+		
+		return this;
+	}
+	
+	public Matrix4 translate(float x, float y, float z) {
+		values[M03] += x;
+		values[M13] += y;
+		values[M23] += z;
+		
+		return this;
+	}
+	
+	/** The result is saved in matrixA. */
 	public native void multiply(float[] matrixA, float[] matrixB);
+	
+	/** Transform formula is Matrix * oldVector = newVector. 
+	 * The result is saved in vector. */
+	public native void multiplyVector(float[] matrix, float[] vector);
 }
