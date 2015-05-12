@@ -1,0 +1,107 @@
+package com.dbylk.rwge.math;
+
+import java.io.Serializable;
+
+/** A 3D vector. */
+
+public class Vector3 implements Serializable, Vector<Vector3>{
+	private static final long serialVersionUID = 8138745047737380774L;
+	
+	public float x;
+	public float y;
+	public float z;
+	
+	public static final Vector3 X = new Vector3(1, 0, 0);
+	public static final Vector3 Y = new Vector3(0, 1, 0);
+	public static final Vector3 Z = new Vector3(0, 0, 1);
+	public static final Vector3 Zero = new Vector3(0, 0, 0);
+	
+	
+	public Vector3() {
+		this.set(Zero);
+	}
+	
+	public Vector3(final Vector3 vector) {
+		this.set(vector);
+	}
+	
+	public Vector3(float x, float y, float z) {
+		this.set(x, y, z);
+	}
+	
+	public Vector3(final float[] coordinates) {
+		this.set(coordinates);
+	}
+	
+	/** Return a Vector3 (x, y, 1), which is needed in transformation of 2D coordinate. */
+	public Vector3(float x, float y) {
+		this.x = x;
+		this.y = y;
+		this.z = 1;
+	}
+	
+	/** Return a Vector3 (Vector2, 1), which is needed in transformation of 2D coordinate. */
+	public Vector3(Vector2 vector) {
+		this.x = vector.x;
+		this.y = vector.y;
+		this.z = 1;
+	}
+	
+	/** Calculate and return the norm of the vector. */
+	public float mod() {
+		return (float)Math.sqrt(x * x + y * y + z * z);
+	}
+	
+	/** Calculate and return the square of the norm while calculating this is faster than calculating the norm. */
+	public float mod2() {
+		return x * x + y * y + z * z;
+	}
+	
+	public Vector3 set(Vector3 v) {
+		this.x = v.x;
+		this.y = v.y;
+		this.z = v.z;
+		
+		return this;
+	}
+
+	public Vector3 set(float x, float y, float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		
+		return this;
+	}
+	
+	public Vector3 set(final float[] coordinates) {
+		this.x = coordinates[0];
+		this.y = coordinates[1];
+		this.z = coordinates[2];
+		
+		return this;
+	}
+	
+	public Vector3 add(Vector3 v) {
+		return this.set(this.x + v.x, this.y + v.y, this.z + v.z);
+	}
+	
+	public Vector3 sub(Vector3 v) {
+		return this.set(this.x - v.x, this.y - v.y, this.z - v.z);
+	}
+	
+	public float dot(Vector3 v) {
+		return this.x * v.x + this.y * v.y + this.z * v.z;
+	}
+	
+	public Vector3 cross(Vector3 v) {
+		return this.set(this.y * v.z - this.z * v.y, this.z * v.x - this.x * v.z, this.x * v.y - this.y * v.x);
+	}
+	
+	public Vector3 scale(float s) {
+		this.x *= s;
+		this.y *= s;
+		this.z *= s;
+		
+		return this;
+	}
+}
