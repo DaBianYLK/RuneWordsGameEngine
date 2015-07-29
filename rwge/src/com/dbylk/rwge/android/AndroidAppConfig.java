@@ -1,5 +1,7 @@
 package com.dbylk.rwge.android;
 
+import com.dbylk.rwge.graphics.Color;
+
 public class AndroidAppConfig {
 	/** Number of bits for red channel. */
 	public int redSize = 5;
@@ -19,8 +21,17 @@ public class AndroidAppConfig {
 	public int numSamples = 0;
 	
 	public boolean keepScreenOn = true;
+	public boolean useAccelerometer = true;
+	public boolean useCompass = true;
 	
 	public boolean useSceneRenderer = true;
+	public int maxSpriteNum = 32;
+	public Color backgroundColor = Color.White;
+	
+	public boolean useAudio = true;
+	public int maxAudioStreams = 16;
+	
+	public boolean showDebugLog = true;
 	
 	/** Create a default android application configuration. */
 	public AndroidAppConfig() {

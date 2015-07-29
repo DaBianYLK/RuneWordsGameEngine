@@ -65,8 +65,24 @@ public class Vector2 implements Serializable, Vector<Vector2> {
 		return this.set(this.x + v.x, this.y + v.y);
 	}
 	
+	public Vector2 add(float x, float y) {
+		return this.set(this.x + x, this.y + y);
+	}
+	
 	public Vector2 sub(Vector2 v) {
 		return this.set(this.x - v.x, this.y - v.y);
+	}
+	
+	public Vector2 sub(float x, float y) {
+		return this.set(this.x - x, this.y - y);
+	}
+	
+	public Vector2 mul(float n) {
+		return this.set(this.x * n, this.y * n);
+	}
+	
+	public Vector2 div(float n) {
+		return this.set(this.x / n, this.y / n);
 	}
 	
 	public float dot(Vector2 v) {
@@ -82,5 +98,9 @@ public class Vector2 implements Serializable, Vector<Vector2> {
 		this.y *= s;
 		
 		return this;
+	}
+	
+	public String toString() {
+		return "x = " + x + ", y = " + y;
 	}
 }

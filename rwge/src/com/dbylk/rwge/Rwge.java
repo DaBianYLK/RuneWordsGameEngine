@@ -6,6 +6,7 @@ import com.dbylk.rwge.Files;
 import com.dbylk.rwge.Graphics;
 import com.dbylk.rwge.Input;
 import com.dbylk.rwge.Net;
+import com.dbylk.rwge.android.utils.Debug;
 
 public class Rwge {
 	public static Application application;

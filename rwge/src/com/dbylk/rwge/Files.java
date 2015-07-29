@@ -11,7 +11,7 @@ public interface Files {
 	
 	public RwgeFile getExternalFile(String path);
 	
-	public RwgeFile getLoaclFile(String path);
+	public RwgeFile getLocalFile(String path);
 	
 	public RwgeFile getAbsoluteFile(String path);
 	
@@ -22,6 +22,9 @@ public interface Files {
 	public String getLocalPath ();
 	
 	public enum PathType {
+		/** Path relative to the project's source file. */
+		Classpath,
+		
 		/** Path relative to the asset directory on Android. */
 		Internal,
 		

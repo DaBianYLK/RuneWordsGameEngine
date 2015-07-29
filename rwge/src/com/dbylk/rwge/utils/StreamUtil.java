@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
 
-public final class StreamUtils {
+public final class StreamUtil {
 	public static final int DEFAULT_BUFFER_SIZE = 8192;
 	public static final byte[] EMPTY_BYTES = new byte[0];
 

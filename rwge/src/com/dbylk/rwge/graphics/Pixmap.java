@@ -17,7 +17,6 @@ public class Pixmap implements Disposable {
 		bitmap.copyPixelsToBuffer(pixelBuffer);
 		width = bitmap.getWidth();
 		height = bitmap.getHeight();
-		
 	}
 	
 	@Override

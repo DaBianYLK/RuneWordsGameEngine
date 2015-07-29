@@ -10,7 +10,7 @@ public interface ApplicationListener {
 	public void resize(int width, int height);
 	
 	/** Called when the application frame is rendered. */
-	public void render();
+	public void render(float deltaTime);
 	
 	/** Called when the application is paused. */
 	public void pause();
@@ -19,5 +19,5 @@ public interface ApplicationListener {
 	public void resume();
 	
 	/** Called when the application is closed. */
-	public void dispose();
+	public void release();
 }

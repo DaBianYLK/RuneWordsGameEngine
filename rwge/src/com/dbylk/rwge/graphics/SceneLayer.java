@@ -7,6 +7,7 @@ import com.dbylk.rwge.math.Transformable;
 import com.dbylk.rwge.math.Vector2;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -68,8 +69,12 @@ public class SceneLayer implements Comparable<SceneLayer>, Transformable {
 	 * priority is not specified, the newer layer will be put on the top.
 	 */
 	public SceneLayer createChild() {
-		SceneLayer layer = new SceneLayer(children.get(children.size() - 1).priority + 1, this);
+		int priority = 0;
+		if (!children.isEmpty()) {
+			priority = children.getLast().priority + 1;
+		}
 		
+		SceneLayer layer = new SceneLayer(priority, this);
 		children.add(layer);
 
 		return layer;
@@ -90,6 +95,7 @@ public class SceneLayer implements Comparable<SceneLayer>, Transformable {
 	private void insertChild(SceneLayer layer) {
 		Iterator<SceneLayer> it = children.iterator();
 		int position = 0;
+		int priority = layer.priority;
 		while (it.hasNext()) {
 			SceneLayer child = it.next();
 			
@@ -101,6 +107,11 @@ public class SceneLayer implements Comparable<SceneLayer>, Transformable {
 		}
 		
 		children.add(position, layer);
+		
+		if (layer.father != null && father != this) {
+			layer.father.removeChild(layer);
+		}
+		layer.father = this;
 	}
 	
 	private void removeChild(SceneLayer layer) {
@@ -110,6 +121,7 @@ public class SceneLayer implements Comparable<SceneLayer>, Transformable {
 			
 			if (child == layer) {
 				it.remove();
+				layer.father = null;
 				break;
 			}
 		}
@@ -120,7 +132,7 @@ public class SceneLayer implements Comparable<SceneLayer>, Transformable {
 			sprite.priority = 0;
 		}
 		else {
-			sprite.priority = children.get(children.size() - 1).priority + 1;
+			sprite.priority = children.getLast().priority + 1;
 		}
 		
 		if (sprite.father != null) {
@@ -134,21 +146,11 @@ public class SceneLayer implements Comparable<SceneLayer>, Transformable {
 	public void attachSprite(Sprite sprite, int priority) {
 		sprite.priority = priority;
 		
-		if (sprite.father != null) {
-			sprite.father.removeChild(sprite);
-		}
-		sprite.father = this;
-		
 		insertChild(sprite);
 	}
 	
 	public void attachCamera(OrthographicCamera camera) {
 		camera.priority = -1;
-		
-		if (camera.father != null) {
-			camera.father.removeChild(camera);
-		}
-		camera.father = this;
 		
 		insertChild(camera);
 	}
@@ -212,6 +214,13 @@ public class SceneLayer implements Comparable<SceneLayer>, Transformable {
 		
 		scaleX = s;
 		scaleY = s;
+	}
+	
+	public void setScale(float x, float y) {
+		transformUpdated = false;
+		
+		scaleX = x;
+		scaleY = y;
 	}
 	
 	public Transform2D getTransform() {
@@ -299,5 +308,12 @@ public class SceneLayer implements Comparable<SceneLayer>, Transformable {
 		rotation += Radian.getRadianValue(angle);
 		
 		return this;
+	}
+	
+	private class SceneLayerComparator implements Comparator<SceneLayer> {
+		@Override
+		public int compare(SceneLayer layerA, SceneLayer layerB) {
+			return layerA.compareTo(layerB);
+		}
 	}
 }

@@ -3,7 +3,6 @@ package com.dbylk.rwge.android;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
@@ -40,7 +39,8 @@ public class AndroidFile extends RwgeFile {
 				if (fileDescriptor != null) {
 					try {
 						fileDescriptor.close();
-					} catch (IOException e) {
+					} 
+					catch (IOException e) {
 					}
 				}
 			}

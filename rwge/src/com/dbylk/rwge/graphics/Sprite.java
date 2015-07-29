@@ -1,10 +1,11 @@
 package com.dbylk.rwge.graphics;
 
+import java.util.HashMap;
+
 import android.util.Log;
 
 import com.dbylk.rwge.math.Angle;
 import com.dbylk.rwge.math.Radian;
-import com.dbylk.rwge.math.Transform2D;
 import com.dbylk.rwge.math.Vector2;
 
 /**
@@ -19,8 +20,9 @@ import com.dbylk.rwge.math.Vector2;
 
 public class Sprite extends SceneLayer {
 	protected TextureRect textureRect;
-	// a / r / g / b
-	protected float[] color = new float[4];
+	protected Color color = Color.White;
+	
+	protected HashMap<String, Animation> animations = new HashMap<String, Animation>();
 	
 	protected float width;
 	protected float height;
@@ -28,33 +30,30 @@ public class Sprite extends SceneLayer {
 	protected float cornerY;
 	
 	/** It is not allowed to create an empty sprite. */
+	@SuppressWarnings("unused")
 	private Sprite() { }
 	
 	public Sprite(Sprite sprite) {
 		set(sprite);
 	}
 	
-	public Sprite(TextureRect textureRect, float x, float y, float width, float height) {
+	public Sprite(TextureRect textureRect, float x, float y, float cornerX, float cornerY, float width, float height) {
 		this.textureRect = textureRect;
 		
-		int len = this.color.length;
-		for (int i = 0; i < len; i++) {
-			this.color[i] = 1f;
-		}
-		
-		setBounds(x, y, width, height);
+		setPosition(x, y);
+		setBounds(cornerX, cornerY, width, height);
 	}
 	
-	public Sprite(Texture texture, float x, float y, float width, float height) {
-		this(new TextureRect(texture), x, y, width, height);
+	public Sprite(Texture texture, float x, float y, float cornerX, float cornerY, float width, float height) {
+		this(new TextureRect(texture), x, y, cornerX, cornerY, width, height);
 	}
 	
 	public void bind() {
-		textureRect.bind();
+		textureRect.texture.bind();
 	}
 	
 	public void unbind() {
-		textureRect.unbind();
+		textureRect.texture.unbind();
 	}
 	
 	public void set(Sprite sprite) {
@@ -62,10 +61,7 @@ public class Sprite extends SceneLayer {
 		
 		this.textureRect = sprite.textureRect;
 		
-		int len = this.color.length;
-		for (int i = 0; i < len; i++) {
-			this.color[i] = sprite.color[i];
-		}
+		color.set(sprite.color);
 		
 		this.width = sprite.width;
 		this.height = sprite.height;
@@ -73,16 +69,8 @@ public class Sprite extends SceneLayer {
 		this.cornerY = sprite.cornerY;
 	}
 	
-	public void setColor(float[] color) {
-		int len = this.color.length;
-		
-		if (color.length != len) {
-			Log.w("Sprite", "The color component number is not matched.");
-		}
-		
-		for (int i = 0; i < len; i++) {
-			this.color[i] = color[i];
-		}
+	public void setColor(Color color) {
+		this.color.set(color);
 	}
 	
 	public void setSize(float width, float height) {
@@ -90,11 +78,31 @@ public class Sprite extends SceneLayer {
 		this.height = height;
 	}
 	
-	public void setBounds(float x, float y, float width, float height) {
-		setPosition(x, y);
-		
+	/** A corner's coordinate is its bottom left corner's coordinate, and it is based on its position. */
+	public void setBounds(float cornerX, float cornerY, float width, float height) {
+		this.cornerX = cornerX;
+		this.cornerY = cornerY;
 		this.width = width;
 		this.height = height;
+	}
+	
+	public void horizontalFlip() {
+		this.cornerX = -this.cornerX;
+		this.width = -this.width;
+	}
+	
+	public void verticalFlip() {
+		this.cornerY = -this.cornerY;
+		this.height = -this.height;
+	}
+	
+	public void addAnimation(String animationName, Animation animation) {
+		animation.sprite = this;
+		animations.put(animationName, animation);
+	}
+	
+	public Animation getAnimation(String animationName) {
+		return animations.get(animationName);
 	}
 	
 	@Override

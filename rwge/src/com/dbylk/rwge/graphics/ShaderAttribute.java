@@ -32,8 +32,6 @@ public class ShaderAttribute {
 		this.location = GLES20.glGetAttribLocation(shader.getProgramHandle(), name);
 	}
 	
-	
-	
 	public enum Usage {
 		Position,
 		Color,

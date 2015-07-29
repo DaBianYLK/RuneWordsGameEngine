@@ -9,6 +9,11 @@
     <supports-gl-texture android:name="GL_OES_compressed_ETC1_RGB8_texture" />
 	<supports-gl-texture android:name="GL_OES_compressed_paletted_texture" />
 	
+	<!-- SDCard中创建与删除文件权限 -->
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+	<!-- 向SDCard写入数据权限 -->
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	
 	<application android:hardwareAccelerated="true" />
     
 </manifest>

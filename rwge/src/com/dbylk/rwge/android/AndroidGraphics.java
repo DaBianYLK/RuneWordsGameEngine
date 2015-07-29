@@ -1,6 +1,8 @@
 package com.dbylk.rwge.android;
 
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -17,6 +19,7 @@ import android.view.View;
 
 import com.dbylk.rwge.Graphics;
 import com.dbylk.rwge.RenderListener;
+import com.dbylk.rwge.graphics.Color;
 import com.dbylk.rwge.graphics.SceneRenderer;
 
 /**
@@ -34,8 +37,8 @@ public class AndroidGraphics implements Graphics, Renderer {
 	int height;
 
 	protected long lastFrameTime = System.nanoTime();
-	/** Delta time between two frames. */
-	protected float deltaTime = 0;
+	/** Delta time between two frames, the unit is second. */
+	protected float deltaTime = 0f;
 	protected long frameId = -1;
 
 	/**
@@ -48,9 +51,12 @@ public class AndroidGraphics implements Graphics, Renderer {
 
 	protected RendererState state = new RendererState();
 
+	protected Color backgroundColor;
 	protected BufferFormat bufferFormat;
 	
 	protected SceneRenderer sceneRenderer;
+	ArrayList<RenderListener> renderListeners = new ArrayList<RenderListener>();
+	
 
 	public AndroidGraphics(AndroidApplication app, AndroidAppConfig config) {
 		this.app = app;
@@ -58,11 +64,15 @@ public class AndroidGraphics implements Graphics, Renderer {
 		view = createGLSurfaceView();
 		view.setFocusable(true);
 		view.setFocusableInTouchMode(true);
+		
+		this.backgroundColor = config.backgroundColor;
 	}
 
 	protected View createGLSurfaceView() {
 		if (!glEs20Available()) {
 			Log.e("Graphics", "Can't run without OpenGL ES 2.0.");
+			
+			return null;
 		}
 		
 		//Log.i("Test", "Create gl surface view.");
@@ -106,7 +116,7 @@ public class AndroidGraphics implements Graphics, Renderer {
 		height = displayMetrics.heightPixels;
 		lastFrameTime = System.nanoTime();
 
-		GLES20.glClearColor(0f, 1f, 0f, 1f);
+		GLES20.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
 		GLES20.glViewport(0, 0, width, height);
 		
 		// 以下代码参考libgdx，因为模块未完成，在此仅当作一个标记
@@ -117,19 +127,13 @@ public class AndroidGraphics implements Graphics, Renderer {
 		// FrameBuffer.invalidateAllFrameBuffers(app);
 		
 		if (this.config.useSceneRenderer) {
-			sceneRenderer = new SceneRenderer(app);
-			app.addRenderListener(sceneRenderer);
+			sceneRenderer = new SceneRenderer(config.maxSpriteNum);
+			addRenderListener(sceneRenderer);
 		}
-		
-//		IntBuffer temp = IntBuffer.allocate(1);
-//		GLES20.glGenRenderbuffers(1, temp);
-//		int renderBufferHandle = temp.get(0);
-//		GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, renderBufferHandle);
-//		
-//		GLES20.glGenFramebuffers(1, temp);
-//		int frameBufferHandle = temp.get(0);
-//		GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBufferHandle);
-//		GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_RENDERBUFFER, renderBufferHandle);
+	}
+	
+	public void addRenderListener(RenderListener renderListener) {
+		renderListeners.add(renderListener);
 	}
 
 	private void setBufferFormat(EGLConfig eglConfig) {
@@ -185,6 +189,7 @@ public class AndroidGraphics implements Graphics, Renderer {
 		long time = System.nanoTime();
 		deltaTime = (time - lastFrameTime) / 1000000000f;
 		lastFrameTime = time;
+		frameId++;
 
 		synchronized (state) {
 			if (state.resume) {
@@ -192,18 +197,18 @@ public class AndroidGraphics implements Graphics, Renderer {
 				deltaTime = 0;
 
 				app.appListener.resume();
-				synchronized (app.renderListeners) {
-					for (RenderListener renderListener : app.renderListeners) {
+				synchronized (renderListeners) {
+					for (RenderListener renderListener : renderListeners) {
 						renderListener.resume();
 					}
 				}
 			}
 
 			if (state.running) {
-				app.appListener.render();
-				synchronized (app.renderListeners) {
-					for (RenderListener renderListener : app.renderListeners) {
-						renderListener.render();
+				app.appListener.render(deltaTime);
+				synchronized (renderListeners) {
+					for (RenderListener renderListener : renderListeners) {
+						renderListener.render(deltaTime);
 					}
 				}
 
@@ -212,17 +217,17 @@ public class AndroidGraphics implements Graphics, Renderer {
 
 			if (state.pause) {
 				app.appListener.pause();
-				synchronized (app.renderListeners) {
-					for (RenderListener renderListener : app.renderListeners) {
+				synchronized (renderListeners) {
+					for (RenderListener renderListener : renderListeners) {
 						renderListener.pause();
 					}
 				}
 			}
 
 			if (state.ended) {
-				app.appListener.dispose();
-				synchronized (app.renderListeners) {
-					for (RenderListener renderListener : app.renderListeners) {
+				app.appListener.release();
+				synchronized (renderListeners) {
+					for (RenderListener renderListener : renderListeners) {
 						renderListener.dispose();
 					}
 				}
@@ -307,6 +312,10 @@ public class AndroidGraphics implements Graphics, Renderer {
 			}
 		}
 	}
+	
+	public void setBackgroundColor(Color color) {
+		backgroundColor.set(color);
+	}
 
 	public View getView() {
 		return view;
@@ -342,8 +351,7 @@ public class AndroidGraphics implements Graphics, Renderer {
 
 	@Override
 	public int getRefreshRate() {
-		// TODO Auto-generated method stub
-		return 0;
+		return fps;
 	}
 
 	@Override

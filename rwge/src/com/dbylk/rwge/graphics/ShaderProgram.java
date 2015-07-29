@@ -29,7 +29,7 @@ public class ShaderProgram {
 	boolean isLinked = false;
 	
 	public ShaderProgram(String vertexShaderSource, String fragmentShaderSource) {
-		linkProgram(vertexShaderSource, fragmentShaderSource);
+		isLinked = linkProgram(vertexShaderSource, fragmentShaderSource);
 		
 		if (!isLinked) {
 			return;
@@ -39,19 +39,19 @@ public class ShaderProgram {
 		this.fragmentShaderSource = fragmentShaderSource;
 	}
 	
-	private void linkProgram(String vertexShaderSource, String fragmentShaderSource) {
+	private boolean linkProgram(String vertexShaderSource, String fragmentShaderSource) {
 		vertexShaderHandle = createShader(GLES20.GL_VERTEX_SHADER, vertexShaderSource);
 		fragmentShaderHandle = createShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderSource);
 		
 		if (vertexShaderHandle == -1 || fragmentShaderHandle == -1) {
-			return;
+			return false;
 		}
 		
 		programHandle = GLES20.glCreateProgram();
 		if (programHandle == 0) {
 			programHandle = -1;
 			Log.e("ShaderProgram", "Unable to get a new program handle from OpenGL ES.");
-			return;
+			return false;
 		}
 		
 		GLES20.glAttachShader(programHandle, vertexShaderHandle);
@@ -62,10 +62,10 @@ public class ShaderProgram {
 		GLES20.glGetProgramiv(programHandle, GLES20.GL_LINK_STATUS, linkStatus, 0);
 		if (linkStatus[0] == 0) {
 			Log.e("ShaderProgram", GLES20.glGetProgramInfoLog(programHandle));
-			return;
+			return false;
 		}
 		
-		isLinked = true;
+		return true;
 	}
 	
 	/** Create a shader by source and return its handle. Return -1 if create failed. */
@@ -130,7 +130,6 @@ public class ShaderProgram {
 			ShaderAttribute attribute = attributes.get(i);
 			GLES20.glEnableVertexAttribArray(attribute.location);
 			GLES20.glVertexAttribPointer(attribute.location, attribute.count, attribute.type, false, attributeBufferSize, attribute.offset);
-			//Log.i("Render", "stride = " + attributeBufferSize + ", offset = " + attribute.offset);
 		}
 	}
 	

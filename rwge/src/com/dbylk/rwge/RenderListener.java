@@ -7,7 +7,7 @@ package com.dbylk.rwge;
 
 public interface RenderListener {
 	/** Called when the application frame is rendered. */
-	public void render();
+	public void render(float deltaTime);
 	
 	/** Called when the application is paused. */
 	public void pause();

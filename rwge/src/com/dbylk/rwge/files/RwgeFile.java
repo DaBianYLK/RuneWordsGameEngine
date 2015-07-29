@@ -6,8 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import com.dbylk.rwge.utils.StreamUtils;
+import android.util.Log;
+
+import com.dbylk.rwge.utils.StreamUtil;
 import com.dbylk.rwge.Files.PathType;
+import com.dbylk.rwge.Rwge;
 
 /** Provides method to access files. */
 
@@ -27,6 +30,13 @@ public class RwgeFile {
 
 	public RwgeFile(String path, PathType type) {
 		file = new File(path);
+		
+		if (!file.exists() && type == PathType.External) {
+			path = Rwge.files.getExternalPath() + path;
+			
+			file = new File(path);
+		}
+		
 		pathType = type;
 	}
 
@@ -59,10 +69,12 @@ public class RwgeFile {
 				}
 				output.append(buffer, 0, length);
 			}
-		} catch (IOException ex) {
-			throw new RuntimeException("Error reading layout file: " + this, ex);
-		} finally {
-			StreamUtils.closeQuietly(reader);
+		} 
+		catch (IOException ex) {
+			throw new RuntimeException("Error reading file: " + this, ex);
+		} 
+		finally {
+			StreamUtil.closeQuietly(reader);
 		}
 		
 		return output.toString();
@@ -71,11 +83,13 @@ public class RwgeFile {
 	public byte[] readBytes() {
 		InputStream input = read();
 		try {
-			return StreamUtils.copyStreamToByteArray(input, estimateLength());
-		} catch (IOException ex) {
+			return StreamUtil.copyStreamToByteArray(input, estimateLength());
+		} 
+		catch (IOException ex) {
 			throw new RuntimeException("Error reading file: " + this, ex);
-		} finally {
-			StreamUtils.closeQuietly(input);
+		} 
+		finally {
+			StreamUtil.closeQuietly(input);
 		}
 	}
 
@@ -84,10 +98,13 @@ public class RwgeFile {
 			InputStream input = read();
 			try {
 				return input.available();
-			} catch (Exception ignored) {
-			} finally {
-				StreamUtils.closeQuietly(input);
+			} 
+			catch (Exception ignored) {
+			} 
+			finally {
+				StreamUtil.closeQuietly(input);
 			}
+			
 			return 0;
 		}
 
@@ -104,7 +121,7 @@ public class RwgeFile {
 	public InputStream read() {
 		// If path type is internal or local, and File class can not open it,
 		// then try to find it by "getResourceAsStream" method.
-		if ((pathType == PathType.Internal && !file.exists()) || (pathType == PathType.Local && !file.exists())) {
+		if (pathType == PathType.Classpath || (pathType == PathType.Internal && !file.exists()) || (pathType == PathType.Local && !file.exists())) {
 			InputStream input = RwgeFile.class.getResourceAsStream("/" + file.getPath().replace('\\', '/'));
 			if (input == null) {
 				throw new RuntimeException("File not found: " + file + " (" + pathType + ")");
@@ -114,7 +131,8 @@ public class RwgeFile {
 
 		try {
 			return new FileInputStream(file);
-		} catch (Exception ex) {
+		} 
+		catch (Exception ex) {
 			if (file.isDirectory()) {
 				throw new RuntimeException("Cannot open a stream to a directory: " + file + " (" + pathType + ")", ex);
 			}

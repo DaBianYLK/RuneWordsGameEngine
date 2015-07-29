@@ -13,30 +13,32 @@ import android.widget.FrameLayout;
 
 import com.dbylk.rwge.*;
 import com.dbylk.rwge.android.utils.AndroidUtils;
+import com.dbylk.rwge.android.utils.Debug;
 
 public class AndroidApplication extends Activity implements Application {
 	protected AndroidGraphics graphics;
-	protected Input input;
-	protected Audio audio;
+	protected AndroidInput input;
+	protected AndroidAudio audio;
 	protected Files files;
 	protected Net net;
 	ApplicationListener appListener;
-	List<RenderListener> renderListeners = new ArrayList<RenderListener>();
 	
 	protected boolean keepScreenOn;
-	//protected boolean showStatuesBar;
+	//protected boolean #showStatuesBar;
 	
 	/** Use default android application configuration to set up an android application. */
-	protected void initialize(ApplicationListener listener) {
+	public void initialize(ApplicationListener listener) {
 		AndroidAppConfig config = new AndroidAppConfig();
 		
 		initialize(listener, config);
 	}
 	
 	/** Set up an android application with custom configuration. */
-	protected void initialize(ApplicationListener listener, AndroidAppConfig config) {
+	public void initialize(ApplicationListener listener, AndroidAppConfig config) {
 		// Initialize Android Utilities.
-		AndroidUtils.initialize(this);
+		if (config.showDebugLog) {
+			Debug.showLog();
+		}
 		
 		appListener = listener;
 		
@@ -55,10 +57,16 @@ public class AndroidApplication extends Activity implements Application {
 		setScreenAlwaysOn(config.keepScreenOn);
 		//setStatusBarVisibility();
 		
+		input = new AndroidInput(this, config);
+		graphics.addRenderListener(input);
+		audio = new AndroidAudio(this, config);
 		
 		// Set the Rwge properties.
 		Rwge.application = this;
 		Rwge.graphics = this.graphics;
+		Rwge.files = new AndroidFiles(this.getAssets());
+		Rwge.input = this.input;
+		Rwge.audio = this.audio;
 	}
 
 	private FrameLayout.LayoutParams createLayoutParams () {
@@ -74,10 +82,6 @@ public class AndroidApplication extends Activity implements Application {
 		}
 		
 		this.keepScreenOn = keepScreenOn;
-	}
-	
-	public void addRenderListener(RenderListener renderListener) {
-		renderListeners.add(renderListener);
 	}
 	
 //	private void setStatusBarVisibility(boolean visible) {
