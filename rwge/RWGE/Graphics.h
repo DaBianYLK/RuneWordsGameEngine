@@ -18,6 +18,7 @@ public:
 
 	IDirect3DDevice9* GetD3D9Device();
 	SceneManager* GetSceneManager();
+	Window* GetWindow();
 
 private:
 	void InitWindow();

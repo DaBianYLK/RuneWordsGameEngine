@@ -1,6 +1,8 @@
 #include "Camera.h"
 
 #include "AppConfig.h"
+#include "Graphics.h"
+#include "Window.h"
 
 Camera::Camera() {
 	m_Position = D3DXVECTOR3(0.0f, 0.0f, -10.0f);
@@ -9,6 +11,14 @@ Camera::Camera() {
 	m_LookAxis = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
 
 	m_ViewMatrix = D3DXMATRIX();
+	m_ProjectionMatrix = D3DXMATRIX();
+
+	D3DXMatrixPerspectiveFovLH(
+		&m_ProjectionMatrix,
+		D3DX_PI * 0.5f, // 90 - degree
+		(float)Graphics::GetInstance()->GetWindow()->GetWidth() / (float)Graphics::GetInstance()->GetWindow()->GetHeight(),
+		1.0f,
+		1000.0f);
 }
 
 Camera::Camera(const D3DXVECTOR3& position, const D3DXVECTOR3& rightAxis, const D3DXVECTOR3& upAxis, const D3DXVECTOR3& lookAxis) {
@@ -18,6 +28,14 @@ Camera::Camera(const D3DXVECTOR3& position, const D3DXVECTOR3& rightAxis, const 
 	m_LookAxis = lookAxis;
 
 	m_ViewMatrix = D3DXMATRIX();
+	m_ProjectionMatrix = D3DXMATRIX();
+
+	D3DXMatrixPerspectiveFovLH(
+		&m_ProjectionMatrix,
+		D3DX_PI * 0.25f, // 90 - degree
+		(float)Graphics::GetInstance()->GetWindow()->GetWidth() / (float)Graphics::GetInstance()->GetWindow()->GetHeight(),
+		30.0f,
+		1000.0f);
 }
 
 Camera::~Camera() {
@@ -58,6 +76,10 @@ D3DXMATRIX* Camera::GetViewMatrix() {
 	//int x41 = m_pViewMatrix->_41;	int x42 = m_pViewMatrix->_42;	int x43 = m_pViewMatrix->_43;	int x44 = m_pViewMatrix->_44;
 
 	return &m_ViewMatrix;
+}
+
+D3DXMATRIX* Camera::GetProjectionMatrix() {
+	return &m_ProjectionMatrix;
 }
 
 void Camera::Move(float x, float y, float z) {

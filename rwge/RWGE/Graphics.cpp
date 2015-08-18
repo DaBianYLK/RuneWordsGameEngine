@@ -25,22 +25,6 @@ void Graphics::Initialize() {
 
 	m_pWindow->CreateViewport(m_pSceneManager->GetCamera());
 
-	m_pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
-	m_pDevice->SetRenderState(D3DRS_SPECULARENABLE, true);
-
-	m_pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-	m_pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-	m_pDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
-
-
-	D3DXMATRIX proj;
-	D3DXMatrixPerspectiveFovLH(
-		&proj,
-		D3DX_PI * 0.5f, // 90 - degree
-		(float)m_pWindow->GetWidth() / (float)m_pWindow->GetHeight(),
-		1.0f,
-		1000.0f);
-	m_pDevice->SetTransform(D3DTS_PROJECTION, &proj);
 }
 
 void Graphics::Update(float deltaTime) {
@@ -65,6 +49,10 @@ IDirect3DDevice9* Graphics::GetD3D9Device() {
 
 SceneManager* Graphics::GetSceneManager() {
 	return m_pSceneManager;
+}
+
+Window* Graphics::GetWindow() {
+	return m_pWindow;
 }
 
 void Graphics::InitWindow() {
@@ -136,6 +124,14 @@ void Graphics::InitD3D9() {
 	}
 
 	m_pD3D9->Release(); // done with d3d9 object
+
+
+	m_pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
+	m_pDevice->SetRenderState(D3DRS_SPECULARENABLE, true);
+
+	m_pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+	m_pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	m_pDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
 }
 
 void Graphics::InitSceneManager() {

@@ -29,7 +29,7 @@ namespace AppConfig {
 	// ÉãÏñ»ú²ÎÊý
 	const float cameraPosX = 0.0f;
 	const float cameraPosY = 80.0f;
-	const float cameraPosZ = -80.0f;
+	const float cameraPosZ = -200.0f;
 	const float cameraRightAxisX = 1.0f;
 	const float cameraRightAxisY = 0.0f;
 	const float cameraRightAxisZ = 0.0f;

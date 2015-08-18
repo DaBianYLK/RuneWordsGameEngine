@@ -15,6 +15,7 @@ public:
 	~Camera();
 
 	D3DXMATRIX* GetViewMatrix();
+	D3DXMATRIX* GetProjectionMatrix();
 
 	void Move(float x, float y, float z);
 	// ÈÆrightÖáÐý×ª
@@ -28,6 +29,7 @@ private:
 	Type m_Type;
 
 	D3DXMATRIX m_ViewMatrix;
+	D3DXMATRIX m_ProjectionMatrix;
 
 	D3DXVECTOR3 m_Position;
 	D3DXVECTOR3 m_RightAxis;

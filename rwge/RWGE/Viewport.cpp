@@ -7,6 +7,7 @@ Viewport::Viewport(Camera* pCamera) {
 	m_pDevice = Graphics::GetInstance()->GetD3D9Device();
 	m_pCamera = pCamera;
 
+	m_pDevice->SetTransform(D3DTS_PROJECTION, pCamera->GetProjectionMatrix());
 }
 
 Viewport::~Viewport() {
