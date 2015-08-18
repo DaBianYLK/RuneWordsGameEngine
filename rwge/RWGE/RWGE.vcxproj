@@ -77,6 +77,7 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="InputListener.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="MaxModel.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="RwgeClasses.h" />
@@ -95,6 +96,7 @@
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="InputListener.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />

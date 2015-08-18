@@ -90,6 +90,9 @@
     <ClInclude Include="MaxModel.h">
       <Filter>头文件\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>头文件\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -129,6 +132,9 @@
       <Filter>源文件\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
+      <Filter>源文件\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
       <Filter>源文件\Graphics</Filter>
     </ClCompile>
   </ItemGroup>

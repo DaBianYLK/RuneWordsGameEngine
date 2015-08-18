@@ -3,6 +3,7 @@
 #include "AppDelegate.h"
 
 class Sprite;
+class Light;
 
 class MyApp : public AppDelegate {
 public:
@@ -15,5 +16,9 @@ public:
 
 private:
 	Sprite* m_pSprite;
+
+	Light* m_pPointLight;
+	Light* m_pDirectionalLight;
+	Light* m_pSpotLight;
 };
 
