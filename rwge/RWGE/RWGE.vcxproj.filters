@@ -57,11 +57,41 @@
     <ClInclude Include="AppDelegate.h">
       <Filter>头文件\Application</Filter>
     </ClInclude>
+    <ClInclude Include="AppConfig.h">
+      <Filter>头文件\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="InputListener.h">
+      <Filter>头文件\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>头文件\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>头文件\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>头文件\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>头文件\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>头文件\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewport.h">
+      <Filter>头文件\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>头文件\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>头文件\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="MaxModel.h">
+      <Filter>头文件\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Singleton.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Application.cpp">
       <Filter>源文件\Applicaiton</Filter>
     </ClCompile>
@@ -73,6 +103,33 @@
     </ClCompile>
     <ClCompile Include="AppDelegate.cpp">
       <Filter>源文件\Applicaiton</Filter>
+    </ClCompile>
+    <ClCompile Include="InputListener.cpp">
+      <Filter>源文件\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>源文件\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>源文件\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>源文件\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>源文件\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>源文件\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewport.cpp">
+      <Filter>源文件\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>源文件\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>源文件\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,0 +1,47 @@
+﻿生成启动时间为 2015/8/18 星期二 22:04:58。
+     1>项目“E:\Projects\GitHub\RuneWordsGameEngine\RWGE\RWGE\RWGE.vcxproj”在节点 2 上(Rebuild 个目标)。
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Animation.cpp Application.cpp AppDelegate.cpp Camera.cpp Graphics.cpp InputListener.cpp InputManager.cpp Mesh.cpp Scene.cpp SceneManager.cpp Sprite.cpp Viewport.cpp Window.cpp
+         Window.cpp
+         Viewport.cpp
+         Sprite.cpp
+     1>e:\projects\github\runewordsgameengine\rwge\rwge\sprite.cpp(34): warning C4018: “<”: 有符号/无符号不匹配
+     1>e:\projects\github\runewordsgameengine\rwge\rwge\sprite.cpp(76): warning C4018: “<”: 有符号/无符号不匹配
+     1>e:\projects\github\runewordsgameengine\rwge\rwge\sprite.cpp(84): warning C4018: “<”: 有符号/无符号不匹配
+     1>e:\projects\github\runewordsgameengine\rwge\rwge\sprite.cpp(94): warning C4018: “<”: 有符号/无符号不匹配
+         SceneManager.cpp
+         Scene.cpp
+         Mesh.cpp
+     1>e:\projects\github\runewordsgameengine\rwge\rwge\mesh.cpp(70): warning C4018: “<”: 有符号/无符号不匹配
+     1>e:\projects\github\runewordsgameengine\rwge\rwge\mesh.cpp(136): warning C4018: “<”: 有符号/无符号不匹配
+         InputManager.cpp
+         InputListener.cpp
+         Graphics.cpp
+     1>e:\projects\github\runewordsgameengine\rwge\rwge\graphics.cpp(117): warning C4800: “HRESULT”: 将值强制为布尔值“true”或“false”(性能警告)
+     1>e:\projects\github\runewordsgameengine\rwge\rwge\graphics.cpp(129): warning C4800: “HRESULT”: 将值强制为布尔值“true”或“false”(性能警告)
+         Camera.cpp
+         AppDelegate.cpp
+         Application.cpp
+         Animation.cpp
+     1>e:\projects\github\runewordsgameengine\rwge\rwge\animation.cpp(37): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+         正在生成代码...
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\Lib.exe /OUT:"E:\Projects\GitHub\RuneWordsGameEngine\RWGE\Debug\RWGE.lib" /NOLOGO Debug\Animation.obj
+         Debug\Application.obj
+         Debug\AppDelegate.obj
+         Debug\Camera.obj
+         Debug\Graphics.obj
+         Debug\InputListener.obj
+         Debug\InputManager.obj
+         Debug\Mesh.obj
+         Debug\Scene.obj
+         Debug\SceneManager.obj
+         Debug\Sprite.obj
+         Debug\Viewport.obj
+         Debug\Window.obj
+         RWGE.vcxproj -> E:\Projects\GitHub\RuneWordsGameEngine\RWGE\Debug\RWGE.lib
+     1>已完成生成项目“E:\Projects\GitHub\RuneWordsGameEngine\RWGE\RWGE\RWGE.vcxproj”(Rebuild 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:04.58

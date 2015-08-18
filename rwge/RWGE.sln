@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RWGE", "RWGE\RWGE.vcxproj", "{34E748B2-E07E-44F1-A8E9-6CFC58D6AA9C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RwgeSample", "RwgeSample\RwgeSample.vcxproj", "{F79ADA52-025B-4433-A0BA-3CE96932D042}"
+	ProjectSection(ProjectDependencies) = postProject
+		{34E748B2-E07E-44F1-A8E9-6CFC58D6AA9C} = {34E748B2-E07E-44F1-A8E9-6CFC58D6AA9C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
