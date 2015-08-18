@@ -1,8 +1,8 @@
 *.sdf
 *.opensdf
 *.suo
-RWGE/Debug
-RWGE/RWGE/Debug
-rwge/Debug
-rwge/RWGE/Debug
-rwge/RwgeSample/Debug
+RWGE\Debug
+RWGE\RWGE\Debug
+rwge\Debug
+rwge\RWGE\Debug
+rwge\RwgeSample\Debug
