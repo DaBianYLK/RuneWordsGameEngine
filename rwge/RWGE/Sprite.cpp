@@ -30,7 +30,7 @@ Sprite* Sprite::Load(const char* filePath) {
 	// 获取骨骼数据
 	int boneDataLength = 4 * 4 * sprite->m_ModelHead.frameNum * sprite->m_ModelHead.boneNum;
 	sprite->m_BoneData = new float[boneDataLength];
-	modelFile.read((char*)sprite->m_BoneData, sizeof(float)* boneDataLength);
+	modelFile.read((char*)sprite->m_BoneData, sizeof(float) * boneDataLength);
 
 	// 获取网格数据
 	sprite->m_Meshes = new Mesh[sprite->m_ModelHead.meshNum];

@@ -123,8 +123,26 @@ void Mesh::Multiply(float* position, float* matrix) {
 }
 
 void Mesh::Update(int frameIndex) {
-	// 如果没有骨骼直接返回
+	// 如果没有骨骼则只执行场景树变换
 	if (m_pSprite->GetBoneNum() <= 0) {
+		m_pVertexBuffer->Lock(0, 0, (void**)&m_Vertices, 0);
+
+		for (int vertexIndex = 0; vertexIndex < m_MeshHead.vertexNum; ++vertexIndex) {
+			// 执行场景变换
+			D3DXVECTOR4 vertex;
+			vertex.x = m_pVertexData[vertexIndex].x;
+			vertex.y = m_pVertexData[vertexIndex].y;
+			vertex.z = m_pVertexData[vertexIndex].z;
+			vertex.w = 1.0f;
+			D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_TransformMatrix));
+
+			m_Vertices[vertexIndex].x = vertex.x;
+			m_Vertices[vertexIndex].y = vertex.y;
+			m_Vertices[vertexIndex].z = vertex.z;
+		}
+
+		m_pVertexBuffer->Unlock();
+
 		return;
 	}
 
@@ -139,18 +157,18 @@ void Mesh::Update(int frameIndex) {
 		float postionResult[] = { 0.0f, 0.0f, 0.0f };
 		//float normalResult[] = { 0.0f, 0.0f, 0.0f };
 
+		// 执行场景变换
+		D3DXVECTOR4 vertex;
+		vertex.x = m_pVertexData[vertexIndex].x;
+		vertex.y = m_pVertexData[vertexIndex].y;
+		vertex.z = m_pVertexData[vertexIndex].z;
+		vertex.w = 1.0f;
+		D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_TransformMatrix));
+
 		for (int boneIndex = 0; boneIndex < 2; ++boneIndex) {
 			if (m_pVertexData[vertexIndex].boneID[boneIndex] < 0 || m_pVertexData[vertexIndex].boneID[boneIndex] >= m_pSprite->GetBoneNum()) {
 				continue;
 			}
-
-			// 执行场景变换
-			D3DXVECTOR4 vertex;
-			vertex.x = m_pVertexData[vertexIndex].x;
-			vertex.y = m_pVertexData[vertexIndex].y;
-			vertex.z = m_pVertexData[vertexIndex].z;
-			vertex.w = 1.0f;
-			D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_TransformMatrix));
 
 			// 执行骨骼变换
 			position[boneIndex][0] = vertex.x;
