@@ -144,10 +144,19 @@ void Mesh::Update(int frameIndex) {
 				continue;
 			}
 
-			position[boneIndex][0] = m_pVertexData[vertexIndex].x;
-			position[boneIndex][1] = m_pVertexData[vertexIndex].y;
-			position[boneIndex][2] = m_pVertexData[vertexIndex].z;
-			position[boneIndex][3] = 1.0f;
+			// 执行场景变换
+			D3DXVECTOR4 vertex;
+			vertex.x = m_pVertexData[vertexIndex].x;
+			vertex.y = m_pVertexData[vertexIndex].y;
+			vertex.z = m_pVertexData[vertexIndex].z;
+			vertex.w = 1.0f;
+			D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_TransformMatrix));
+
+			// 执行骨骼变换
+			position[boneIndex][0] = vertex.x;
+			position[boneIndex][1] = vertex.y;
+			position[boneIndex][2] = vertex.z;
+			position[boneIndex][3] = vertex.w;
 
 			//normal[boneIndex][0] = m_pVertexData[vertexIndex].nX;
 			//normal[boneIndex][1] = m_pVertexData[vertexIndex].nY;

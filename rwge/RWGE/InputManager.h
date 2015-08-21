@@ -21,7 +21,7 @@ public:
 	void KeyDown(unsigned int key);
 	bool IsKeyDown(unsigned int key);
 
-	void addListener(InputListener* listener);
+	void AddListener(InputListener* listener);
 
 private:
 	bool m_IsKeyDown[256];

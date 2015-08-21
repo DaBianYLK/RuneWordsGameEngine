@@ -1,6 +1,8 @@
 #pragma once
 
-#include "AppDelegate.h"
+#include <AppDelegate.h>
+
+#include "Controller.h"
 
 class Sprite;
 class Light;
@@ -20,5 +22,7 @@ private:
 	Light* m_pPointLight;
 	Light* m_pDirectionalLight;
 	Light* m_pSpotLight;
+
+	Controller* m_pController;
 };
 

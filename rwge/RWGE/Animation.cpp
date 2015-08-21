@@ -5,6 +5,8 @@
 Animation::Animation() {
 	m_PlaySpeed = 1.0f;
 	m_CurrentTime = 0.0f;
+	m_IsPlaying = false;
+	m_Loop = false;
 }
 
 Animation::Animation(int startFrame, int frameNum) {
@@ -12,6 +14,8 @@ Animation::Animation(int startFrame, int frameNum) {
 	m_FrameNum = frameNum;
 	m_PlaySpeed = 1.0f;
 	m_CurrentTime = 0.0f;
+	m_IsPlaying = false;
+	m_Loop = false;
 }
 
 Animation::~Animation() {
@@ -26,6 +30,7 @@ void Animation::Set(int startFrame, int frameNum) {
 void Animation::Play(bool loop) {
 	m_Loop = loop;
 	m_CurrentTime = 0.0f;
+	m_IsPlaying = true;
 }
 
 void Animation::SetPlaySpeed(float playSpeed) {
@@ -42,6 +47,7 @@ void Animation::Update(float deltaTime) {
 		}
 		else {
 			deltaFrame = m_FrameNum - 1;
+			m_IsPlaying = false;
 		}
 	}
 
@@ -50,4 +56,8 @@ void Animation::Update(float deltaTime) {
 
 int Animation::GetFrameIndex() {
 	return m_CurrentFrame;
+}
+
+bool Animation::IsPlaying() {
+	return m_IsPlaying;
 }

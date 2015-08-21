@@ -81,8 +81,8 @@
     <ClInclude Include="MaxModel.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="RwgeClasses.h" />
-    <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="SceneNode.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Viewport.h" />
@@ -98,8 +98,8 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Viewport.cpp" />
     <ClCompile Include="Window.cpp" />

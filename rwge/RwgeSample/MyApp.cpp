@@ -1,10 +1,10 @@
 #include "MyApp.h"
 
-#include "Sprite.h"
-#include "Graphics.h"
-#include "SceneManager.h"
-#include "Scene.h"
-#include "Light.h"
+#include <Sprite.h>
+#include <Graphics.h>
+#include <SceneManager.h>
+#include <Light.h>
+#include <InputManager.h>
 
 MyApp::MyApp() {
 
@@ -19,7 +19,7 @@ void MyApp::Initialize() {
 	m_pSprite = Sprite::Load("Human.model");
 	m_pSprite->Initialize();
 
-	Graphics::GetInstance()->GetSceneManager()->GetScene()->AddSprite(m_pSprite);
+	Graphics::GetInstance()->GetSceneManager()->GetSceneRootNode()->AttachChild(m_pSprite);
 
 	D3DXCOLOR diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	D3DXCOLOR ambient = diffuse * 0.4f;
@@ -38,11 +38,12 @@ void MyApp::Initialize() {
 	m_pDirectionalLight = Light::CreateDirectionalLight(diffuse, specular, ambient, direction);
 	m_pSpotLight = Light::CreateSpotLight(diffuse, specular, ambient, position, direction, range, falloff, attenuation0, attenuation1, attenuation2, theta, phi);
 
-	m_pPointLight->Enable();
+	m_pController = new Controller(m_pSprite, m_pPointLight, m_pDirectionalLight, m_pSpotLight);
+	InputManager::GetInstance()->AddListener(m_pController);
 }
 
 void MyApp::Update(float deltaTime) {
-	
+	m_pController->Update(deltaTime);
 }
 
 void MyApp::Cleanup() {

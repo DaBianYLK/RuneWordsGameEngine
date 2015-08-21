@@ -1,12 +1,15 @@
 #include "Sprite.h"
 
 #include "Graphics.h"
+#include "Mesh.h"
+#include "Animation.h"
 
 #include <fstream>
 
 using namespace std;
 
 Sprite::Sprite() {
+	m_NodeType = Type::SpriteNode;
 	//m_ModelHead.meshNum = 1;
 	//m_Meshes = new Mesh[m_ModelHead.meshNum];
 }
@@ -104,6 +107,10 @@ void Sprite::PlayAnimation(int animationID, bool loop) {
 	m_AnimationID = animationID;
 
 	m_Animation[m_AnimationID].Play(loop);
+}
+
+bool Sprite::IsCurrentAnimationPlaying() {
+	return m_Animation[m_AnimationID].IsPlaying();
 }
 
 void Sprite::InitAnimation() {

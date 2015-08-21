@@ -1,6 +1,8 @@
 #pragma once
 
 #include <d3d9.h>
+#include <d3dx9.h>
+#include <stack>
 
 #include "RwgeClasses.h"
 
@@ -10,17 +12,20 @@ public:
 	~SceneManager();
 
 	void Initialize();
-	void Draw();
-	void Update(float deltaTime);
+	void Draw(float deltaTime);
 	void Cleanup();
 
-	Scene* GetScene();
+	SceneNode* GetSceneRootNode();
 	Camera* GetCamera();
+
+private:
+	void TraversalSceneNode(SceneNode* pNode, float deltaTime);
 
 private:
 	IDirect3DDevice9* m_pDevice;
 
-	Scene* m_pScene;
+	SceneNode* m_pSceneRootNode;
+	std::stack<D3DXMATRIX*> m_pTransformMatrices;
 
 	Camera* m_pCamera;
 };

@@ -2,7 +2,9 @@
 
 #include <d3dx9.h>
 
-class Camera {
+#include "SceneNode.h"
+
+class Camera : public SceneNode {
 public:
 	enum Type {
 		Perspective,
@@ -11,7 +13,8 @@ public:
 
 public:
 	Camera();
-	Camera(const D3DXVECTOR3& position, const D3DXVECTOR3& rightAxis, const D3DXVECTOR3& upAxis, const D3DXVECTOR3& lookAxis);
+	Camera(const D3DXVECTOR3& position, const D3DXVECTOR3& rightAxis, const D3DXVECTOR3& upAxis, const D3DXVECTOR3& lookAxis, 
+		   float fovy, float aspect, float lookNear, float lookFar);
 	~Camera();
 
 	D3DXMATRIX* GetViewMatrix();

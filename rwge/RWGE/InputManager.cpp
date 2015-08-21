@@ -77,6 +77,6 @@ bool InputManager::IsKeyDown(unsigned int key) {
 	return m_IsKeyDown[key];
 }
 
-void InputManager::addListener(InputListener* listener) {
+void InputManager::AddListener(InputListener* listener) {
 	m_InputListeners.push_back(listener);
 }

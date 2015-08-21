@@ -41,6 +41,10 @@ namespace AppConfig {
 	const float cameraLookAxisZ = 1.0f;
 	const float cameraMoveSpeed = 60.0f / 60.0f;
 	const float cameraRotateSpeed = 1.0f / 60.0f;
+	const float cameraFovy = 3.141592654f * 0.25f;
+	const float cameraAspect = (float)winWidth / winHeight;
+	const float cameraLookNear = 30.0f;
+	const float cameraLookFar = 1000.0f;
 
 	// ¶¯»­²ÎÊý
 	const float animationFrameInterval = 2.0f / 60.0f;

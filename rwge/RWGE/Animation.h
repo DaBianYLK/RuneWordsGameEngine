@@ -13,6 +13,7 @@ public:
 	void Update(float deltaTime);
 
 	int GetFrameIndex();
+	bool IsPlaying();
 
 private:
 	int m_StartFrame;
@@ -20,6 +21,7 @@ private:
 
 	float m_PlaySpeed;
 	bool m_Loop;
+	bool m_IsPlaying;
 
 	float m_CurrentTime;
 	int m_CurrentFrame;

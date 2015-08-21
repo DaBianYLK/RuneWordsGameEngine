@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Mesh.h"
-#include "Animation.h"
+#include "RwgeClasses.h"
+#include "SceneNode.h"
+#include "MaxModel.h"
 
 #define ANIMATION_STAND					0
 #define ANIMATION_STAND_WEAPON			1
@@ -26,7 +27,9 @@
 
 #define ANIMATION_NUM					20
 
-class Sprite {
+class Sprite : public SceneNode {
+	friend class Mesh;
+
 public:
 	Sprite();
 	~Sprite();
@@ -46,6 +49,7 @@ public:
 
 	void SetAnimation(int animationID);
 	void PlayAnimation(int animationID, bool loop = false);
+	bool IsCurrentAnimationPlaying();
 
 private:
 	void InitAnimation();

@@ -31,8 +31,8 @@ void Graphics::Update(float deltaTime) {
 	if (m_pDevice && m_pSceneManager) {
 		m_pWindow->Update(deltaTime);
 
-		m_pSceneManager->Update(deltaTime);
-		m_pSceneManager->Draw();
+		//m_pSceneManager->Update(deltaTime);
+		m_pSceneManager->Draw(deltaTime);
 
 		// Swap the back and front buffers.
 		m_pDevice->Present(0, 0, 0, 0);
