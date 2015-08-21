@@ -4,6 +4,11 @@
 *.pdb
 *.obj
 *.cfg
+*.idb
+*.tlog
+*.log
+*.ilk
+*.lastbuildstate
 RWGE\Debug
 RWGE\RWGE\Debug
 rwge\Debug
