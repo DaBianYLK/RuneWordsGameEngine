@@ -3,6 +3,7 @@
 *.suo
 *.pdb
 *.obj
+*.cfg
 RWGE\Debug
 RWGE\RWGE\Debug
 rwge\Debug
