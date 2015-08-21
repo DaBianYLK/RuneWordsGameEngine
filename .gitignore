@@ -1,6 +1,8 @@
 *.sdf
 *.opensdf
 *.suo
+*.pdb
+*.obj
 RWGE\Debug
 RWGE\RWGE\Debug
 rwge\Debug
