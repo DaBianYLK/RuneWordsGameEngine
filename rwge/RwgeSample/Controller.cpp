@@ -2,6 +2,7 @@
 
 #include <Graphics.h>
 #include <SceneManager.h>
+#include <AppConfig.h>
 
 #define POINT_LIGHT			0
 #define DIRECTIONAL_LIGHT	1
@@ -39,7 +40,24 @@ Controller::Controller(Sprite* pSprite, Light* pPointLight, Light* pDirectionalL
 	m_LightType = POINT_LIGHT;
 	m_pPointLight->Enable();
 
+	m_pCameraYawPivot = new SceneNode();
+	m_pCameraYawPivot->SetPositionY(80.0f);
+	m_pSprite->AttachChild(m_pCameraYawPivot);
+
+	m_pCameraPitchPivot = new SceneNode();
+	m_pCameraYawPivot->AttachChild(m_pCameraPitchPivot);
+
+	m_CameraDistance = 150.0f;
+	m_CameraMinDistance = 100.0f;
+	m_CameraMaxDistance = 500.0f;
+
 	m_pCamera = Graphics::GetInstance()->GetSceneManager()->GetCamera();
+	m_pCamera->SetPosition(0.0f, m_CameraDistance, -m_CameraDistance * 2.0f);
+	D3DXVECTOR3 rightAxis(1.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 upAxis(0.0f, 1.0f, 0.0f);
+	D3DXVECTOR3 lookAxis(0.0f, -0.5f, 1.0f);
+	m_pCamera->SetLookAxes(rightAxis, upAxis, lookAxis);
+	m_pCameraPitchPivot->AttachChild(m_pCamera);
 }
 
 
@@ -147,6 +165,33 @@ void Controller::Update(float deltaTime) {
 		}
 
 		m_ActionState = ACTION_STAND;
+	}
+
+	if (m_pInputManager->IsKeyDown('Q')) {
+		m_pCameraYawPivot->Yaw(-AppConfig::cameraRotateSpeed);
+	}
+	if (m_pInputManager->IsKeyDown('E')) {
+		m_pCameraYawPivot->Yaw(AppConfig::cameraRotateSpeed);
+	}
+	if (m_pInputManager->IsKeyDown('Z')) {
+		m_pCameraPitchPivot->Pitch(-AppConfig::cameraRotateSpeed);
+	}
+	if (m_pInputManager->IsKeyDown('X')) {
+		m_pCameraPitchPivot->Pitch(AppConfig::cameraRotateSpeed);
+	}
+	if (m_pInputManager->IsKeyDown('C')) {
+		if (m_CameraDistance < m_CameraMaxDistance) {
+			m_CameraDistance += AppConfig::cameraMoveSpeed;
+
+			m_pCamera->SetPosition(0.0f, m_CameraDistance, -m_CameraDistance * 2.0f);
+		}
+	}
+	if (m_pInputManager->IsKeyDown('V')) {
+		if (m_CameraDistance > m_CameraMinDistance) {
+			m_CameraDistance -= AppConfig::cameraMoveSpeed;
+
+			m_pCamera->SetPosition(0.0f, m_CameraDistance, -m_CameraDistance * 2.0f);
+		}
 	}
 }
 

@@ -26,9 +26,9 @@ public:
 	void TranslateY(float y);
 	void TranslateZ(float z);
 	void Translate(float x, float y, float z);
-	void SetPostionX(float x);
-	void SetPostionY(float y);
-	void SetPostionZ(float z);
+	void SetPositionX(float x);
+	void SetPositionY(float y);
+	void SetPositionZ(float z);
 	void SetPosition(float x, float y, float z);
 
 	void Pitch(float radian);		// 绕X轴旋转
@@ -50,6 +50,7 @@ public:
 
 	D3DXMATRIX* GetTransformMatrix();
 	void GetTransformMatrix(float* outputMatrix);		// 矩阵中数据排列顺序为先行后列
+	SceneNode* GetFather();
 
 protected:
 	Type m_NodeType;

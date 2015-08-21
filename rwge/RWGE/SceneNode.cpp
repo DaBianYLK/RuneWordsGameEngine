@@ -10,6 +10,8 @@ SceneNode::SceneNode() {
 	m_RotationRadian = 0.0f;
 
 	m_Scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+
+	m_pFather = NULL;
 }
 
 
@@ -18,11 +20,17 @@ SceneNode::~SceneNode() {
 }
 
 void SceneNode::AttachChild(SceneNode* pNode) {
+	if (pNode->m_pFather) {
+		pNode->m_pFather->RemoveChild(pNode);
+	}
+
 	m_pChildren.push_back(pNode);
-  }
+	pNode->m_pFather = this;
+}
 
 void SceneNode::RemoveChild(SceneNode* pNode) {
 	m_pChildren.remove(pNode);
+	pNode->m_pFather = NULL;
 }
 
 void SceneNode::TranslateX(float x) {
@@ -43,15 +51,15 @@ void SceneNode::Translate(float x, float y, float z) {
 	m_Position.z += z;
 }
 
-void SceneNode::SetPostionX(float x) {
+void SceneNode::SetPositionX(float x) {
 	m_Position.x = x;
 }
 
-void SceneNode::SetPostionY(float y) {
+void SceneNode::SetPositionY(float y) {
 	m_Position.y = y;
 }
 
-void SceneNode::SetPostionZ(float z) {
+void SceneNode::SetPositionZ(float z) {
 	m_Position.z = z;
 }
 
@@ -333,4 +341,8 @@ void SceneNode::GetTransformMatrix(float* outputMatrix) {
 	outputMatrix[4] = scaleY * rotMat10;	outputMatrix[5] = scaleY * rotMat11;	outputMatrix[6] = scaleY * rotMat12;	outputMatrix[7] = 0.0f;
 	outputMatrix[8] = scaleZ * rotMat20;	outputMatrix[9] = scaleZ * rotMat21;	outputMatrix[10] = scaleZ * rotMat22;	outputMatrix[11] = 0.0f;
 	outputMatrix[12] = translateX;			outputMatrix[13] = translateY;			outputMatrix[14] = translateZ;			outputMatrix[15] = 1.0f;
+}
+
+SceneNode* SceneNode::GetFather() {
+	return m_pFather;
 }

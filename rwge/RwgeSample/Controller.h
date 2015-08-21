@@ -5,6 +5,7 @@
 #include <Light.h>
 #include <Camera.h>
 #include <InputManager.h>
+#include <SceneNode.h>
 
 class Controller : public InputListener {
 public:
@@ -39,5 +40,10 @@ private:
 	unsigned short m_LightType;
 
 	Camera* m_pCamera;
+	SceneNode* m_pCameraYawPivot;
+	SceneNode* m_pCameraPitchPivot;
+	float m_CameraDistance;
+	float m_CameraMinDistance;
+	float m_CameraMaxDistance;
 };
 

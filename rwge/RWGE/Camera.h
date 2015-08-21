@@ -17,16 +17,11 @@ public:
 		   float fovy, float aspect, float lookNear, float lookFar);
 	~Camera();
 
+	void SetLookAxes(const D3DXVECTOR3& rightAxis, const D3DXVECTOR3& upAxis, const D3DXVECTOR3& lookAxis);
+	void SetPerspective(float fovy, float aspect, float lookNear, float lookFar);
+
 	D3DXMATRIX* GetViewMatrix();
 	D3DXMATRIX* GetProjectionMatrix();
-
-	void Move(float x, float y, float z);
-	// ÈÆrightÖáÐý×ª
-	void Pitch(float radian);
-	// ÈÆupÖáÐý×ª
-	void Yaw(float radian);
-	// ÈÆlookÖáÐý×ª
-	void Roll(float radian);
 
 private:
 	Type m_Type;
@@ -34,7 +29,6 @@ private:
 	D3DXMATRIX m_ViewMatrix;
 	D3DXMATRIX m_ProjectionMatrix;
 
-	D3DXVECTOR3 m_Position;
 	D3DXVECTOR3 m_RightAxis;
 	D3DXVECTOR3 m_UpAxis;
 	D3DXVECTOR3 m_LookAxis;
