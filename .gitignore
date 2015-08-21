@@ -8,6 +8,8 @@
 *.tlog
 *.log
 *.ilk
+*.exe
+*.lib
 *.lastbuildstate
 RWGE\Debug
 RWGE\RWGE\Debug
