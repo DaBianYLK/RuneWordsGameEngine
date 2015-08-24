@@ -17,9 +17,10 @@ MyApp::~MyApp() {
 
 void MyApp::Initialize() {
 	m_pSprite = Sprite::Load("Human.model");
-	m_pSprite->Initialize();
-
 	Graphics::GetInstance()->GetSceneManager()->GetSceneRootNode()->AttachChild(m_pSprite);
+
+	pGround = Sprite::CreatePanel(0.0f, 0.0f, 0.0f, 1000.0f, 1000.0f);
+	Graphics::GetInstance()->GetSceneManager()->GetSceneRootNode()->AttachChild(pGround);
 
 	D3DXCOLOR diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	D3DXCOLOR ambient = diffuse * 0.4f;

@@ -54,15 +54,14 @@ public:
 	Mesh(const MaxMeshHead& head, MaxVertex* vertexData, unsigned short* indexData, Sprite* pSprite);
 	~Mesh();
 
-	static Mesh* createPanel(const D3DXVECTOR3& position, float length, float width);				// length is parallel with X-axis, width is parallel with Z-axis.
-	static Mesh* createBox(const D3DXVECTOR3& position, float length, float width, float height);	// length is parallel with X-axis, width is parallel with Z-axis, height is parallel with Y-axis.
+	static Mesh* CreatePanel(const D3DXVECTOR3& position, float length, float width);				// length is parallel with X-axis, width is parallel with Z-axis.
+	static Mesh* CreateBox(const D3DXVECTOR3& position, float length, float width, float height);	// length is parallel with X-axis, width is parallel with Z-axis, height is parallel with Y-axis.
 
 	static void SetDevice(IDirect3DDevice9* m_pDevice);
 
 	void UploadVertices();
 	void UploadIndices();
 
-	void Initialize();
 	void Update(int frameIndex);
 	void Draw();
 
@@ -83,11 +82,16 @@ private:
 	static const string m_TextureFolderPath;
 	static const string m_TextureSuffix;
 
-	Vertex* m_Vertices;
-	int m_VertexNum;
+	// 用于从model文件中加载数据
+	MaxMeshHead m_MeshHead;
+	MaxVertex* m_pVertexData;
+	unsigned short* m_pIndexData;
 
-	unsigned short* m_Indices;
+	int m_VertexNum;
+	Vertex* m_Vertices;
+
 	int m_IndexNum;
+	unsigned short* m_Indices;
 
 	IDirect3DTexture9* m_pTexture;
 
@@ -95,11 +99,6 @@ private:
 
 	IDirect3DVertexBuffer9* m_pVertexBuffer;
 	IDirect3DIndexBuffer9* m_pIndexBuffer;
-
-	// 用于从model文件中加载数据
-	MaxMeshHead m_MeshHead;
-	MaxVertex* m_pVertexData;
-	unsigned short* m_pIndexData;
 
 	// 动画相关
 	Sprite* m_pSprite;

@@ -18,6 +18,7 @@ public:
 
 private:
 	Sprite* m_pSprite;
+	Sprite* pGround;
 
 	Light* m_pPointLight;
 	Light* m_pDirectionalLight;

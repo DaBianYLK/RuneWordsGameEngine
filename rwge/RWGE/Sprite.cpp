@@ -11,9 +11,12 @@ using namespace std;
 Sprite::Sprite() {
 	m_NodeType = Type::SpriteNode;
 	
+	m_Meshes = NULL;
 	m_Animations = NULL;
+	m_AnimationID = 0;
 	m_AnimationNum = 0;
 
+	ZeroMemory(&m_ModelHead, sizeof(MaxModelHead));
 	m_BoneData = NULL;
 }
 
@@ -22,22 +25,22 @@ Sprite::~Sprite() {
 }
 
 Sprite* Sprite::Load(const char* filePath) {
-	Sprite* sprite = new Sprite();
+	Sprite* pSprite = new Sprite();
 
 	ifstream modelFile;
 	modelFile.open(filePath, ios::in | ios::binary);
 
 	// 获取模型文件首字段的数据
-	modelFile.read((char*)&sprite->m_ModelHead, sizeof(MaxModelHead));
+	modelFile.read((char*)&pSprite->m_ModelHead, sizeof(MaxModelHead));
 
 	// 获取骨骼数据
-	int boneDataLength = 4 * 4 * sprite->m_ModelHead.frameNum * sprite->m_ModelHead.boneNum;
-	sprite->m_BoneData = new float[boneDataLength];
-	modelFile.read((char*)sprite->m_BoneData, sizeof(float) * boneDataLength);
+	int boneDataLength = 4 * 4 * pSprite->m_ModelHead.frameNum * pSprite->m_ModelHead.boneNum;
+	pSprite->m_BoneData = new float[boneDataLength];
+	modelFile.read((char*)pSprite->m_BoneData, sizeof(float) * boneDataLength);
 
 	// 获取网格数据
-	sprite->m_Meshes = new Mesh[sprite->m_ModelHead.meshNum];
-	for (int i = 0; i < sprite->m_ModelHead.meshNum; ++i) {
+	pSprite->m_Meshes = new Mesh[pSprite->m_ModelHead.meshNum];
+	for (int i = 0; i < pSprite->m_ModelHead.meshNum; ++i) {
 		// 获取网格首字段的数据
 		MaxMeshHead head;
 		modelFile.read((char*)&head, sizeof(MaxMeshHead));
@@ -48,7 +51,7 @@ Sprite* Sprite::Load(const char* filePath) {
 		modelFile.read((char*)vertexData, sizeof(MaxVertex)* head.vertexNum);
 		modelFile.read((char*)indexData, sizeof(unsigned short)* 3 * head.triangleNum);
 
-		sprite->m_Meshes[i] = Mesh(head, vertexData, indexData, sprite);
+		pSprite->m_Meshes[i] = Mesh(head, vertexData, indexData, pSprite);
 	}
 
 	// 获取动画数据
@@ -61,17 +64,28 @@ Sprite* Sprite::Load(const char* filePath) {
 
 	modelFile.close();
 
-	sprite->m_AnimationNum = animationNum;
-	sprite->m_Animations = new Animation[animationNum]; 
-	sprite->m_AnimationID = 0;
+	pSprite->m_AnimationNum = animationNum;
+	pSprite->m_Animations = new Animation[animationNum]; 
+	pSprite->m_AnimationID = 0;
 
 	for (int i = 0; i < animationNum; ++i) {
-		sprite->m_Animations[i].Set(animationData[i].startFrame, animationData[i].frameNum);
+		pSprite->m_Animations[i].Set(animationData[i].startFrame, animationData[i].frameNum);
 	}
 
 	delete animationData;
 
-	return sprite;
+	return pSprite;
+}
+
+Sprite* Sprite::CreatePanel(float x, float y, float z, float length, float width) {
+	Sprite* pSprite = new Sprite();
+
+	D3DXVECTOR3 position(x, y, z);
+	pSprite->m_Meshes = Mesh::CreatePanel(position, length, width);
+
+	pSprite->m_ModelHead.meshNum = 1;
+
+	return pSprite;
 }
 
 Mesh* Sprite::GetMeshes() {
@@ -94,17 +108,13 @@ int Sprite::GetFrameNum() {
 	return m_ModelHead.frameNum;
 }
 
-void Sprite::Initialize() {
-	for (int i = 0; i < m_ModelHead.meshNum; ++i) {
-		m_Meshes[i].Initialize();
-	}
-}
-
 void Sprite::Update(float deltaTime) {
-	m_Animations[m_AnimationID].Update(deltaTime);
+	if (m_Animations && m_AnimationID < m_AnimationNum) {
+		m_Animations[m_AnimationID].Update(deltaTime);
 
-	for (int i = 0; i < m_ModelHead.meshNum; ++i) {
-		m_Meshes[i].Update(m_Animations[m_AnimationID].GetFrameIndex());
+		for (int i = 0; i < m_ModelHead.meshNum; ++i) {
+			m_Meshes[i].Update(m_Animations[m_AnimationID].GetFrameIndex());
+		}
 	}
 }
 
@@ -123,17 +133,25 @@ int Sprite::GetAnimationNum() {
 }
 
 void Sprite::SetAnimation(int animationID) {
-	m_AnimationID = animationID;
+	if (m_Animations && animationID < m_AnimationNum) {
+		m_AnimationID = animationID;
+	}
 }
 
 void Sprite::PlayAnimation(int animationID, bool loop) {
-	m_AnimationID = animationID;
+	if (m_Animations && animationID < m_AnimationNum) {
+		m_AnimationID = animationID;
 
-	m_Animations[m_AnimationID].Play(loop);
+		m_Animations[m_AnimationID].Play(loop);
+	}
 }
 
 bool Sprite::IsCurrentAnimationPlaying() {
-	return m_Animations[m_AnimationID].IsPlaying();
+	if (m_Animations) {
+		return m_Animations[m_AnimationID].IsPlaying();
+	}
+	
+	return false;
 }
 
 //void Sprite::InitAnimation() {

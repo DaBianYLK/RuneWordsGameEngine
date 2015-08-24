@@ -9,23 +9,23 @@ const string Mesh::m_TextureFolderPath = "textures/";
 const string Mesh::m_TextureSuffix = ".bmp";
 
 Mesh::Mesh() {
-	m_MeshHead.vertexNum = 465;
-	m_Vertices = new Vertex[m_MeshHead.vertexNum];
+	ZeroMemory(&m_MeshHead, sizeof(MaxMeshHead));
+	m_pVertexData = NULL;
+	m_pIndexData = NULL;
 
-	m_MeshHead.triangleNum = 812;
-	m_IndexNum = m_MeshHead.triangleNum * 3;
-	m_Indices = new unsigned short[m_IndexNum];
+	m_VertexNum = 0;
+	m_Vertices = NULL;
 
-	if (m_pDevice) {
-		D3DXCreateTextureFromFile(m_pDevice, "WoodenBox.jpg", &m_pTexture);
-	}
+	m_IndexNum = 0;
+	m_Indices = NULL;
 
-	m_pMaterial = new D3DMATERIAL9();
-	m_pMaterial->Ambient = D3DXCOLOR(D3DCOLOR_XRGB(255, 255, 255));
-	m_pMaterial->Diffuse = D3DXCOLOR(D3DCOLOR_XRGB(255, 255, 255));
-	m_pMaterial->Specular = D3DXCOLOR(D3DCOLOR_XRGB(255, 255, 255));
-	m_pMaterial->Emissive = D3DXCOLOR(D3DCOLOR_XRGB(0, 0, 0));
-	m_pMaterial->Power = 2.0f;
+	m_pTexture = NULL;
+	m_pMaterial = NULL;
+
+	m_pVertexBuffer = NULL;
+	m_pIndexBuffer = NULL;
+
+	m_pSprite = NULL;
 }
 
 Mesh::Mesh(const MaxMeshHead& head, MaxVertex* vertexData, unsigned short* indexData, Sprite* pSprite) {
@@ -33,7 +33,8 @@ Mesh::Mesh(const MaxMeshHead& head, MaxVertex* vertexData, unsigned short* index
 	m_pVertexData = vertexData;
 	m_pIndexData = indexData;
 
-	m_Vertices = new Vertex[m_MeshHead.vertexNum];
+	m_VertexNum = head.vertexNum;
+	m_Vertices = new Vertex[m_VertexNum];
 
 	m_IndexNum = m_MeshHead.triangleNum * 3;
 	m_Indices = new unsigned short[m_IndexNum];
@@ -52,6 +53,14 @@ Mesh::Mesh(const MaxMeshHead& head, MaxVertex* vertexData, unsigned short* index
 	m_pMaterial->Emissive = D3DXCOLOR(D3DCOLOR_XRGB(0, 0, 0));
 	m_pMaterial->Power = 2.0f;
 
+	if (m_pDevice) {
+		m_pDevice->CreateVertexBuffer(sizeof(Vertex)* m_VertexNum, D3DUSAGE_WRITEONLY, VertexFVF, D3DPOOL_MANAGED, &m_pVertexBuffer, 0);
+		m_pDevice->CreateIndexBuffer(sizeof(WORD)* m_IndexNum, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_MANAGED, &m_pIndexBuffer, 0);
+
+		UploadVertices();
+		UploadIndices();
+	}
+
 	m_pSprite = pSprite;
 }
 
@@ -59,13 +68,72 @@ Mesh::~Mesh() {
 
 }
 
-Mesh* Mesh::createPanel(const D3DXVECTOR3& position, float length, float width) {
+Mesh* Mesh::CreatePanel(const D3DXVECTOR3& position, float length, float width) {
 	Mesh* pPanel = new Mesh();
+
+	pPanel->m_VertexNum = 4;
+	pPanel->m_Vertices = new Vertex[pPanel->m_VertexNum];
+
+	pPanel->m_IndexNum = 6;
+	pPanel->m_Indices = new unsigned short[pPanel->m_IndexNum];
+
+	if (m_pDevice) {
+		D3DXCreateTextureFromFile(m_pDevice, "WoodenBox.jpg", &(pPanel->m_pTexture));
+	}
+
+	pPanel->m_pMaterial = new D3DMATERIAL9();
+	pPanel->m_pMaterial->Ambient = D3DXCOLOR(D3DCOLOR_XRGB(255, 255, 255));
+	pPanel->m_pMaterial->Diffuse = D3DXCOLOR(D3DCOLOR_XRGB(150, 150, 150));
+	pPanel->m_pMaterial->Specular = D3DXCOLOR(D3DCOLOR_XRGB(50, 50, 50));
+	pPanel->m_pMaterial->Emissive = D3DXCOLOR(D3DCOLOR_XRGB(0, 0, 0));
+	pPanel->m_pMaterial->Power = 2.0f;
+
+	ZeroMemory(&(pPanel->m_MeshHead), sizeof(MaxMeshHead));
+	pPanel->m_MeshHead.triangleNum = 2;
+	pPanel->m_pVertexData = NULL;
+	pPanel->m_pIndexData = NULL;
+
+	if (m_pDevice) {
+		m_pDevice->CreateVertexBuffer(sizeof(Vertex)* pPanel->m_VertexNum, D3DUSAGE_WRITEONLY, VertexFVF, D3DPOOL_MANAGED, &(pPanel->m_pVertexBuffer), 0);
+		m_pDevice->CreateIndexBuffer(sizeof(WORD)* pPanel->m_IndexNum, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_MANAGED, &(pPanel->m_pIndexBuffer), 0);
+	}
+
+	pPanel->m_pSprite = NULL;
+
+	// =======================================================================
+	float halfLength = length * 0.5f;
+	float halfWidth = length * 0.5f;
+	float left = position.x - halfLength;
+	float right = position.x + halfLength;
+	float top = position.z + halfWidth;
+	float bottom = position.z - halfWidth;
+
+	// 更新顶点缓存
+	pPanel->m_pVertexBuffer->Lock(0, 0, (void**)&(pPanel->m_Vertices), 0);
+
+	pPanel->m_Vertices[0] = Vertex(left,  position.y, bottom, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f);
+	pPanel->m_Vertices[1] = Vertex(right, position.y, bottom, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f);
+	pPanel->m_Vertices[2] = Vertex(right, position.y, top,    0.0f, 1.0f, 0.0f, 1.0f, 0.0f);
+	pPanel->m_Vertices[3] = Vertex(left,  position.y, top,    0.0f, 1.0f, 0.0f, 0.0f, 0.0f);
+
+	pPanel->m_pVertexBuffer->Unlock();
+
+	// 更新索引缓存
+	pPanel->m_pIndexBuffer->Lock(0, 0, (void**)&(pPanel->m_Indices), 0);
+
+	pPanel->m_Indices[0] = 0;
+	pPanel->m_Indices[1] = 2;
+	pPanel->m_Indices[2] = 1;
+	pPanel->m_Indices[3] = 0;
+	pPanel->m_Indices[4] = 3;
+	pPanel->m_Indices[5] = 2;
+
+	pPanel->m_pIndexBuffer->Unlock();
 
 	return pPanel;
 }
 
-Mesh* Mesh::createBox(const D3DXVECTOR3& position, float length, float width, float height) {
+Mesh* Mesh::CreateBox(const D3DXVECTOR3& position, float length, float width, float height) {
 	Mesh* pBox = new Mesh();
 
 	return pBox;
@@ -76,48 +144,29 @@ void Mesh::SetDevice(IDirect3DDevice9* device) {
 }
 
 void Mesh::UploadVertices() {
-	m_pVertexBuffer->Lock(0, 0, (void**)&m_Vertices, 0);
+	if (m_pVertexData) {
+		m_pVertexBuffer->Lock(0, 0, (void**)&m_Vertices, 0);
 
-	MaxVertex* pVertex = m_pVertexData;
-	for (int i = 0; i < m_MeshHead.vertexNum; ++i) {
-		m_Vertices[i] = Vertex(pVertex->x, pVertex->y, pVertex->z, pVertex->nX, pVertex->nY, pVertex->nZ, pVertex->u, pVertex->v);
+		MaxVertex* pVertex = m_pVertexData;
+		for (int i = 0; i < m_VertexNum; ++i) {
+			m_Vertices[i] = Vertex(pVertex->x, pVertex->y, pVertex->z, pVertex->nX, pVertex->nY, pVertex->nZ, pVertex->u, pVertex->v);
 
-		++pVertex;
+			++pVertex;
+		}
+
+		m_pVertexBuffer->Unlock();
 	}
-
-	m_pVertexBuffer->Unlock();
 }
 
 void Mesh::UploadIndices() {
-	m_pIndexBuffer->Lock(0, 0, (void**)&m_Indices, 0);
+	if (m_pIndexData) {
+		m_pIndexBuffer->Lock(0, 0, (void**)&m_Indices, 0);
 
-	for (int i = 0; i < m_IndexNum; ++i) {
-		m_Indices[i] = m_pIndexData[i];
-	}
+		for (int i = 0; i < m_IndexNum; ++i) {
+			m_Indices[i] = m_pIndexData[i];
+		}
 
-	m_pIndexBuffer->Unlock();
-}
-
-void Mesh::Initialize() {
-	if (m_pDevice) {
-		m_pDevice->CreateVertexBuffer(
-			sizeof(Vertex)* m_MeshHead.vertexNum,
-			D3DUSAGE_WRITEONLY,
-			VertexFVF,
-			D3DPOOL_MANAGED,
-			&m_pVertexBuffer,
-			0);
-
-		m_pDevice->CreateIndexBuffer(
-			sizeof(WORD)* m_IndexNum,
-			D3DUSAGE_WRITEONLY,
-			D3DFMT_INDEX16,
-			D3DPOOL_MANAGED,
-			&m_pIndexBuffer,
-			0);
-
-		UploadVertices();
-		UploadIndices();
+		m_pIndexBuffer->Unlock();
 	}
 }
 
@@ -136,16 +185,12 @@ void Mesh::Multiply(float* position, float* matrix) {
 
 void Mesh::Update(int frameIndex) {
 	// 如果没有骨骼则只执行场景树变换
-	if (m_pSprite->GetBoneNum() <= 0) {
+	if (m_pSprite->GetBoneNum() <= 0 || m_pSprite->GetAnimationNum() <= 0) {
 		m_pVertexBuffer->Lock(0, 0, (void**)&m_Vertices, 0);
 
-		for (int vertexIndex = 0; vertexIndex < m_MeshHead.vertexNum; ++vertexIndex) {
+		for (int vertexIndex = 0; vertexIndex < m_VertexNum; ++vertexIndex) {
 			// 执行场景变换
-			D3DXVECTOR4 vertex;
-			vertex.x = m_pVertexData[vertexIndex].x;
-			vertex.y = m_pVertexData[vertexIndex].y;
-			vertex.z = m_pVertexData[vertexIndex].z;
-			vertex.w = 1.0f;
+			D3DXVECTOR4 vertex(m_Vertices[vertexIndex].x, m_Vertices[vertexIndex].y, m_Vertices[vertexIndex].z, 1.0f);
 			D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_TransformMatrix));
 
 			m_Vertices[vertexIndex].x = vertex.x;
@@ -163,7 +208,7 @@ void Mesh::Update(int frameIndex) {
 
 	m_pVertexBuffer->Lock(0, 0, (void**)&m_Vertices, 0);
 
-	for (int vertexIndex = 0; vertexIndex < m_MeshHead.vertexNum; ++vertexIndex) {
+	for (int vertexIndex = 0; vertexIndex < m_VertexNum; ++vertexIndex) {
 		float position[2][4];
 		//float normal[2][4];
 		float postionResult[] = { 0.0f, 0.0f, 0.0f };
@@ -223,7 +268,7 @@ void Mesh::Draw() {
 		m_pDevice->SetStreamSource(0, m_pVertexBuffer, 0, sizeof(Vertex));
 		m_pDevice->SetIndices(m_pIndexBuffer);
 		m_pDevice->SetFVF(VertexFVF);
-		m_pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_MeshHead.vertexNum, 0, m_MeshHead.triangleNum);
+		m_pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_VertexNum, 0, m_MeshHead.triangleNum);
 	}
 }
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <d3dx9.h>
+
 #include "RwgeClasses.h"
 #include "SceneNode.h"
 #include "MaxModel.h"
@@ -12,6 +14,7 @@ public:
 	~Sprite();
 
 	static Sprite* Load(const char* filePath);
+	static Sprite* CreatePanel(float x, float y, float z, float length, float width);
 
 	Mesh* GetMeshes();
 	int GetMeshNum();
@@ -19,7 +22,6 @@ public:
 	int GetBoneNum();
 	int GetFrameNum();
 
-	void Initialize();
 	void Update(float deltaTime);
 	void Cleanup();
 	void Draw();
