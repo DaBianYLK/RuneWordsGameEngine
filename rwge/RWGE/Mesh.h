@@ -54,6 +54,9 @@ public:
 	Mesh(const MaxMeshHead& head, MaxVertex* vertexData, unsigned short* indexData, Sprite* pSprite);
 	~Mesh();
 
+	static Mesh* createPanel(const D3DXVECTOR3& position, float length, float width);				// length is parallel with X-axis, width is parallel with Z-axis.
+	static Mesh* createBox(const D3DXVECTOR3& position, float length, float width, float height);	// length is parallel with X-axis, width is parallel with Z-axis, height is parallel with Y-axis.
+
 	static void SetDevice(IDirect3DDevice9* m_pDevice);
 
 	void UploadVertices();
@@ -65,10 +68,15 @@ public:
 
 	int GetVertexNum();
 	int GetIndexNum();
+	Vertex* GetVertices();
+	unsigned short* GetIndices();
 	Vertex** GetVerticesPtr();
 	unsigned short** GetIndicesPtr();
 	IDirect3DTexture9* GetTexture();
 	D3DMATERIAL9* GetMaterial();
+
+private:
+	void Multiply(float* position, float* matrix);
 
 private:
 	static IDirect3DDevice9* m_pDevice;
@@ -76,6 +84,7 @@ private:
 	static const string m_TextureSuffix;
 
 	Vertex* m_Vertices;
+	int m_VertexNum;
 
 	unsigned short* m_Indices;
 	int m_IndexNum;
@@ -94,7 +103,5 @@ private:
 
 	// ∂Øª≠œ‡πÿ
 	Sprite* m_pSprite;
-
-	void Multiply(float* position, float* matrix);
 };
 

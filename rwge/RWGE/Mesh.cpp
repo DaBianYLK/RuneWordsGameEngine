@@ -59,6 +59,18 @@ Mesh::~Mesh() {
 
 }
 
+Mesh* Mesh::createPanel(const D3DXVECTOR3& position, float length, float width) {
+	Mesh* pPanel = new Mesh();
+
+	return pPanel;
+}
+
+Mesh* Mesh::createBox(const D3DXVECTOR3& position, float length, float width, float height) {
+	Mesh* pBox = new Mesh();
+
+	return pBox;
+}
+
 void Mesh::SetDevice(IDirect3DDevice9* device) {
 	m_pDevice = device;
 }
@@ -221,6 +233,14 @@ int Mesh::GetVertexNum() {
 
 int Mesh::GetIndexNum() {
 	return m_IndexNum;
+}
+
+Vertex* Mesh::GetVertices() {
+	return m_Vertices;
+}
+
+unsigned short* Mesh::GetIndices() {
+	return m_Indices;
 }
 
 Vertex** Mesh::GetVerticesPtr() {

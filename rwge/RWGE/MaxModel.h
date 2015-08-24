@@ -40,3 +40,9 @@ struct MaxModelHead {
 
 	unsigned int meshNum;
 };
+
+struct MaxAnimation {
+	char name[256];
+	unsigned int startFrame;
+	unsigned int frameNum;
+};

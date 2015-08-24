@@ -168,10 +168,10 @@ void Controller::Update(float deltaTime) {
 	}
 
 	if (m_pInputManager->IsKeyDown('Q')) {
-		m_pCameraYawPivot->Yaw(-AppConfig::cameraRotateSpeed);
+		m_pCameraYawPivot->Yaw(AppConfig::cameraRotateSpeed);
 	}
 	if (m_pInputManager->IsKeyDown('E')) {
-		m_pCameraYawPivot->Yaw(AppConfig::cameraRotateSpeed);
+		m_pCameraYawPivot->Yaw(-AppConfig::cameraRotateSpeed);
 	}
 	if (m_pInputManager->IsKeyDown('Z')) {
 		m_pCameraPitchPivot->Pitch(-AppConfig::cameraRotateSpeed);

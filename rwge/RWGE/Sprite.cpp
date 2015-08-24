@@ -10,8 +10,11 @@ using namespace std;
 
 Sprite::Sprite() {
 	m_NodeType = Type::SpriteNode;
-	//m_ModelHead.meshNum = 1;
-	//m_Meshes = new Mesh[m_ModelHead.meshNum];
+	
+	m_Animations = NULL;
+	m_AnimationNum = 0;
+
+	m_BoneData = NULL;
 }
 
 Sprite::~Sprite() {
@@ -48,9 +51,25 @@ Sprite* Sprite::Load(const char* filePath) {
 		sprite->m_Meshes[i] = Mesh(head, vertexData, indexData, sprite);
 	}
 
+	// 获取动画数据
+	unsigned int animationNum = 0;
+	modelFile.read((char*)&animationNum, sizeof(unsigned int));
+
+	MaxAnimation* animationData = new MaxAnimation[animationNum];
+
+	modelFile.read((char*)animationData, sizeof(MaxAnimation) * animationNum);
+
 	modelFile.close();
 
-	sprite->InitAnimation();
+	sprite->m_AnimationNum = animationNum;
+	sprite->m_Animations = new Animation[animationNum]; 
+	sprite->m_AnimationID = 0;
+
+	for (int i = 0; i < animationNum; ++i) {
+		sprite->m_Animations[i].Set(animationData[i].startFrame, animationData[i].frameNum);
+	}
+
+	delete animationData;
 
 	return sprite;
 }
@@ -82,10 +101,10 @@ void Sprite::Initialize() {
 }
 
 void Sprite::Update(float deltaTime) {
-	m_Animation[m_AnimationID].Update(deltaTime);
+	m_Animations[m_AnimationID].Update(deltaTime);
 
 	for (int i = 0; i < m_ModelHead.meshNum; ++i) {
-		m_Meshes[i].Update(m_Animation[m_AnimationID].GetFrameIndex());
+		m_Meshes[i].Update(m_Animations[m_AnimationID].GetFrameIndex());
 	}
 }
 
@@ -99,6 +118,10 @@ void Sprite::Draw() {
 	}
 }
 
+int Sprite::GetAnimationNum() {
+	return m_AnimationNum;
+}
+
 void Sprite::SetAnimation(int animationID) {
 	m_AnimationID = animationID;
 }
@@ -106,36 +129,36 @@ void Sprite::SetAnimation(int animationID) {
 void Sprite::PlayAnimation(int animationID, bool loop) {
 	m_AnimationID = animationID;
 
-	m_Animation[m_AnimationID].Play(loop);
+	m_Animations[m_AnimationID].Play(loop);
 }
 
 bool Sprite::IsCurrentAnimationPlaying() {
-	return m_Animation[m_AnimationID].IsPlaying();
+	return m_Animations[m_AnimationID].IsPlaying();
 }
 
-void Sprite::InitAnimation() {
-	m_Animation = new Animation[ANIMATION_NUM];
-
-	m_Animation[ANIMATION_STAND].Set(6, 40);
-	m_Animation[ANIMATION_STAND_WEAPON].Set(745, 40);
-	m_Animation[ANIMATION_SPECIAL_STAND].Set(104, 95);
-	m_Animation[ANIMATION_SPECTAL_STAND_WEAPON].Set(207, 71);
-	m_Animation[ANIMATION_RUN].Set(286, 22);
-	m_Animation[ANIMATION_RUN_WEAPON].Set(316, 22);
-	m_Animation[ANIMATION_HIT].Set(346, 17);
-	m_Animation[ANIMATION_HIT_WEAPON].Set(370, 17);
-	m_Animation[ANIMATION_ATTACK].Set(394, 16);
-	m_Animation[ANIMATION_ATTACK_WEAPON].Set(421, 31);
-	m_Animation[ANIMATION_DEAD].Set(465, 502);
-	m_Animation[ANIMATION_SKILL_FNYJ01].Set(508, 15);
-	m_Animation[ANIMATION_SKILL_FNYJ02].Set(535, 20);
-	m_Animation[ANIMATION_SKILL_FNYJ03].Set(566, 27);
-	m_Animation[ANIMATION_SKILL_FKYJ].Set(605, 24);
-	m_Animation[ANIMATION_SKILL_FYJT].Set(637, 22);
-	m_Animation[ANIMATION_SKILL_FRLW].Set(666, 30);
-	m_Animation[ANIMATION_STAND_ATTACK].Set(700, 38);
-	m_Animation[ANIMATION_SKILL_JS].Set(815, 25);
-	m_Animation[ANIMATION_SKILL_HYCJ].Set(845, 35);
-
-	m_AnimationID = ANIMATION_STAND;
-}
+//void Sprite::InitAnimation() {
+//	m_Animations = new Animation[ANIMATION_NUM];
+//
+//	m_Animations[ANIMATION_STAND].Set(6, 40);
+//	m_Animations[ANIMATION_STAND_WEAPON].Set(745, 40);
+//	m_Animations[ANIMATION_SPECIAL_STAND].Set(104, 95);
+//	m_Animations[ANIMATION_SPECTAL_STAND_WEAPON].Set(207, 71);
+//	m_Animations[ANIMATION_RUN].Set(286, 22);
+//	m_Animations[ANIMATION_RUN_WEAPON].Set(316, 22);
+//	m_Animations[ANIMATION_HIT].Set(346, 17);
+//	m_Animations[ANIMATION_HIT_WEAPON].Set(370, 17);
+//	m_Animations[ANIMATION_ATTACK].Set(394, 16);
+//	m_Animations[ANIMATION_ATTACK_WEAPON].Set(421, 31);
+//	m_Animations[ANIMATION_DEAD].Set(465, 37);
+//	m_Animations[ANIMATION_SKILL_FNYJ01].Set(508, 15);
+//	m_Animations[ANIMATION_SKILL_FNYJ02].Set(535, 20);
+//	m_Animations[ANIMATION_SKILL_FNYJ03].Set(566, 27);
+//	m_Animations[ANIMATION_SKILL_FKYJ].Set(605, 24);
+//	m_Animations[ANIMATION_SKILL_FYJT].Set(637, 22);
+//	m_Animations[ANIMATION_SKILL_FRLW].Set(666, 30);
+//	m_Animations[ANIMATION_STAND_ATTACK].Set(700, 38);
+//	m_Animations[ANIMATION_SKILL_JS].Set(815, 25);
+//	m_Animations[ANIMATION_SKILL_HYCJ].Set(845, 35);
+//
+//	m_AnimationID = ANIMATION_STAND;
+//}
