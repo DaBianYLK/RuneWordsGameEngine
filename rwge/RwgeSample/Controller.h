@@ -53,9 +53,13 @@ private:
 private:
 	InputManager* m_pInputManager;
 
+	SceneNode* m_pSpriteNode;
+
 	Sprite* m_pSprite;
 	unsigned short m_ActionState;
 	bool m_UseWeapon;
+	float m_MoveSpeed;
+	float m_FaceRadian;
 
 	Light* m_pPointLight;
 	Light* m_pDirectionalLight;
@@ -68,5 +72,6 @@ private:
 	float m_CameraDistance;
 	float m_CameraMinDistance;
 	float m_CameraMaxDistance;
+	float m_CameraRadian;
 };
 

@@ -5,6 +5,7 @@
 #include <SceneManager.h>
 #include <Light.h>
 #include <InputManager.h>
+#include <LogUtil.h>
 
 MyApp::MyApp() {
 
@@ -16,8 +17,11 @@ MyApp::~MyApp() {
 }
 
 void MyApp::Initialize() {
+	m_pSpriteNode = new SceneNode();
+	Graphics::GetInstance()->GetSceneManager()->GetSceneRootNode()->AttachChild(m_pSpriteNode);
+
 	m_pSprite = Sprite::Load("Human.model");
-	Graphics::GetInstance()->GetSceneManager()->GetSceneRootNode()->AttachChild(m_pSprite);
+	m_pSpriteNode->AttachChild(m_pSprite);
 
 	pGround = Sprite::CreatePanel(0.0f, 0.0f, 0.0f, 1000.0f, 1000.0f);
 	Graphics::GetInstance()->GetSceneManager()->GetSceneRootNode()->AttachChild(pGround);
@@ -48,5 +52,5 @@ void MyApp::Update(float deltaTime) {
 }
 
 void MyApp::Cleanup() {
-
+	delete LogUtil::GetInstance();
 }

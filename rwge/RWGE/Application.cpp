@@ -4,6 +4,7 @@
 #include "AppDelegate.h"
 #include "Graphics.h"
 #include "InputManager.h"
+#include "LogUtil.h"
 
 Application::Application() {
 	m_hInstance = GetModuleHandle(0);
@@ -80,5 +81,5 @@ void Application::Update() {
 }
 
 void Application::Cleanup() {
-
+	LogUtil::GetInstance()->Cleanup();
 }

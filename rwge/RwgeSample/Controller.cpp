@@ -4,6 +4,8 @@
 #include <SceneManager.h>
 #include <AppConfig.h>
 
+#include <LogUtil.h>
+
 #define POINT_LIGHT			0
 #define DIRECTIONAL_LIGHT	1
 #define SPOT_LIGHT			2
@@ -29,9 +31,12 @@
 Controller::Controller(Sprite* pSprite, Light* pPointLight, Light* pDirectionalLight, Light* pSpotLight) {
 	m_pInputManager = InputManager::GetInstance();
 
+	m_pSpriteNode = pSprite->GetFather();
+
 	m_pSprite = pSprite; 
 	m_ActionState = ACTION_STAND;
 	m_pSprite->PlayAnimation(ANIMATION_STAND, true);
+	m_MoveSpeed = -6.0f;
 
 	m_pPointLight = pPointLight;
 	m_pDirectionalLight = pDirectionalLight;
@@ -42,13 +47,13 @@ Controller::Controller(Sprite* pSprite, Light* pPointLight, Light* pDirectionalL
 
 	m_pCameraYawPivot = new SceneNode();
 	m_pCameraYawPivot->SetPositionY(80.0f);
-	m_pSprite->AttachChild(m_pCameraYawPivot);
+	m_pSpriteNode->AttachChild(m_pCameraYawPivot);
 
 	m_pCameraPitchPivot = new SceneNode();
 	m_pCameraYawPivot->AttachChild(m_pCameraPitchPivot);
 
 	m_CameraDistance = 150.0f;
-	m_CameraMinDistance = 100.0f;
+	m_CameraMinDistance = 50.0f;
 	m_CameraMaxDistance = 500.0f;
 
 	m_pCamera = Graphics::GetInstance()->GetSceneManager()->GetCamera();
@@ -57,7 +62,8 @@ Controller::Controller(Sprite* pSprite, Light* pPointLight, Light* pDirectionalL
 	D3DXVECTOR3 upAxis(0.0f, 1.0f, 0.0f);
 	D3DXVECTOR3 lookAxis(0.0f, -0.5f, 1.0f);
 	m_pCamera->SetLookAxes(rightAxis, upAxis, lookAxis);
-	m_pCameraPitchPivot->AttachChild(m_pCamera);
+	m_pCameraPitchPivot->AttachChild(m_pCamera); 
+	m_CameraRadian = 0.0f;
 }
 
 
@@ -156,6 +162,7 @@ void Controller::OnKeyDown(unsigned int key) {
 }
 
 void Controller::Update(float deltaTime) {
+	// 人物动作控制
 	if (!m_pSprite->IsCurrentAnimationPlaying()) {
 		if (m_UseWeapon) {
 			m_pSprite->PlayAnimation(ANIMATION_STAND_WEAPON, true);
@@ -167,18 +174,25 @@ void Controller::Update(float deltaTime) {
 		m_ActionState = ACTION_STAND;
 	}
 
+	// 镜头控制
 	if (m_pInputManager->IsKeyDown('Q')) {
-		m_pCameraYawPivot->Yaw(AppConfig::cameraRotateSpeed);
+		//m_pCameraYawPivot->Yaw(-AppConfig::cameraRotateSpeed);
+		m_CameraRadian -= AppConfig::cameraRotateSpeed;
+		m_pCameraYawPivot->SetRotation(0.0f, 1.0f, 0.0f, m_CameraRadian);
 	}
-	if (m_pInputManager->IsKeyDown('E')) {
-		m_pCameraYawPivot->Yaw(-AppConfig::cameraRotateSpeed);
+	else if (m_pInputManager->IsKeyDown('E')) {
+		//m_pCameraYawPivot->Yaw(AppConfig::cameraRotateSpeed);
+		m_CameraRadian += AppConfig::cameraRotateSpeed;
+		m_pCameraYawPivot->SetRotation(0.0f, 1.0f, 0.0f, m_CameraRadian);
 	}
+
 	if (m_pInputManager->IsKeyDown('Z')) {
 		m_pCameraPitchPivot->Pitch(-AppConfig::cameraRotateSpeed);
 	}
-	if (m_pInputManager->IsKeyDown('X')) {
+	else if (m_pInputManager->IsKeyDown('X')) {
 		m_pCameraPitchPivot->Pitch(AppConfig::cameraRotateSpeed);
 	}
+
 	if (m_pInputManager->IsKeyDown('C')) {
 		if (m_CameraDistance < m_CameraMaxDistance) {
 			m_CameraDistance += AppConfig::cameraMoveSpeed;
@@ -186,12 +200,36 @@ void Controller::Update(float deltaTime) {
 			m_pCamera->SetPosition(0.0f, m_CameraDistance, -m_CameraDistance * 2.0f);
 		}
 	}
-	if (m_pInputManager->IsKeyDown('V')) {
+	else if (m_pInputManager->IsKeyDown('V')) {
 		if (m_CameraDistance > m_CameraMinDistance) {
 			m_CameraDistance -= AppConfig::cameraMoveSpeed;
 
 			m_pCamera->SetPosition(0.0f, m_CameraDistance, -m_CameraDistance * 2.0f);
 		}
+	}
+
+	// 人物移动控制
+	if (m_ActionState == ACTION_RUN) {
+		if (m_pInputManager->IsKeyDown('Q') || m_pInputManager->IsKeyDown('E')) {
+			if (m_pInputManager->IsKeyDown('W')) {
+				m_FaceRadian = m_CameraRadian + D3DX_PI;
+			}
+			else if (m_pInputManager->IsKeyDown('A')) {
+				m_FaceRadian = m_CameraRadian + D3DX_PI * 0.5f;
+			}
+			else if (m_pInputManager->IsKeyDown('S')) {
+				m_FaceRadian = m_CameraRadian;
+			}
+			else if (m_pInputManager->IsKeyDown('D')) {
+				m_FaceRadian = m_CameraRadian - D3DX_PI * 0.5f;
+			}
+			
+			m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian);
+		}
+		
+		float x = m_MoveSpeed * sinf(m_FaceRadian);
+		float z = m_MoveSpeed * cosf(m_FaceRadian);
+		m_pSpriteNode->Translate(x, 0.0f, z);
 	}
 }
 
@@ -206,6 +244,31 @@ void Controller::OnWalkKeyDown(unsigned int direction) {
 		}
 
 		m_ActionState = ACTION_RUN;
+	}
+
+	switch (direction) {
+	case DIRECTION_UP:
+		m_FaceRadian = m_CameraRadian + D3DX_PI;
+		m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian);
+		break;
+
+	case DIRECTION_DOWN:
+		m_FaceRadian = m_CameraRadian;
+		m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian);
+		break; 
+
+	case DIRECTION_LEFT:
+		m_FaceRadian = m_CameraRadian + D3DX_PI * 0.5f;
+		m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian);
+		break; 
+
+	case DIRECTION_RIGHT:
+		m_FaceRadian = m_CameraRadian - D3DX_PI * 0.5f;
+		m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian);
+		break;
+
+	default:
+		break;
 	}
 }
 

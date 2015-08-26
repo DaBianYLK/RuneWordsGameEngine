@@ -61,7 +61,7 @@ void SceneManager::TraversalSceneNode(SceneNode* pNode, float deltaTime) {
 	D3DXMATRIX* pTransformMatrix = pNode->GetTransformMatrix();
 
 	if (!m_pTransformMatrices.empty()) {
-		D3DXMatrixMultiply(pTransformMatrix, m_pTransformMatrices.top(), pTransformMatrix);
+		D3DXMatrixMultiply(pTransformMatrix, pTransformMatrix, m_pTransformMatrices.top());
 	}
 
 	m_pTransformMatrices.push(pTransformMatrix);

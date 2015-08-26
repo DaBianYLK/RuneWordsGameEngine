@@ -17,6 +17,8 @@ public:
 	void Cleanup();
 
 private:
+	SceneNode* m_pSpriteNode;
+
 	Sprite* m_pSprite;
 	Sprite* pGround;
 

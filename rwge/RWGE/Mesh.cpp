@@ -209,18 +209,15 @@ void Mesh::Update(int frameIndex) {
 	m_pVertexBuffer->Lock(0, 0, (void**)&m_Vertices, 0);
 
 	for (int vertexIndex = 0; vertexIndex < m_VertexNum; ++vertexIndex) {
-		float position[2][4];
-		//float normal[2][4];
-		float postionResult[] = { 0.0f, 0.0f, 0.0f };
-		//float normalResult[] = { 0.0f, 0.0f, 0.0f };
+		D3DXVECTOR4 position[2];
 
-		// 执行场景变换
+		float postionResult[] = { 0.0f, 0.0f, 0.0f };
+		
 		D3DXVECTOR4 vertex;
 		vertex.x = m_pVertexData[vertexIndex].x;
 		vertex.y = m_pVertexData[vertexIndex].y;
 		vertex.z = m_pVertexData[vertexIndex].z;
 		vertex.w = 1.0f;
-		D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_TransformMatrix));
 
 		for (int boneIndex = 0; boneIndex < 2; ++boneIndex) {
 			if (m_pVertexData[vertexIndex].boneID[boneIndex] < 0 || m_pVertexData[vertexIndex].boneID[boneIndex] >= m_pSprite->GetBoneNum()) {
@@ -228,33 +225,31 @@ void Mesh::Update(int frameIndex) {
 			}
 
 			// 执行骨骼变换
-			position[boneIndex][0] = vertex.x;
-			position[boneIndex][1] = vertex.y;
-			position[boneIndex][2] = vertex.z;
-			position[boneIndex][3] = vertex.w;
-
-			//normal[boneIndex][0] = m_pVertexData[vertexIndex].nX;
-			//normal[boneIndex][1] = m_pVertexData[vertexIndex].nY;
-			//normal[boneIndex][2] = m_pVertexData[vertexIndex].nZ;
-			//normal[boneIndex][3] = 1.0f;
+			position[boneIndex].x = vertex.x;
+			position[boneIndex].y = vertex.y;
+			position[boneIndex].z = vertex.z;
+			position[boneIndex].w = vertex.w;
 
 			float* matrix = m_pSprite->GetBoneData() + boneDataStride * m_pVertexData[vertexIndex].boneID[boneIndex] + matrixStride * frameIndex;
 
-			Multiply(position[boneIndex], matrix);
-			//Multiply(normal[boneIndex], matrix);
+			D3DXVec4Transform(&(position[boneIndex]), &(position[boneIndex]), (D3DXMATRIX*)matrix);
 
+			float* pValue = &(position[boneIndex].x);
 			for (int i = 0; i < 3; ++i) {
-				postionResult[i] += position[boneIndex][i] * m_pVertexData[vertexIndex].blend[boneIndex];
-				//normalResult[i] += normal[boneIndex][i] * m_pVertexData[vertexIndex].blend[boneIndex];
+				postionResult[i] += pValue[i] * m_pVertexData[vertexIndex].blend[boneIndex];
 			}
 		}
 
-		m_Vertices[vertexIndex].x = postionResult[0];
-		m_Vertices[vertexIndex].y = postionResult[1];
-		m_Vertices[vertexIndex].z = postionResult[2];
-		//m_Vertices[vertexIndex].normalX = normalResult[0];
-		//m_Vertices[vertexIndex].normalY = normalResult[1];
-		//m_Vertices[vertexIndex].normalZ = normalResult[2];
+		// 执行场景变换
+		vertex.x = postionResult[0];
+		vertex.y = postionResult[1];
+		vertex.z = postionResult[2];
+		vertex.w = 1.0f;
+		D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_TransformMatrix));
+
+		m_Vertices[vertexIndex].x = vertex.x;
+		m_Vertices[vertexIndex].y = vertex.y;
+		m_Vertices[vertexIndex].z = vertex.z;
 	}
 
 	m_pVertexBuffer->Unlock();

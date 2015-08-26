@@ -43,6 +43,12 @@
     <Filter Include="源文件\Math">
       <UniqueIdentifier>{c8060421-8cf2-4a60-90b7-a02a2cb0735c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Utils">
+      <UniqueIdentifier>{5873603d-bf96-4c94-98b5-3dcd934d7b04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Utils">
+      <UniqueIdentifier>{83c52b3b-74df-4fc4-8c11-94a75cbec78c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RwgeClasses.h">
@@ -99,6 +105,9 @@
     <ClInclude Include="SceneNode.h">
       <Filter>头文件\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="LogUtil.h">
+      <Filter>头文件\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -142,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="SceneNode.cpp">
       <Filter>源文件\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="LogUtil.cpp">
+      <Filter>源文件\Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

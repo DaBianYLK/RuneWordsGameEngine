@@ -1,6 +1,7 @@
 #include "InputManager.h"
 
 #include "InputListener.h"
+#include "Application.h"
 
 InputManager::InputManager() {
 	memset(m_IsKeyDown, 0, sizeof(bool)* 256);

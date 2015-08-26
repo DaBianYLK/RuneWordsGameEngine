@@ -1,5 +1,6 @@
 #include "SceneNode.h"
 
+#include "LogUtil.h"
 
 SceneNode::SceneNode() {
 	m_NodeType = EmptyNode;
@@ -70,7 +71,7 @@ void SceneNode::SetPosition(float x, float y, float z) {
 }
 
 void SceneNode::Pitch(float radian) {
-	float halfAlpha = m_RotationRadian / 2.0f;
+	float halfAlpha = m_RotationRadian * 0.5f;
 	float sinHalfAlpha = sinf(halfAlpha);
 
 	float a1 = sinHalfAlpha * m_RotationAxis.x;
@@ -78,7 +79,7 @@ void SceneNode::Pitch(float radian) {
 	float c1 = sinHalfAlpha * m_RotationAxis.z;
 	float d1 = cosf(halfAlpha);
 
-	float halfBeta = radian / 2.0f;
+	float halfBeta = radian * 0.5f;
 	
 	float a2 = sinf(halfBeta);
 	//float b2 = 0.0f;
@@ -91,17 +92,27 @@ void SceneNode::Pitch(float radian) {
 	float d3 = -a1 * a2 /* - b1 * b2 - c1 * c2 */ + d1 * d2;
 
 	float halfRotationRadian = acosf(d3);
-	float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
+	// 如果旋转角为0，则重置旋转轴为Y轴
+	if (halfRotationRadian > -0.000001 && halfRotationRadian < 0.000001) {
+		m_RotationAxis.x = 0.0f;
+		m_RotationAxis.y = 1.0f;
+		m_RotationAxis.z = 0.0f;
 
-	m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
-	m_RotationAxis.y = b3 * oneDivSinHalfRotationRadian;
-	m_RotationAxis.z = c3 * oneDivSinHalfRotationRadian;
+		m_RotationRadian = 0.0f;
+	}
+	else {
+		float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
 
-	m_RotationRadian = halfRotationRadian * 2.0f;
+		m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
+		m_RotationAxis.y = b3 * oneDivSinHalfRotationRadian;
+		m_RotationAxis.z = c3 * oneDivSinHalfRotationRadian;
+
+		m_RotationRadian = halfRotationRadian * 2.0f;
+	}
 }
 
 void SceneNode::Yaw(float radian) {
-	float halfAlpha = m_RotationRadian / 2.0f;
+	float halfAlpha = m_RotationRadian * 0.5f;
 	float sinHalfAlpha = sinf(halfAlpha);
 
 	float a1 = sinHalfAlpha * m_RotationAxis.x;
@@ -109,7 +120,7 @@ void SceneNode::Yaw(float radian) {
 	float c1 = sinHalfAlpha * m_RotationAxis.z;
 	float d1 = cosf(halfAlpha);
 
-	float halfBeta = radian / 2.0f;
+	float halfBeta = radian * 0.5f;
 
 	//float a2 = 0.0f;
 	float b2 = sinf(halfBeta);
@@ -122,17 +133,27 @@ void SceneNode::Yaw(float radian) {
 	float d3 = /* -a1 * a2 */ - b1 * b2 /* - c1 * c2 */ + d1 * d2;
 
 	float halfRotationRadian = acosf(d3);
-	float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
+	// 如果旋转角为0，则重置旋转轴为Y轴
+	if (halfRotationRadian > -0.000001 && halfRotationRadian < 0.000001) {
+		m_RotationAxis.x = 0.0f;
+		m_RotationAxis.y = 1.0f;
+		m_RotationAxis.z = 0.0f;
 
-	m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
-	m_RotationAxis.y = b3 * oneDivSinHalfRotationRadian;
-	m_RotationAxis.z = c3 * oneDivSinHalfRotationRadian;
+		m_RotationRadian = 0.0f;
+	}
+	else {
+		float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
 
-	m_RotationRadian = halfRotationRadian * 2.0f;
+		m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
+		m_RotationAxis.y = b3 * oneDivSinHalfRotationRadian;
+		m_RotationAxis.z = c3 * oneDivSinHalfRotationRadian;
+
+		m_RotationRadian = halfRotationRadian * 2.0f;
+	}
 }
 
 void SceneNode::Roll(float radian) {
-	float halfAlpha = m_RotationRadian / 2.0f;
+	float halfAlpha = m_RotationRadian * 0.5f;
 	float sinHalfAlpha = sinf(halfAlpha);
 
 	float a1 = sinHalfAlpha * m_RotationAxis.x;
@@ -140,7 +161,7 @@ void SceneNode::Roll(float radian) {
 	float c1 = sinHalfAlpha * m_RotationAxis.z;
 	float d1 = cosf(halfAlpha);
 
-	float halfBeta = radian / 2.0f;
+	float halfBeta = radian * 0.5f;
 
 	//float a2 = 0.0f;
 	//float b2 = 0.0f;
@@ -153,17 +174,27 @@ void SceneNode::Roll(float radian) {
 	float d3 = /* -a1 * a2 -b1 * b2 */ - c1 * c2 + d1 * d2;
 
 	float halfRotationRadian = acosf(d3);
-	float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
+	// 如果旋转角为0，则重置旋转轴为Y轴
+	if (halfRotationRadian > -0.000001 && halfRotationRadian < 0.000001) {
+		m_RotationAxis.x = 0.0f;
+		m_RotationAxis.y = 1.0f;
+		m_RotationAxis.z = 0.0f;
 
-	m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
-	m_RotationAxis.y = b3 * oneDivSinHalfRotationRadian;
-	m_RotationAxis.z = c3 * oneDivSinHalfRotationRadian;
+		m_RotationRadian = 0.0f;
+	}
+	else {
+		float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
 
-	m_RotationRadian = halfRotationRadian * 2.0f;
+		m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
+		m_RotationAxis.y = b3 * oneDivSinHalfRotationRadian;
+		m_RotationAxis.z = c3 * oneDivSinHalfRotationRadian;
+
+		m_RotationRadian = halfRotationRadian * 2.0f;
+	}
 }
 
 void SceneNode::Rotate(float axisX, float axisY, float axisZ, float radian) {
-	float halfAlpha = m_RotationRadian / 2.0f;
+	float halfAlpha = m_RotationRadian * 0.5f;
 	float sinHalfAlpha = sinf(halfAlpha);
 
 	float a1 = sinHalfAlpha * m_RotationAxis.x;
@@ -171,7 +202,7 @@ void SceneNode::Rotate(float axisX, float axisY, float axisZ, float radian) {
 	float c1 = sinHalfAlpha * m_RotationAxis.z;
 	float d1 = cosf(halfAlpha);
 
-	float halfBeta = radian / 2.0f;
+	float halfBeta = radian * 0.5f;
 	float sinHalfBeta = sinf(halfBeta);
 
 	float a2 = sinHalfBeta * axisX;
@@ -185,13 +216,23 @@ void SceneNode::Rotate(float axisX, float axisY, float axisZ, float radian) {
 	float d3 = -a1 * a2 -b1 * b2 -c1 * c2 + d1 * d2;
 
 	float halfRotationRadian = acosf(d3);
-	float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
+	// 如果旋转角为0，则重置旋转轴为Y轴
+	if (halfRotationRadian > -0.000001 && halfRotationRadian < 0.000001) {
+		m_RotationAxis.x = 0.0f;
+		m_RotationAxis.y = 1.0f;
+		m_RotationAxis.z = 0.0f;
 
-	m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
-	m_RotationAxis.y = b3 * oneDivSinHalfRotationRadian;
-	m_RotationAxis.z = c3 * oneDivSinHalfRotationRadian;
+		m_RotationRadian = 0.0f;
+	}
+	else {
+		float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
 
-	m_RotationRadian = halfRotationRadian * 2.0f;
+		m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
+		m_RotationAxis.y = b3 * oneDivSinHalfRotationRadian;
+		m_RotationAxis.z = c3 * oneDivSinHalfRotationRadian;
+
+		m_RotationRadian = halfRotationRadian * 2.0f;
+	}
 }
 
 void SceneNode::SetRotation(float axisX, float axisY, float axisZ, float radian) {
@@ -263,7 +304,7 @@ D3DXMATRIX* SceneNode::GetTransformMatrix() {
 	D3DXVec3Normalize(&m_RotationAxis, &m_RotationAxis);
 	float sinAlpha = sinf(m_RotationRadian);
 	float cosAlpha = cosf(m_RotationRadian);
-	float oneSubCosAlpha = 1 - cosAlpha;
+	float oneSubCosAlpha = 1.0f - cosAlpha;
 	float aX = m_RotationAxis.x;
 	float aY = m_RotationAxis.y;
 	float aZ = m_RotationAxis.z;
@@ -273,7 +314,7 @@ D3DXMATRIX* SceneNode::GetTransformMatrix() {
 	float xy = aX * aY;
 	float xz = aX * aZ;
 	float yz = aY * aZ;
-
+	
 	float rotMat00 = oneSubCosAlpha * x2 + cosAlpha;
 	float rotMat01 = oneSubCosAlpha * xy + sinAlpha * aZ;
 	float rotMat02 = oneSubCosAlpha * xz - sinAlpha * aY;
@@ -345,4 +386,20 @@ void SceneNode::GetTransformMatrix(float* outputMatrix) {
 
 SceneNode* SceneNode::GetFather() {
 	return m_pFather;
+}
+
+D3DXVECTOR3 SceneNode::GetPosition() {
+	return m_Position;
+}
+
+D3DXVECTOR3 SceneNode::GetRotationAxis() {
+	return m_RotationAxis;
+}
+
+float SceneNode::GetRotationRadian() {
+	return m_RotationRadian;
+}
+
+D3DXVECTOR3 SceneNode::GetScale() {
+	return m_Scale;
 }

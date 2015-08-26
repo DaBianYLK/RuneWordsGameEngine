@@ -25,6 +25,8 @@ Camera::Camera() {
 
 Camera::Camera(const D3DXVECTOR3& position, const D3DXVECTOR3& rightAxis, const D3DXVECTOR3& upAxis, const D3DXVECTOR3& lookAxis, 
 			   float fovy, float aspect, float lookNear, float lookFar) {
+	m_NodeType = SceneNode::Type::CameraNode;
+
 	m_Position = position;
 
 	m_RightAxis = rightAxis;
@@ -69,17 +71,14 @@ D3DXMATRIX* Camera::GetViewMatrix() {
 	// 视图矩阵与相机的变换矩阵互逆
 	// 通过将相机变换矩阵的逆矩阵与父节点变换矩阵的逆矩阵依次相乘可以求得
 	D3DXMATRIX tempMatrix;
-	D3DXMatrixInverse(&tempMatrix, NULL, GetTransformMatrix());
-	D3DXMatrixMultiply(&m_ViewMatrix, &tempMatrix, &m_ViewMatrix);
-
 	SceneNode* pRootNode = Graphics::GetInstance()->GetSceneManager()->GetSceneRootNode();
-	SceneNode* pFather = m_pFather;
+	SceneNode* pNode = this;
 
-	while (pFather && pFather != pRootNode) {
-		D3DXMatrixInverse(&tempMatrix, NULL, pFather->GetTransformMatrix());
+	while (pNode && pNode != pRootNode) {
+		D3DXMatrixInverse(&tempMatrix, NULL, pNode->GetTransformMatrix());
 		D3DXMatrixMultiply(&m_ViewMatrix, &tempMatrix, &m_ViewMatrix);
 
-		pFather = pFather->GetFather();
+		pNode = pNode->GetFather();
 	}
 
 	return &m_ViewMatrix;
