@@ -82,9 +82,12 @@
     <ClInclude Include="LogUtil.h" />
     <ClInclude Include="MaxModel.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="RwgeClasses.h" />
+    <ClInclude Include="RwgeVertexShader.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SceneNode.h" />
+    <ClInclude Include="VertexShader.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Viewport.h" />
@@ -101,11 +104,21 @@
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="LogUtil.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="RwgeVertexShader.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SceneNode.cpp" />
+    <ClCompile Include="VertexShader.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="Viewport.cpp" />
     <ClCompile Include="Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="RWGE.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DefaultVertexShader.fx">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

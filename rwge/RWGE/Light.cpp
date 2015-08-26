@@ -5,7 +5,6 @@
 unsigned short Light::m_LightNum = 0;
 
 Light::Light() {
-	m_Light = D3DLIGHT9();
 	ZeroMemory(&m_Light, sizeof(m_Light));
 }
 
