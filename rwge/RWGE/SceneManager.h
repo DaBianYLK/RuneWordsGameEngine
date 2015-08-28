@@ -26,7 +26,6 @@ private:
 
 	SceneNode* m_pSceneRootNode;
 	std::stack<D3DXMATRIX*> m_pTransformMatrices;
-	std::stack<D3DXMATRIX*> m_pNormalTransformMatrices;
 
 	Camera* m_pCamera;
 };

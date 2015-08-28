@@ -59,15 +59,12 @@ Camera* SceneManager::GetCamera() {
 
 void SceneManager::TraversalSceneNode(SceneNode* pNode, float deltaTime) {
 	D3DXMATRIX* pTransformMatrix = pNode->GetTransformMatrix();
-	D3DXMATRIX* pNormalTransformMatrix = pNode->GetNormalTransformMatrix();
 
 	if (!m_pTransformMatrices.empty()) {
 		D3DXMatrixMultiply(pTransformMatrix, pTransformMatrix, m_pTransformMatrices.top());
-		D3DXMatrixMultiply(pNormalTransformMatrix, pNormalTransformMatrix, m_pNormalTransformMatrices.top());
 	}
 
 	m_pTransformMatrices.push(pTransformMatrix);
-	m_pNormalTransformMatrices.push(pNormalTransformMatrix);
 
 	// 如果当前节点为精灵，则进行绘制
 	if (pNode->m_NodeType == SceneNode::Type::SpriteNode) {
@@ -86,5 +83,4 @@ void SceneManager::TraversalSceneNode(SceneNode* pNode, float deltaTime) {
 	}
 
 	m_pTransformMatrices.pop();
-	m_pNormalTransformMatrices.pop();
 }

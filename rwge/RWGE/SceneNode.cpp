@@ -384,48 +384,6 @@ void SceneNode::GetTransformMatrix(float* outputMatrix) {
 	outputMatrix[12] = translateX;			outputMatrix[13] = translateY;			outputMatrix[14] = translateZ;			outputMatrix[15] = 1.0f;
 }
 
-D3DXMATRIX* SceneNode::GetNormalTransformMatrix() {
-	// 空间变换顺序为：先缩放，再旋转
-	// ********************** 缩放矩阵 ********************** 
-	float scaleX = m_Scale.x;
-	float scaleY = m_Scale.y;
-	float scaleZ = m_Scale.z;
-
-	// ********************** 旋转矩阵 ********************** 
-	// 标准化旋转轴
-	D3DXVec3Normalize(&m_RotationAxis, &m_RotationAxis);
-	float sinAlpha = sinf(m_RotationRadian);
-	float cosAlpha = cosf(m_RotationRadian);
-	float oneSubCosAlpha = 1.0f - cosAlpha;
-	float aX = m_RotationAxis.x;
-	float aY = m_RotationAxis.y;
-	float aZ = m_RotationAxis.z;
-	float x2 = aX * aX;
-	float y2 = aY * aY;
-	float z2 = aZ * aZ;
-	float xy = aX * aY;
-	float xz = aX * aZ;
-	float yz = aY * aZ;
-
-	float rotMat00 = oneSubCosAlpha * x2 + cosAlpha;
-	float rotMat01 = oneSubCosAlpha * xy + sinAlpha * aZ;
-	float rotMat02 = oneSubCosAlpha * xz - sinAlpha * aY;
-	float rotMat10 = oneSubCosAlpha * xy - sinAlpha * aZ;
-	float rotMat11 = oneSubCosAlpha * y2 + cosAlpha;
-	float rotMat12 = oneSubCosAlpha * yz + sinAlpha * aX;
-	float rotMat20 = oneSubCosAlpha * xz + sinAlpha * aY;
-	float rotMat21 = oneSubCosAlpha * yz - sinAlpha * aX;
-	float rotMat22 = oneSubCosAlpha * z2 + cosAlpha;
-
-	// ********************** 最终变换矩阵 ********************** 
-	m_NormalTransformMatrix(0, 0) = scaleX * rotMat00;	m_NormalTransformMatrix(0, 1) = scaleX * rotMat01;	m_NormalTransformMatrix(0, 2) = scaleX * rotMat02;	m_NormalTransformMatrix(0, 3) = 0.0f;
-	m_NormalTransformMatrix(1, 0) = scaleY * rotMat10;	m_NormalTransformMatrix(1, 1) = scaleY * rotMat11;	m_NormalTransformMatrix(1, 2) = scaleY * rotMat12;	m_NormalTransformMatrix(1, 3) = 0.0f;
-	m_NormalTransformMatrix(2, 0) = scaleZ * rotMat20;	m_NormalTransformMatrix(2, 1) = scaleZ * rotMat21;	m_NormalTransformMatrix(2, 2) = scaleZ * rotMat22;	m_NormalTransformMatrix(2, 3) = 0.0f;
-	m_NormalTransformMatrix(3, 0) = 0.0f;				m_NormalTransformMatrix(3, 1) = 0.0f;				m_NormalTransformMatrix(3, 2) = 0.0f;				m_NormalTransformMatrix(3, 3) = 1.0f;
-
-	return &m_NormalTransformMatrix;
-}
-
 SceneNode* SceneNode::GetFather() {
 	return m_pFather;
 }

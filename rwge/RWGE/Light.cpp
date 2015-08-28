@@ -27,7 +27,9 @@ Light* Light::CreatePointLight(const D3DCOLORVALUE& diffuse, const D3DCOLORVALUE
 	light->m_Light.Attenuation1 = attenuation1;
 	light->m_Light.Attenuation2 = attenuation2;
 
-	light->Register();
+	#ifndef RWGE_SHADER_ENABLED
+		light->Register();
+	#endif
 
 	return light;
 }
@@ -39,9 +41,12 @@ Light* Light::CreateDirectionalLight(const D3DCOLORVALUE& diffuse, const D3DCOLO
 	light->m_Light.Diffuse = diffuse;
 	light->m_Light.Specular = specular;
 	light->m_Light.Ambient = ambient;
-	light->m_Light.Direction = direction;
+	//light->m_Light.Direction = direction;
+	D3DXVec3Normalize((D3DXVECTOR3*)&(light->m_Light.Direction), &direction);
 
-	light->Register();
+	#ifndef RWGE_SHADER_ENABLED
+		light->Register();
+	#endif
 
 	return light;
 }
@@ -56,7 +61,8 @@ Light* Light::CreateSpotLight(const D3DCOLORVALUE& diffuse, const D3DCOLORVALUE&
 	light->m_Light.Specular = specular;
 	light->m_Light.Ambient = ambient;
 	light->m_Light.Position = position;
-	light->m_Light.Direction = direction;
+	//light->m_Light.Direction = direction;
+	D3DXVec3Normalize((D3DXVECTOR3*)&(light->m_Light.Direction), &direction);
 	light->m_Light.Range = range;
 	light->m_Light.Falloff = falloff;
 	light->m_Light.Attenuation0 = attenuation0;
@@ -65,9 +71,7 @@ Light* Light::CreateSpotLight(const D3DCOLORVALUE& diffuse, const D3DCOLORVALUE&
 	light->m_Light.Theta = theta;
 	light->m_Light.Phi = phi;
 
-	#ifdef RWGE_SHADER_ENABLED
-
-	#else
+	#ifndef RWGE_SHADER_ENABLED
 		light->Register();
 	#endif
 
@@ -84,9 +88,7 @@ void Light::Enable() {
 }
 
 void Light::Disable() {
-	#ifdef RWGE_SHADER_ENABLED
-		
-	#else
+	#ifndef RWGE_SHADER_ENABLED
 		Graphics::GetInstance()->GetD3D9Device()->LightEnable(m_Index, false);
 	#endif
 }

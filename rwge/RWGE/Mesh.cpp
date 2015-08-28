@@ -212,8 +212,8 @@ void Mesh::Update(int frameIndex) {
 			vertex.x = m_Vertices[vertexIndex].normalX;
 			vertex.y = m_Vertices[vertexIndex].normalY;
 			vertex.z = m_Vertices[vertexIndex].normalZ;
-			vertex.w = 1.0f;
-			D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_NormalTransformMatrix));
+			vertex.w = 0.0f;
+			D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_TransformMatrix));
 			D3DXVec4Normalize(&vertex, &vertex);
 
 			m_Vertices[vertexIndex].normalX = vertex.x;
@@ -250,13 +250,14 @@ void Mesh::Update(int frameIndex) {
 			}
 
 			// =========================== 执行骨骼变换 =========================== 
+			// 获取骨骼变换矩阵
+			float* matrix = m_pSprite->GetBoneData() + boneDataStride * m_pVertexData[vertexIndex].boneID[boneIndex] + matrixStride * frameIndex;
+
 			// 顶点变换
 			position[boneIndex].x = vertex.x;
 			position[boneIndex].y = vertex.y;
 			position[boneIndex].z = vertex.z;
 			position[boneIndex].w = vertex.w;
-
-			float* matrix = m_pSprite->GetBoneData() + boneDataStride * m_pVertexData[vertexIndex].boneID[boneIndex] + matrixStride * frameIndex;
 
 			D3DXVec4Transform(&(position[boneIndex]), &(position[boneIndex]), (D3DXMATRIX*)matrix);
 
@@ -264,14 +265,9 @@ void Mesh::Update(int frameIndex) {
 			normal[boneIndex].x = m_pVertexData[vertexIndex].nX;
 			normal[boneIndex].y = m_pVertexData[vertexIndex].nY;
 			normal[boneIndex].z = m_pVertexData[vertexIndex].nZ;
-			normal[boneIndex].w = 1.0f;
+			normal[boneIndex].w = 0.0f;
 
-			D3DXMATRIX normalTransformMatrix(matrix);
-			normalTransformMatrix._41 = 0.0f;
-			normalTransformMatrix._42 = 0.0f;
-			normalTransformMatrix._43 = 0.0f;
-
-			D3DXVec4Transform(&(normal[boneIndex]), &(normal[boneIndex]), &normalTransformMatrix);
+			D3DXVec4Transform(&(normal[boneIndex]), &(normal[boneIndex]), (D3DXMATRIX*)matrix);
 
 			// 合成
 			float* pPositionValue = &(position[boneIndex].x);
@@ -298,8 +294,8 @@ void Mesh::Update(int frameIndex) {
 		vertex.x = normalResult[0];
 		vertex.y = normalResult[1];
 		vertex.z = normalResult[2];
-		vertex.w = 1.0f;
-		D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_NormalTransformMatrix));
+		vertex.w = 0.0f;
+		D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_TransformMatrix));
 		D3DXVec4Normalize(&vertex, &vertex);
 
 		m_Vertices[vertexIndex].normalX = vertex.x;

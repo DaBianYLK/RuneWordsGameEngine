@@ -13,10 +13,8 @@ struct PS_OUTPUT
 
 PS_OUTPUT Main(PS_INPUT input)
 {
-	// zero out members of output
 	PS_OUTPUT output = (PS_OUTPUT)0;
 
-	// save the resulting pixel color
 	output.diffuse = tex2D(TextureSampler, input.texCoord) * input.light;
 
 	return output;

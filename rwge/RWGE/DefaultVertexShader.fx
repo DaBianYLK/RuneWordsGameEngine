@@ -32,50 +32,21 @@ VS_OUTPUT Main(VS_INPUT input)
 	//
 	output.position = mul(input.position, ViewProjectionMatrix);
 
-	//
-	// Transform lights and normals to view space.  Set w
-	// componentes to zero since we're transforming vectors 
-	// here and not points.
-	//
+	// 对光线与法向量执行视图变换
 	LightDirection.w = 0.0f;
 	input.normal.w = 0.0f;
 	LightDirection = mul(LightDirection, ViewMatrix);
 	input.normal = mul(input.normal, ViewMatrix);
 
-	//
-	// Compute cosine of the angle between light and normal.
-	//
-	float s = dot(LightDirection, input.normal);
-
-	//
-	// Recall that if the angle between the surface and light
-	// is greater than 90 degrees the surface recieves no light.
-	// Thus, if the angle is greater than 90 degrees we set
-	// s to zero so that the surface will not be lit.
-	//
-	if (s < 0.0f) {
-		s = 0.0f;
+	// 计算光线方向与顶点法线方向的夹角余弦值（光的方向向量和法线向量都是单位向量）
+	float cos = dot(LightDirection, input.normal);
+	if (cos > 0.0f) {
+		cos = 0.0f;
 	}
-
-	//
-	// Ambient light reflected is computed by performing a 
-	// component wise multiplication with the ambient material
-	// vector and the ambient light intensity vector.
-	//
-	// Diffuse light reflected is computed by performing a 
-	// component wise multiplication with the diffuse material
-	// vector and the diffuse light intensity vector.  Further
-	// we scale each component by the shading scalar s, which
-	// shades the color based on how much light the vertex received
-	// from the light source.
-	//
-	// The sum of both the ambient and diffuse components gives
-	// us our final vertex color.
-	// 
-
-	output.diffuse = (MaterialAmbient * LightAmbient) +
-		(s * (LightDiffuse * MaterialDiffuse));
-
+	else {
+		cos = -cos;
+	}
+	output.diffuse = (MaterialAmbient * LightAmbient) + (cos * (MaterialDiffuse * LightDiffuse));
 	output.texCoord = input.texCoord;
 
 	return output;

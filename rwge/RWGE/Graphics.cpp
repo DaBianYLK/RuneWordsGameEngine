@@ -35,12 +35,13 @@ void Graphics::Initialize() {
 
 void Graphics::Update(float deltaTime) {
 	if (m_pDevice && m_pSceneManager) {
-		m_pVertexShader->Enable();
-		m_pPixelShader->Enable();
+		#ifdef RWGE_SHADER_ENABLED
+			m_pVertexShader->Enable();
+			m_pPixelShader->Enable();
+		#endif
 
 		m_pWindow->Update(deltaTime);
 
-		//m_pSceneManager->Update(deltaTime);
 		m_pSceneManager->Draw(deltaTime);
 
 		// Swap the back and front buffers.

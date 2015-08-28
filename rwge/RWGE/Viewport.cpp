@@ -22,10 +22,9 @@ Viewport::~Viewport() {
 void Viewport::Update(float deltaTime) {
 	m_pDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_BackgroundColor, 1.0f, 0);
 
-	D3DXMATRIX viewProjectionMatrix;
-	D3DXMatrixMultiply(&viewProjectionMatrix, m_pCamera->GetViewMatrix(), m_pCamera->GetProjectionMatrix());
-
 	#ifdef RWGE_SHADER_ENABLED
+		D3DXMATRIX viewProjectionMatrix;
+		D3DXMatrixMultiply(&viewProjectionMatrix, m_pCamera->GetViewMatrix(), m_pCamera->GetProjectionMatrix());
 		m_pVertexShader->SetViewTransform(m_pCamera->GetViewMatrix());
 		m_pVertexShader->SetViewProjectionTransform(&viewProjectionMatrix);
 	#else
