@@ -49,11 +49,15 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;d3dcompiler.lib;d3dx9d.lib;dxerr.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -82,8 +86,10 @@
     <ClInclude Include="LogUtil.h" />
     <ClInclude Include="MaxModel.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="PixelShader.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RwgeClasses.h" />
+    <ClInclude Include="RwgePixelShader.h" />
     <ClInclude Include="RwgeVertexShader.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SceneNode.h" />
@@ -104,6 +110,8 @@
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="LogUtil.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="PixelShader.cpp" />
+    <ClCompile Include="RwgePixelShader.cpp" />
     <ClCompile Include="RwgeVertexShader.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SceneNode.cpp" />
@@ -113,10 +121,12 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="RWGE.rc" />
+    <None Include="DefaultVertexShader.fx">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="DefaultVertexShader.fx">
+    <None Include="DefaultPixelShader.fx">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

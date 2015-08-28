@@ -19,6 +19,7 @@ public:
 
 private:
 	IDirect3DDevice9* m_pDevice;
+	RwgeVertexShader* m_pVertexShader;
 
 	Camera* m_pCamera;
 	D3DCOLOR m_BackgroundColor;

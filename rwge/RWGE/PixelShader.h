@@ -1,22 +1,22 @@
 #pragma once
 
-#include <d3dx9.h>
+#include "d3dx9.h"
 
-class VertexShader {
+class PixelShader {
 public:
 	enum Target {
-		VS_1_1 = 0,
-		VS_2_0 = 1,
-		VS_3_0 = 2
+		PS_1_1 = 0,
+		PS_2_0 = 1,
+		PS_3_0 = 2
 	};
 
 public:
-	VertexShader();
-	VertexShader(const char* sourceFilePath);
-	VertexShader(const char* sourceFilePath, const char* entryFuncName);
-	VertexShader(const char* sourceFilePath, Target target);
-	VertexShader(const char* sourceFilePath, const char* entryFuncName, Target target);
-	~VertexShader();
+	PixelShader();
+	PixelShader(const char* sourceFilePath);
+	PixelShader(const char* sourceFilePath, const char* entryFuncName);
+	PixelShader(const char* sourceFilePath, Target target);
+	PixelShader(const char* sourceFilePath, const char* entryFuncName, Target target);
+	~PixelShader();
 
 protected:
 	void Initialize(const char* sourceFilePath, const char* entryFuncName, Target target);
@@ -45,9 +45,9 @@ public:
 protected:
 	IDirect3DDevice9* m_pDevice;
 
-	IDirect3DVertexShader9* m_pShader;
+	IDirect3DPixelShader9* m_pShader;
 	ID3DXConstantTable* m_pConstantTable;
-	
+
 	const char* m_SourceFilePath;
 	Target m_Target;
 	const char* m_EntryFuncName;

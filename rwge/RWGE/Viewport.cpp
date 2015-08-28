@@ -1,13 +1,18 @@
 #include "Viewport.h"
 
+#include "AppConfig.h"
 #include "Graphics.h"
 #include "Camera.h"
 
 Viewport::Viewport(Camera* pCamera) {
 	m_pDevice = Graphics::GetInstance()->GetD3D9Device();
+	m_pVertexShader = Graphics::GetInstance()->GetVertexShader();
+
 	m_pCamera = pCamera;
 
-	m_pDevice->SetTransform(D3DTS_PROJECTION, pCamera->GetProjectionMatrix());
+	#ifndef RWGE_SHADER_ENABLED
+		m_pDevice->SetTransform(D3DTS_PROJECTION, pCamera->GetProjectionMatrix());
+	#endif
 }
 
 Viewport::~Viewport() {
@@ -17,7 +22,15 @@ Viewport::~Viewport() {
 void Viewport::Update(float deltaTime) {
 	m_pDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_BackgroundColor, 1.0f, 0);
 
-	m_pDevice->SetTransform(D3DTS_VIEW, m_pCamera->GetViewMatrix());
+	D3DXMATRIX viewProjectionMatrix;
+	D3DXMatrixMultiply(&viewProjectionMatrix, m_pCamera->GetViewMatrix(), m_pCamera->GetProjectionMatrix());
+
+	#ifdef RWGE_SHADER_ENABLED
+		m_pVertexShader->SetViewTransform(m_pCamera->GetViewMatrix());
+		m_pVertexShader->SetViewProjectionTransform(&viewProjectionMatrix);
+	#else
+		m_pDevice->SetTransform(D3DTS_VIEW, m_pCamera->GetViewMatrix());
+	#endif
 }
 
 void Viewport::Clear() {

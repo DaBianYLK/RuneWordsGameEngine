@@ -39,7 +39,7 @@ void Animation::SetPlaySpeed(float playSpeed) {
 
 void Animation::Update(float deltaTime) {
 	m_CurrentTime += deltaTime * m_PlaySpeed;
-	int deltaFrame = m_CurrentTime / AppConfig::animationFrameInterval;
+	int deltaFrame = (int)(m_CurrentTime / AppConfig::animationFrameInterval);
 	if (deltaFrame >= m_FrameNum) {
 		if (m_Loop) {
 			deltaFrame = 0;

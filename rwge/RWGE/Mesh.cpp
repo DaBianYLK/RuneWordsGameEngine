@@ -5,6 +5,8 @@
 #include "Sprite.h"
 
 IDirect3DDevice9* Mesh::m_pDevice = NULL;
+RwgeVertexShader* Mesh::m_pVertexShader = NULL;
+RwgePixelShader* Mesh::m_pPixelShader = NULL;
 const string Mesh::m_TextureFolderPath = "textures/";
 const string Mesh::m_TextureSuffix = ".bmp";
 
@@ -139,8 +141,16 @@ Mesh* Mesh::CreateBox(const D3DXVECTOR3& position, float length, float width, fl
 	return pBox;
 }
 
-void Mesh::SetDevice(IDirect3DDevice9* device) {
-	m_pDevice = device;
+void Mesh::SetDevice(IDirect3DDevice9* pDevice) {
+	m_pDevice = pDevice;
+}
+
+void Mesh::SetVertexShader(RwgeVertexShader* pVertexShader) {
+	m_pVertexShader = pVertexShader;
+}
+
+void Mesh::SetPixelShader(RwgePixelShader* pPixelShader) {
+	m_pPixelShader = pPixelShader;
 }
 
 void Mesh::UploadVertices() {
@@ -189,13 +199,26 @@ void Mesh::Update(int frameIndex) {
 		m_pVertexBuffer->Lock(0, 0, (void**)&m_Vertices, 0);
 
 		for (int vertexIndex = 0; vertexIndex < m_VertexNum; ++vertexIndex) {
-			// 执行场景变换
+			// =========================== 执行场景变换 =========================== 
+			// 对顶点执行变换
 			D3DXVECTOR4 vertex(m_Vertices[vertexIndex].x, m_Vertices[vertexIndex].y, m_Vertices[vertexIndex].z, 1.0f);
 			D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_TransformMatrix));
 
 			m_Vertices[vertexIndex].x = vertex.x;
 			m_Vertices[vertexIndex].y = vertex.y;
 			m_Vertices[vertexIndex].z = vertex.z;
+
+			// 对法向量执行变换
+			vertex.x = m_Vertices[vertexIndex].normalX;
+			vertex.y = m_Vertices[vertexIndex].normalY;
+			vertex.z = m_Vertices[vertexIndex].normalZ;
+			vertex.w = 1.0f;
+			D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_NormalTransformMatrix));
+			D3DXVec4Normalize(&vertex, &vertex);
+
+			m_Vertices[vertexIndex].normalX = vertex.x;
+			m_Vertices[vertexIndex].normalY = vertex.y;
+			m_Vertices[vertexIndex].normalZ = vertex.z;
 		}
 
 		m_pVertexBuffer->Unlock();
@@ -210,8 +233,10 @@ void Mesh::Update(int frameIndex) {
 
 	for (int vertexIndex = 0; vertexIndex < m_VertexNum; ++vertexIndex) {
 		D3DXVECTOR4 position[2];
+		D3DXVECTOR4 normal[2];
 
 		float postionResult[] = { 0.0f, 0.0f, 0.0f };
+		float normalResult[] = { 0.0f, 0.0f, 0.0f };
 		
 		D3DXVECTOR4 vertex;
 		vertex.x = m_pVertexData[vertexIndex].x;
@@ -224,7 +249,8 @@ void Mesh::Update(int frameIndex) {
 				continue;
 			}
 
-			// 执行骨骼变换
+			// =========================== 执行骨骼变换 =========================== 
+			// 顶点变换
 			position[boneIndex].x = vertex.x;
 			position[boneIndex].y = vertex.y;
 			position[boneIndex].z = vertex.z;
@@ -234,13 +260,30 @@ void Mesh::Update(int frameIndex) {
 
 			D3DXVec4Transform(&(position[boneIndex]), &(position[boneIndex]), (D3DXMATRIX*)matrix);
 
-			float* pValue = &(position[boneIndex].x);
+			// 法向量变换
+			normal[boneIndex].x = m_pVertexData[vertexIndex].nX;
+			normal[boneIndex].y = m_pVertexData[vertexIndex].nY;
+			normal[boneIndex].z = m_pVertexData[vertexIndex].nZ;
+			normal[boneIndex].w = 1.0f;
+
+			D3DXMATRIX normalTransformMatrix(matrix);
+			normalTransformMatrix._41 = 0.0f;
+			normalTransformMatrix._42 = 0.0f;
+			normalTransformMatrix._43 = 0.0f;
+
+			D3DXVec4Transform(&(normal[boneIndex]), &(normal[boneIndex]), &normalTransformMatrix);
+
+			// 合成
+			float* pPositionValue = &(position[boneIndex].x);
+			float* pNormalValue = &(normal[boneIndex].x);
 			for (int i = 0; i < 3; ++i) {
-				postionResult[i] += pValue[i] * m_pVertexData[vertexIndex].blend[boneIndex];
+				postionResult[i] += pPositionValue[i] * m_pVertexData[vertexIndex].blend[boneIndex];
+				normalResult[i] += pNormalValue[i] * m_pVertexData[vertexIndex].blend[boneIndex];
 			}
 		}
 
-		// 执行场景变换
+		// =========================== 执行场景变换 =========================== 
+		// 对顶点执行变换
 		vertex.x = postionResult[0];
 		vertex.y = postionResult[1];
 		vertex.z = postionResult[2];
@@ -250,6 +293,18 @@ void Mesh::Update(int frameIndex) {
 		m_Vertices[vertexIndex].x = vertex.x;
 		m_Vertices[vertexIndex].y = vertex.y;
 		m_Vertices[vertexIndex].z = vertex.z;
+
+		// 对法向量执行变换
+		vertex.x = normalResult[0];
+		vertex.y = normalResult[1];
+		vertex.z = normalResult[2];
+		vertex.w = 1.0f;
+		D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_NormalTransformMatrix));
+		D3DXVec4Normalize(&vertex, &vertex);
+
+		m_Vertices[vertexIndex].normalX = vertex.x;
+		m_Vertices[vertexIndex].normalY = vertex.y;
+		m_Vertices[vertexIndex].normalZ = vertex.z;
 	}
 
 	m_pVertexBuffer->Unlock();
@@ -257,12 +312,17 @@ void Mesh::Update(int frameIndex) {
 
 void Mesh::Draw() {
 	if (m_pDevice) {
-		m_pDevice->SetMaterial(m_pMaterial);
-		m_pDevice->SetTexture(0, m_pTexture);
+		#ifdef RWGE_SHADER_ENABLED
+			m_pVertexShader->SetMaterial(m_pMaterial);
+			m_pPixelShader->SetTexture(m_pTexture);
+		#else
+			m_pDevice->SetMaterial(m_pMaterial);
+			m_pDevice->SetTexture(0, m_pTexture);
+		#endif
 
+		m_pDevice->SetFVF(VertexFVF);
 		m_pDevice->SetStreamSource(0, m_pVertexBuffer, 0, sizeof(Vertex));
 		m_pDevice->SetIndices(m_pIndexBuffer);
-		m_pDevice->SetFVF(VertexFVF);
 		m_pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_VertexNum, 0, m_MeshHead.triangleNum);
 	}
 }

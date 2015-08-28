@@ -10,6 +10,8 @@
 *.ilk
 *.exe
 *.lib
+*.bsc
+*.sbr
 *.lastbuildstate
 RWGE\Debug
 RWGE\RWGE\Debug

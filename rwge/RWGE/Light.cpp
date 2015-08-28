@@ -1,5 +1,6 @@
 #include "Light.h"
 
+#include "AppConfig.h"
 #include "Graphics.h"
 
 unsigned short Light::m_LightNum = 0;
@@ -7,7 +8,6 @@ unsigned short Light::m_LightNum = 0;
 Light::Light() {
 	ZeroMemory(&m_Light, sizeof(m_Light));
 }
-
 
 Light::~Light() {
 
@@ -65,17 +65,30 @@ Light* Light::CreateSpotLight(const D3DCOLORVALUE& diffuse, const D3DCOLORVALUE&
 	light->m_Light.Theta = theta;
 	light->m_Light.Phi = phi;
 
-	light->Register();
+	#ifdef RWGE_SHADER_ENABLED
+
+	#else
+		light->Register();
+	#endif
 
 	return light;
 }
 
 void Light::Enable() {
-	Graphics::GetInstance()->GetD3D9Device()->LightEnable(m_Index, true);
+	#ifdef RWGE_SHADER_ENABLED
+		RwgeVertexShader* pVertexShader = Graphics::GetInstance()->GetVertexShader();
+		pVertexShader->SetLight(&m_Light);
+	#else
+		Graphics::GetInstance()->GetD3D9Device()->LightEnable(m_Index, true);
+	#endif
 }
 
 void Light::Disable() {
-	Graphics::GetInstance()->GetD3D9Device()->LightEnable(m_Index, false);
+	#ifdef RWGE_SHADER_ENABLED
+		
+	#else
+		Graphics::GetInstance()->GetD3D9Device()->LightEnable(m_Index, false);
+	#endif
 }
 
 void Light::Register() {

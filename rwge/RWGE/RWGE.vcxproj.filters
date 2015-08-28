@@ -120,6 +120,12 @@
     <ClInclude Include="RwgeVertexShader.h">
       <Filter>头文件\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="PixelShader.h">
+      <Filter>头文件\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="RwgePixelShader.h">
+      <Filter>头文件\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -173,14 +179,18 @@
     <ClCompile Include="RwgeVertexShader.cpp">
       <Filter>源文件\Graphics</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="RWGE.rc">
-      <Filter>资源文件</Filter>
-    </ResourceCompile>
+    <ClCompile Include="PixelShader.cpp">
+      <Filter>源文件\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="RwgePixelShader.cpp">
+      <Filter>源文件\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DefaultVertexShader.fx">
+      <Filter>着色器</Filter>
+    </None>
+    <None Include="DefaultPixelShader.fx">
       <Filter>着色器</Filter>
     </None>
   </ItemGroup>

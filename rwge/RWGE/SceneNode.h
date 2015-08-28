@@ -50,6 +50,7 @@ public:
 
 	D3DXMATRIX* GetTransformMatrix();
 	void GetTransformMatrix(float* outputMatrix);		// 矩阵中数据排列顺序为先行后列
+	D3DXMATRIX* GetNormalTransformMatrix();
 	SceneNode* GetFather();
 	D3DXVECTOR3 GetPosition();
 	D3DXVECTOR3 GetRotationAxis();
@@ -67,6 +68,7 @@ protected:
 	D3DXVECTOR3 m_Scale;
 
 	D3DXMATRIX m_TransformMatrix;
+	D3DXMATRIX m_NormalTransformMatrix;
 
 	SceneNode* m_pFather;
 	std::list<SceneNode*> m_pChildren;

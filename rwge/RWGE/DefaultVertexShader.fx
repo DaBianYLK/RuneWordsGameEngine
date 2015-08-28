@@ -1,36 +1,36 @@
 matrix ViewMatrix;
-matrix ViewProjMatrix;
+matrix ViewProjectionMatrix;
 
-vector AmbientMtrl;
-vector DiffuseMtrl;
+vector MaterialAmbient;
+vector MaterialDiffuse;
 
+vector LightDiffuse;
+vector LightAmbient;
 vector LightDirection;
-
-vector DiffuseLightIntensity = { 0.0f, 0.0f, 1.0f, 1.0f };
-vector AmbientLightIntensity = { 0.0f, 0.0f, 0.2f, 1.0f };
 
 struct VS_INPUT
 {
 	vector position : POSITION;
 	vector normal   : NORMAL;
+	float2 texCoord : TEXCOORD0;
 };
 
 struct VS_OUTPUT
 {
 	vector position : POSITION;
-	vector diffuse  : COLOR;
+	float2 texCoord : TEXCOORD0;
+	vector diffuse  : COLOR0;
 };
 
 VS_OUTPUT Main(VS_INPUT input)
 {
-	// zero out all members of the output instance.
 	VS_OUTPUT output = (VS_OUTPUT)0;
 
 	//
 	// Transform position to homogeneous clip space
 	// and store in the output.position member. 
 	//
-	output.position = mul(input.position, ViewProjMatrix);
+	output.position = mul(input.position, ViewProjectionMatrix);
 
 	//
 	// Transform lights and normals to view space.  Set w
@@ -53,8 +53,9 @@ VS_OUTPUT Main(VS_INPUT input)
 	// Thus, if the angle is greater than 90 degrees we set
 	// s to zero so that the surface will not be lit.
 	//
-	if (s < 0.0f)
+	if (s < 0.0f) {
 		s = 0.0f;
+	}
 
 	//
 	// Ambient light reflected is computed by performing a 
@@ -72,8 +73,10 @@ VS_OUTPUT Main(VS_INPUT input)
 	// us our final vertex color.
 	// 
 
-	output.diffuse = (AmbientMtrl * AmbientLightIntensity) +
-		(s * (DiffuseLightIntensity * DiffuseMtrl));
+	output.diffuse = (MaterialAmbient * LightAmbient) +
+		(s * (LightDiffuse * MaterialDiffuse));
+
+	output.texCoord = input.texCoord;
 
 	return output;
 }

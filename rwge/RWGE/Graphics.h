@@ -6,6 +6,8 @@
 
 #include "RwgeClasses.h"
 #include "Singleton.h"
+#include "RwgeVertexShader.h"
+#include "RwgePixelShader.h"
 
 class Graphics : public Singleton<Graphics> {
 public:
@@ -19,6 +21,7 @@ public:
 	IDirect3DDevice9* GetD3D9Device();
 	SceneManager* GetSceneManager();
 	Window* GetWindow();
+	RwgeVertexShader* GetVertexShader();
 
 private:
 	void InitWindow();
@@ -34,5 +37,8 @@ private:
 	int m_VertexProcType;
 
 	SceneManager* m_pSceneManager;
+
+	RwgeVertexShader* m_pVertexShader;
+	RwgePixelShader* m_pPixelShader;
 };
 

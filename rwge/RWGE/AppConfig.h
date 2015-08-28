@@ -2,6 +2,8 @@
 
 #include <d3d9.h>
 
+#define RWGE_SHADER_ENABLED
+
 namespace AppConfig {
 	// 窗口参数
 	const int winX = 100;
@@ -48,4 +50,12 @@ namespace AppConfig {
 
 	// 动画参数
 	const float animationFrameInterval = 2.0f / 60.0f;
+
+	// 着色器
+	const char defaultVertexShaderPath[] = "../RWGE/DefaultVertexShader.fx";
+	const char defaultVertexShaderEntryFuncName[] = "Main";
+	const unsigned int defaultVertexShaderTarget = 1;
+	const char defaultPixelShaderPath[] = "../RWGE/DefaultPixelShader.fx";
+	const char defaultPixelShaderEntryFuncName[] = "Main";
+	const unsigned int defaultPixelShaderTarget = 1;
 };

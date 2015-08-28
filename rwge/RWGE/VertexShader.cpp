@@ -1,21 +1,22 @@
 #include "VertexShader.h"
 
+#include "AppConfig.h"
 #include "Graphics.h"
 
 VertexShader::VertexShader() {
-	Initialize("DefaultVertexShader.fx", "Main", VS_2_0);
+	Initialize(AppConfig::defaultVertexShaderPath, AppConfig::defaultVertexShaderEntryFuncName, (Target)AppConfig::defaultVertexShaderTarget);
 }
 
 VertexShader::VertexShader(const char* sourceFilePath) {
-	Initialize(sourceFilePath, "Main", VS_2_0);
+	Initialize(sourceFilePath, AppConfig::defaultVertexShaderEntryFuncName, (Target)AppConfig::defaultVertexShaderTarget);
 }
 
 VertexShader::VertexShader(const char* sourceFilePath, const char* entryFuncName) {
-	Initialize(sourceFilePath, entryFuncName, VS_2_0);
+	Initialize(sourceFilePath, entryFuncName, (Target)AppConfig::defaultVertexShaderTarget);
 }
 
 VertexShader::VertexShader(const char* sourceFilePath, Target target) {
-	Initialize(sourceFilePath, "Main", target);
+	Initialize(sourceFilePath, AppConfig::defaultVertexShaderEntryFuncName, target);
 }
 
 VertexShader::VertexShader(const char* sourceFilePath, const char* entryFuncName, Target target) {
@@ -47,7 +48,7 @@ void VertexShader::Initialize(const char* sourceFilePath, const char* entryFuncN
 	ID3DXBuffer* pShaderBuffer = NULL;
 	ID3DXBuffer* pErrorBuffer = NULL;
 
-	bool result = D3DXCompileShaderFromFile(
+	HRESULT result = D3DXCompileShaderFromFile(
 		sourceFilePath,
 		0,
 		0,
@@ -62,7 +63,7 @@ void VertexShader::Initialize(const char* sourceFilePath, const char* entryFuncN
 	if (pErrorBuffer) {
 		MessageBox(0, (char*)pErrorBuffer->GetBufferPointer(), 0, 0);
 		
-		delete pErrorBuffer;
+		pErrorBuffer->Release();
 	}
 
 	if (FAILED(result)) {
@@ -76,9 +77,7 @@ void VertexShader::Initialize(const char* sourceFilePath, const char* entryFuncN
 	m_Target = target;
 
 	// 创建着色器
-	result = m_pDevice->CreateVertexShader(
-		(DWORD*)pShaderBuffer->GetBufferPointer(),
-		&m_pShader);
+	result = m_pDevice->CreateVertexShader((DWORD*)pShaderBuffer->GetBufferPointer(), &m_pShader);
 
 	if (FAILED(result)) {
 		MessageBox(0, "CreateVertexShader - FAILED", 0, 0);
@@ -86,7 +85,7 @@ void VertexShader::Initialize(const char* sourceFilePath, const char* entryFuncN
 		return;
 	}
 
-	delete pShaderBuffer;
+	pShaderBuffer->Release();
 
 	// 设置常量表
 	m_pConstantTable->SetDefaults(m_pDevice);

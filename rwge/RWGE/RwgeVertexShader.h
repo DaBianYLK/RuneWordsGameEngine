@@ -17,5 +17,12 @@ public:
 private:
 	D3DXHANDLE m_hViewMatrix;
 	D3DXHANDLE m_hViewProjectionMatrix;
+
+	D3DXHANDLE m_hMaterialAmbient;
+	D3DXHANDLE m_hMaterialDiffuse;
+
+	D3DXHANDLE m_hLightDiffuse;
+	D3DXHANDLE m_hLightAmbient;
+	D3DXHANDLE m_hLightDirection;
 };
 

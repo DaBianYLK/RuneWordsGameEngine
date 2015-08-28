@@ -4,8 +4,7 @@
 #include <d3dx9.h>
 
 #include "MaxModel.h"
-
-class Sprite;
+#include "RwgeClasses.h"
 
 struct Vertex {
 	float x;
@@ -57,7 +56,9 @@ public:
 	static Mesh* CreatePanel(const D3DXVECTOR3& position, float length, float width);				// length is parallel with X-axis, width is parallel with Z-axis.
 	static Mesh* CreateBox(const D3DXVECTOR3& position, float length, float width, float height);	// length is parallel with X-axis, width is parallel with Z-axis, height is parallel with Y-axis.
 
-	static void SetDevice(IDirect3DDevice9* m_pDevice);
+	static void SetDevice(IDirect3DDevice9* pDevice);
+	static void SetVertexShader(RwgeVertexShader* pVertexShader);
+	static void SetPixelShader(RwgePixelShader* pPixelShader);
 
 	void UploadVertices();
 	void UploadIndices();
@@ -79,6 +80,8 @@ private:
 
 private:
 	static IDirect3DDevice9* m_pDevice;
+	static RwgeVertexShader* m_pVertexShader;
+	static RwgePixelShader* m_pPixelShader;
 	static const string m_TextureFolderPath;
 	static const string m_TextureSuffix;
 

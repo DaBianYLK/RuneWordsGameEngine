@@ -19,9 +19,15 @@ Graphics::~Graphics() {
 void Graphics::Initialize() {
 	InitWindow();
 	InitD3D9();
+
+	m_pVertexShader = new RwgeVertexShader();
+	m_pPixelShader = new RwgePixelShader();
+
 	InitSceneManager();
 
 	Mesh::SetDevice(m_pDevice);
+	Mesh::SetVertexShader(m_pVertexShader);
+	Mesh::SetPixelShader(m_pPixelShader);
 
 	m_pWindow->CreateViewport(m_pSceneManager->GetCamera());
 
@@ -29,6 +35,9 @@ void Graphics::Initialize() {
 
 void Graphics::Update(float deltaTime) {
 	if (m_pDevice && m_pSceneManager) {
+		m_pVertexShader->Enable();
+		m_pPixelShader->Enable();
+
 		m_pWindow->Update(deltaTime);
 
 		//m_pSceneManager->Update(deltaTime);
@@ -53,6 +62,10 @@ SceneManager* Graphics::GetSceneManager() {
 
 Window* Graphics::GetWindow() {
 	return m_pWindow;
+}
+
+RwgeVertexShader* Graphics::GetVertexShader() {
+	return m_pVertexShader;
 }
 
 void Graphics::InitWindow() {
@@ -96,7 +109,7 @@ void Graphics::InitD3D9() {
 	d3dpp.FullScreen_RefreshRateInHz = AppConfig::fullScreenRefreshRateInHz;
 	d3dpp.PresentationInterval = AppConfig::presentationInterval;
 
-	bool result = m_pD3D9->CreateDevice(
+	HRESULT result = m_pD3D9->CreateDevice(
 		D3DADAPTER_DEFAULT,				// primary adapter
 		AppConfig::deviceType,			// device type
 		hWnd,							// window associated with device
