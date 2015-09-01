@@ -23,10 +23,8 @@ void Viewport::Update(float deltaTime) {
 	m_pDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_BackgroundColor, 1.0f, 0);
 
 	#ifdef RWGE_SHADER_ENABLED
-		D3DXMATRIX viewProjectionMatrix;
-		D3DXMatrixMultiply(&viewProjectionMatrix, m_pCamera->GetViewMatrix(), m_pCamera->GetProjectionMatrix());
-		m_pVertexShader->SetViewTransform(m_pCamera->GetViewMatrix());
-		m_pVertexShader->SetViewProjectionTransform(&viewProjectionMatrix);
+		m_pViewMatrix = m_pCamera->GetViewMatrix();
+		D3DXMatrixMultiply(&m_ViewProjectionMatrix, m_pViewMatrix, m_pCamera->GetProjectionMatrix());
 	#else
 		m_pDevice->SetTransform(D3DTS_VIEW, m_pCamera->GetViewMatrix());
 	#endif
@@ -38,4 +36,16 @@ void Viewport::Clear() {
 
 void Viewport::SetBackgroundColor(const D3DCOLOR& color) {
 	m_BackgroundColor = color;
+}
+
+D3DXMATRIX* Viewport::GetViewTransform() {
+	return m_pViewMatrix;
+}
+
+D3DXMATRIX* Viewport::GetViewportTransform() {
+	return &m_ViewProjectionMatrix;
+}
+
+Camera* Viewport::GetCamera() {
+	return m_pCamera;
 }

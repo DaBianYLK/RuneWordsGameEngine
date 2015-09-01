@@ -6,6 +6,7 @@
 #include <Camera.h>
 #include <InputManager.h>
 #include <SceneNode.h>
+#include <Mesh.h>
 
 #define ANIMATION_STAND					0
 #define ANIMATION_STAND_WEAPON			1
@@ -32,7 +33,7 @@
 
 class Controller : public InputListener {
 public:
-	Controller(Sprite* pSprite, Light* pPointLight, Light* pDirectionalLight, Light* pSpotLight);
+	Controller(Sprite* pSprite, Light* pPointLight, Light* pDirectionalLight, Light* pSpotLight, Camera* pCamera);
 	~Controller();
 
 	void OnKeyUp(unsigned int key);
@@ -49,6 +50,9 @@ private:
 	void OnAttackKeyDown();
 	void OnSkillKeyDown(unsigned int skillID);
 
+	void EnhanceMaterial(unsigned int attributeID);
+	void WeakenMaterial(unsigned int attributeID);
+
 
 private:
 	InputManager* m_pInputManager;
@@ -60,6 +64,16 @@ private:
 	bool m_UseWeapon;
 	float m_MoveSpeed;
 	float m_FaceRadian;
+	float m_TargetRadian;
+	float m_RotateSpeed;
+
+	Mesh* m_Meshes;
+	unsigned int m_MeshNum;
+	float m_Ambient;
+	float m_Diffuse;
+	float m_Specular;
+	float m_Power;
+	float m_DeltaColor;
 
 	Light* m_pPointLight;
 	Light* m_pDirectionalLight;

@@ -8,7 +8,8 @@ public:
 	~RwgeVertexShader();
 
 	void SetViewTransform(const D3DXMATRIX* pMatrix);
-	void SetViewProjectionTransform(const D3DXMATRIX* pMatrix);
+	void SetWorldTransform(const D3DXMATRIX* pMatrix);
+	void SetWorldViewProjectionTransform(const D3DXMATRIX* pMatrix);
 	//void SetWorldViewProjectionTransform(const D3DXMATRIX* pMatrix);
 
 	void SetMaterial(const D3DMATERIAL9* pMaterial);
@@ -16,13 +17,10 @@ public:
 
 private:
 	D3DXHANDLE m_hViewMatrix;
-	D3DXHANDLE m_hViewProjectionMatrix;
+	D3DXHANDLE m_hWorldMatrix;
+	D3DXHANDLE m_hWorldViewProjectionMatrix;
 
-	D3DXHANDLE m_hMaterialAmbient;
-	D3DXHANDLE m_hMaterialDiffuse;
-
-	D3DXHANDLE m_hLightDiffuse;
-	D3DXHANDLE m_hLightAmbient;
-	D3DXHANDLE m_hLightDirection;
+	D3DXHANDLE m_hMaterial;
+	D3DXHANDLE m_hLight;
 };
 

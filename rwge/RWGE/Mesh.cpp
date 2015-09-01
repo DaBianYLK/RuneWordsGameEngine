@@ -9,6 +9,8 @@ RwgeVertexShader* Mesh::m_pVertexShader = NULL;
 RwgePixelShader* Mesh::m_pPixelShader = NULL;
 const string Mesh::m_TextureFolderPath = "textures/";
 const string Mesh::m_TextureSuffix = ".bmp";
+D3DVERTEXELEMENT9* Mesh::m_pVertexElements = NULL;
+IDirect3DVertexDeclaration9* Mesh::m_pVertexDeclaration = NULL;
 
 Mesh::Mesh() {
 	ZeroMemory(&m_MeshHead, sizeof(MaxMeshHead));
@@ -56,8 +58,8 @@ Mesh::Mesh(const MaxMeshHead& head, MaxVertex* vertexData, unsigned short* index
 	m_pMaterial->Power = 2.0f;
 
 	if (m_pDevice) {
-		m_pDevice->CreateVertexBuffer(sizeof(Vertex)* m_VertexNum, D3DUSAGE_WRITEONLY, VertexFVF, D3DPOOL_MANAGED, &m_pVertexBuffer, 0);
-		m_pDevice->CreateIndexBuffer(sizeof(WORD)* m_IndexNum, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_MANAGED, &m_pIndexBuffer, 0);
+		m_pDevice->CreateVertexBuffer(sizeof(Vertex)* m_VertexNum, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_pVertexBuffer, 0);
+		m_pDevice->CreateIndexBuffer(sizeof(WORD)* m_IndexNum, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &m_pIndexBuffer, 0);
 
 		UploadVertices();
 		UploadIndices();
@@ -153,6 +155,11 @@ void Mesh::SetPixelShader(RwgePixelShader* pPixelShader) {
 	m_pPixelShader = pPixelShader;
 }
 
+void Mesh::SetVertexDeclaration(D3DVERTEXELEMENT9* pVertexElements) {
+	m_pVertexElements = pVertexElements;
+	m_pDevice->CreateVertexDeclaration(pVertexElements, &m_pVertexDeclaration);
+}
+
 void Mesh::UploadVertices() {
 	if (m_pVertexData) {
 		m_pVertexBuffer->Lock(0, 0, (void**)&m_Vertices, 0);
@@ -194,38 +201,6 @@ void Mesh::Multiply(float* position, float* matrix) {
 }
 
 void Mesh::Update(int frameIndex) {
-	// 如果没有骨骼则只执行场景树变换
-	if (m_pSprite->GetBoneNum() <= 0 || m_pSprite->GetAnimationNum() <= 0) {
-		m_pVertexBuffer->Lock(0, 0, (void**)&m_Vertices, 0);
-
-		for (int vertexIndex = 0; vertexIndex < m_VertexNum; ++vertexIndex) {
-			// =========================== 执行场景变换 =========================== 
-			// 对顶点执行变换
-			D3DXVECTOR4 vertex(m_Vertices[vertexIndex].x, m_Vertices[vertexIndex].y, m_Vertices[vertexIndex].z, 1.0f);
-			D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_TransformMatrix));
-
-			m_Vertices[vertexIndex].x = vertex.x;
-			m_Vertices[vertexIndex].y = vertex.y;
-			m_Vertices[vertexIndex].z = vertex.z;
-
-			// 对法向量执行变换
-			vertex.x = m_Vertices[vertexIndex].normalX;
-			vertex.y = m_Vertices[vertexIndex].normalY;
-			vertex.z = m_Vertices[vertexIndex].normalZ;
-			vertex.w = 0.0f;
-			D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_TransformMatrix));
-			D3DXVec4Normalize(&vertex, &vertex);
-
-			m_Vertices[vertexIndex].normalX = vertex.x;
-			m_Vertices[vertexIndex].normalY = vertex.y;
-			m_Vertices[vertexIndex].normalZ = vertex.z;
-		}
-
-		m_pVertexBuffer->Unlock();
-
-		return;
-	}
-
 	int matrixStride = 4 * 4;
 	int boneDataStride = m_pSprite->GetFrameNum() * matrixStride;
 
@@ -237,12 +212,6 @@ void Mesh::Update(int frameIndex) {
 
 		float postionResult[] = { 0.0f, 0.0f, 0.0f };
 		float normalResult[] = { 0.0f, 0.0f, 0.0f };
-		
-		D3DXVECTOR4 vertex;
-		vertex.x = m_pVertexData[vertexIndex].x;
-		vertex.y = m_pVertexData[vertexIndex].y;
-		vertex.z = m_pVertexData[vertexIndex].z;
-		vertex.w = 1.0f;
 
 		for (int boneIndex = 0; boneIndex < 2; ++boneIndex) {
 			if (m_pVertexData[vertexIndex].boneID[boneIndex] < 0 || m_pVertexData[vertexIndex].boneID[boneIndex] >= m_pSprite->GetBoneNum()) {
@@ -254,10 +223,10 @@ void Mesh::Update(int frameIndex) {
 			float* matrix = m_pSprite->GetBoneData() + boneDataStride * m_pVertexData[vertexIndex].boneID[boneIndex] + matrixStride * frameIndex;
 
 			// 顶点变换
-			position[boneIndex].x = vertex.x;
-			position[boneIndex].y = vertex.y;
-			position[boneIndex].z = vertex.z;
-			position[boneIndex].w = vertex.w;
+			position[boneIndex].x = m_pVertexData[vertexIndex].x;
+			position[boneIndex].y = m_pVertexData[vertexIndex].y;
+			position[boneIndex].z = m_pVertexData[vertexIndex].z;
+			position[boneIndex].w = 1.0f;
 
 			D3DXVec4Transform(&(position[boneIndex]), &(position[boneIndex]), (D3DXMATRIX*)matrix);
 
@@ -278,29 +247,21 @@ void Mesh::Update(int frameIndex) {
 			}
 		}
 
-		// =========================== 执行场景变换 =========================== 
-		// 对顶点执行变换
-		vertex.x = postionResult[0];
-		vertex.y = postionResult[1];
-		vertex.z = postionResult[2];
-		vertex.w = 1.0f;
-		D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_TransformMatrix));
+		// 对顶点赋值
+		m_Vertices[vertexIndex].x = postionResult[0];
+		m_Vertices[vertexIndex].y = postionResult[1];
+		m_Vertices[vertexIndex].z = postionResult[2];
 
-		m_Vertices[vertexIndex].x = vertex.x;
-		m_Vertices[vertexIndex].y = vertex.y;
-		m_Vertices[vertexIndex].z = vertex.z;
+		// 对法向量赋值
+		D3DXVECTOR3 normalVector;
+		normalVector.x = normalResult[0];
+		normalVector.y = normalResult[1];
+		normalVector.z = normalResult[2];
+		D3DXVec3Normalize(&normalVector, &normalVector);
 
-		// 对法向量执行变换
-		vertex.x = normalResult[0];
-		vertex.y = normalResult[1];
-		vertex.z = normalResult[2];
-		vertex.w = 0.0f;
-		D3DXVec4Transform(&vertex, &vertex, &(m_pSprite->m_TransformMatrix));
-		D3DXVec4Normalize(&vertex, &vertex);
-
-		m_Vertices[vertexIndex].normalX = vertex.x;
-		m_Vertices[vertexIndex].normalY = vertex.y;
-		m_Vertices[vertexIndex].normalZ = vertex.z;
+		m_Vertices[vertexIndex].normalX = normalVector.x;
+		m_Vertices[vertexIndex].normalY = normalVector.y;
+		m_Vertices[vertexIndex].normalZ = normalVector.z;
 	}
 
 	m_pVertexBuffer->Unlock();
@@ -316,11 +277,44 @@ void Mesh::Draw() {
 			m_pDevice->SetTexture(0, m_pTexture);
 		#endif
 
-		m_pDevice->SetFVF(VertexFVF);
+		//m_pDevice->SetFVF(VertexFVF);
+		m_pDevice->SetVertexDeclaration(m_pVertexDeclaration);
 		m_pDevice->SetStreamSource(0, m_pVertexBuffer, 0, sizeof(Vertex));
 		m_pDevice->SetIndices(m_pIndexBuffer);
 		m_pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_VertexNum, 0, m_MeshHead.triangleNum);
 	}
+}
+
+void Mesh::SetMaterialAmbient(const D3DXCOLOR& color) {
+	m_pMaterial->Ambient = color;
+}
+
+void Mesh::SetMaterialDiffuse(const D3DXCOLOR& color) {
+	m_pMaterial->Diffuse = color;
+}
+
+void Mesh::SetMaterialSpecular(const D3DXCOLOR& color) {
+	m_pMaterial->Specular = color;
+}
+
+void Mesh::SetMaterialPower(float power) {
+	m_pMaterial->Power = power;
+}
+
+D3DXCOLOR Mesh::GetMaterialAmbient() {
+	return m_pMaterial->Ambient;
+}
+
+D3DXCOLOR Mesh::GetMaterialDiffuse() {
+	return m_pMaterial->Diffuse;
+}
+
+D3DXCOLOR Mesh::GetMaterialSpecular() {
+	return m_pMaterial->Specular;
+}
+
+float Mesh::GetMaterialPower() {
+	return m_pMaterial->Power;
 }
 
 int Mesh::GetVertexNum() {

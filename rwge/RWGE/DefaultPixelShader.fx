@@ -2,20 +2,21 @@ sampler TextureSampler;
 
 struct PS_INPUT
 {
-	float2 texCoord	: TEXCOORD0;
-	vector light	: COLOR0;
+	vector surfaceColor		: COLOR0; 
+	vector specularColor	: COLOR1;
+	float2 texCoord			: TEXCOORD0;
 };
 
 struct PS_OUTPUT
 {
-	vector diffuse : COLOR;
+	vector surfaceColor : COLOR0;
 };
 
 PS_OUTPUT Main(PS_INPUT input)
 {
 	PS_OUTPUT output = (PS_OUTPUT)0;
 
-	output.diffuse = tex2D(TextureSampler, input.texCoord) * input.light;
+	output.surfaceColor = tex2D(TextureSampler, input.texCoord) * input.surfaceColor + input.specularColor;
 
 	return output;
 }

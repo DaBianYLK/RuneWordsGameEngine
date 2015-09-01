@@ -31,9 +31,6 @@ public:
 	void PlayAnimation(int animationID, bool loop = false);
 	bool IsCurrentAnimationPlaying();
 
-//private:
-	//void InitAnimation();
-
 private:
 	Mesh* m_Meshes;
 	Animation* m_Animations;

@@ -43,6 +43,9 @@ Light* Light::CreateDirectionalLight(const D3DCOLORVALUE& diffuse, const D3DCOLO
 	light->m_Light.Ambient = ambient;
 	//light->m_Light.Direction = direction;
 	D3DXVec3Normalize((D3DXVECTOR3*)&(light->m_Light.Direction), &direction);
+	light->m_Light.Direction.x = -light->m_Light.Direction.x;
+	light->m_Light.Direction.y = -light->m_Light.Direction.y;
+	light->m_Light.Direction.z = -light->m_Light.Direction.z;
 
 	#ifndef RWGE_SHADER_ENABLED
 		light->Register();
@@ -63,6 +66,9 @@ Light* Light::CreateSpotLight(const D3DCOLORVALUE& diffuse, const D3DCOLORVALUE&
 	light->m_Light.Position = position;
 	//light->m_Light.Direction = direction;
 	D3DXVec3Normalize((D3DXVECTOR3*)&(light->m_Light.Direction), &direction);
+	light->m_Light.Direction.x = -light->m_Light.Direction.x;
+	light->m_Light.Direction.y = -light->m_Light.Direction.y;
+	light->m_Light.Direction.z = -light->m_Light.Direction.z;
 	light->m_Light.Range = range;
 	light->m_Light.Falloff = falloff;
 	light->m_Light.Attenuation0 = attenuation0;

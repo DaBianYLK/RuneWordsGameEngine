@@ -112,3 +112,7 @@ int Window::GetHeight() {
 bool Window::IsFullScreen() {
 	return m_FullScreen;
 }
+
+Viewport* Window::GetViewport() {
+	return m_pViewport;
+}

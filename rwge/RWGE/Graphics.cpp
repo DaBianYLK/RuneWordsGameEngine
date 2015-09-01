@@ -28,9 +28,14 @@ void Graphics::Initialize() {
 	Mesh::SetDevice(m_pDevice);
 	Mesh::SetVertexShader(m_pVertexShader);
 	Mesh::SetPixelShader(m_pPixelShader);
-
-	m_pWindow->CreateViewport(m_pSceneManager->GetCamera());
-
+	D3DVERTEXELEMENT9 declaration[] =
+	{
+		{ 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
+		{ 0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0 },
+		{ 0, 24, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
+		D3DDECL_END()
+	};
+	Mesh::SetVertexDeclaration(declaration);
 }
 
 void Graphics::Update(float deltaTime) {

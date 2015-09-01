@@ -112,8 +112,10 @@ void Sprite::Update(float deltaTime) {
 	if (m_Animations && m_AnimationID < m_AnimationNum) {
 		m_Animations[m_AnimationID].Update(deltaTime);
 
-		for (int i = 0; i < m_ModelHead.meshNum; ++i) {
-			m_Meshes[i].Update(m_Animations[m_AnimationID].GetFrameIndex());
+		if (m_ModelHead.boneNum > 0) {
+			for (int i = 0; i < m_ModelHead.meshNum; ++i) {
+				m_Meshes[i].Update(m_Animations[m_AnimationID].GetFrameIndex());
+			}
 		}
 	}
 }

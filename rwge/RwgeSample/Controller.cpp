@@ -28,22 +28,39 @@
 #define SKILL_6		6
 #define SKILL_7		7
 
-Controller::Controller(Sprite* pSprite, Light* pPointLight, Light* pDirectionalLight, Light* pSpotLight) {
+#define MATERIAL_AMBIENT	0
+#define MATERIAL_DIFFUSE	1
+#define MATERIAL_SPECULAR	2
+#define MATERIAL_POWER		3
+
+Controller::Controller(Sprite* pSprite, Light* pPointLight, Light* pDirectionalLight, Light* pSpotLight, Camera* pCamera) {
 	m_pInputManager = InputManager::GetInstance();
 
 	m_pSpriteNode = pSprite->GetFather();
 
-	m_pSprite = pSprite; 
+	m_pSprite = pSprite;
 	m_ActionState = ACTION_STAND;
 	m_pSprite->PlayAnimation(ANIMATION_STAND, true);
-	m_MoveSpeed = -6.0f;
+	m_MoveSpeed = 6.0f;
+	m_FaceRadian = 0.0f;
+	m_TargetRadian = m_FaceRadian;
+	m_RotateSpeed = 6.0f / 60.0f;
+	m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian + +D3DX_PI);
+
+	m_Meshes = m_pSprite->GetMeshes();
+	m_MeshNum = m_pSprite->GetMeshNum();
+	m_Ambient = m_Meshes[0].GetMaterialAmbient().r;
+	m_Diffuse = m_Meshes[0].GetMaterialDiffuse().r;
+	m_Specular = m_Meshes[0].GetMaterialSpecular().r;
+	m_Power = m_Meshes[0].GetMaterialPower();
+	m_DeltaColor = 0.05f;
 
 	m_pPointLight = pPointLight;
 	m_pDirectionalLight = pDirectionalLight;
 	m_pSpotLight = pSpotLight;
 
-	m_LightType = POINT_LIGHT;
-	m_pPointLight->Enable();
+	m_LightType = DIRECTIONAL_LIGHT;
+	m_pDirectionalLight->Enable();
 
 	m_pCameraYawPivot = new SceneNode();
 	m_pCameraYawPivot->SetPositionY(80.0f);
@@ -56,13 +73,13 @@ Controller::Controller(Sprite* pSprite, Light* pPointLight, Light* pDirectionalL
 	m_CameraMinDistance = 50.0f;
 	m_CameraMaxDistance = 500.0f;
 
-	m_pCamera = Graphics::GetInstance()->GetSceneManager()->GetCamera();
+	m_pCamera = pCamera;
 	m_pCamera->SetPosition(0.0f, m_CameraDistance, -m_CameraDistance * 2.0f);
 	D3DXVECTOR3 rightAxis(1.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 upAxis(0.0f, 1.0f, 0.0f);
 	D3DXVECTOR3 lookAxis(0.0f, -0.5f, 1.0f);
 	m_pCamera->SetLookAxes(rightAxis, upAxis, lookAxis);
-	m_pCameraPitchPivot->AttachChild(m_pCamera); 
+	m_pCameraPitchPivot->AttachChild(m_pCamera);
 	m_CameraRadian = 0.0f;
 }
 
@@ -156,6 +173,38 @@ void Controller::OnKeyDown(unsigned int key) {
 		OnAttackKeyDown();
 		break;
 
+	case VK_NUMPAD7:
+		EnhanceMaterial(MATERIAL_AMBIENT);
+		break;
+
+	case VK_NUMPAD8:
+		EnhanceMaterial(MATERIAL_DIFFUSE);
+		break;
+
+	case VK_NUMPAD9:
+		EnhanceMaterial(MATERIAL_SPECULAR);
+		break;
+
+	case VK_NUMPAD4:
+		WeakenMaterial(MATERIAL_AMBIENT);
+		break;
+
+	case VK_NUMPAD5:
+		WeakenMaterial(MATERIAL_DIFFUSE);
+		break;
+
+	case VK_NUMPAD6:
+		WeakenMaterial(MATERIAL_SPECULAR);
+		break;
+
+	case VK_NUMPAD2:
+		EnhanceMaterial(MATERIAL_POWER);
+		break;
+
+	case VK_NUMPAD1:
+		WeakenMaterial(MATERIAL_POWER);
+		break;
+
 	default:
 		break;
 	}
@@ -208,28 +257,59 @@ void Controller::Update(float deltaTime) {
 		}
 	}
 
-	// 人物移动控制
 	if (m_ActionState == ACTION_RUN) {
+		// 人物移动控制
 		if (m_pInputManager->IsKeyDown('Q') || m_pInputManager->IsKeyDown('E')) {
 			if (m_pInputManager->IsKeyDown('W')) {
-				m_FaceRadian = m_CameraRadian + D3DX_PI;
+				m_TargetRadian = m_CameraRadian;
 			}
 			else if (m_pInputManager->IsKeyDown('A')) {
-				m_FaceRadian = m_CameraRadian + D3DX_PI * 0.5f;
+				m_TargetRadian = m_CameraRadian - D3DX_PI * 0.5f;
 			}
 			else if (m_pInputManager->IsKeyDown('S')) {
-				m_FaceRadian = m_CameraRadian;
+				m_TargetRadian = m_CameraRadian + D3DX_PI;
 			}
 			else if (m_pInputManager->IsKeyDown('D')) {
-				m_FaceRadian = m_CameraRadian - D3DX_PI * 0.5f;
+				m_TargetRadian = m_CameraRadian + D3DX_PI * 0.5f;
 			}
-			
-			m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian);
 		}
-		
+
+		// 行走过程中的人物转身控制
+		if (m_FaceRadian != m_TargetRadian) {
+			if (m_FaceRadian > m_TargetRadian + m_RotateSpeed) {
+				m_FaceRadian -= m_RotateSpeed;
+			}
+			else if (m_FaceRadian < m_TargetRadian - m_RotateSpeed) {
+				m_FaceRadian += m_RotateSpeed;
+			}
+			else {
+				m_FaceRadian = m_TargetRadian;
+			}
+
+			m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian + D3DX_PI);
+		}
+
 		float x = m_MoveSpeed * sinf(m_FaceRadian);
 		float z = m_MoveSpeed * cosf(m_FaceRadian);
 		m_pSpriteNode->Translate(x, 0.0f, z);
+	}
+
+	if (m_ActionState == ACTION_STAND) {
+		// 站立时的人物转身控制
+		if (m_pInputManager->IsKeyDown('R')) {
+			m_FaceRadian += m_RotateSpeed;
+			if (m_FaceRadian > D3DX_PI * 2.0f) {
+				m_FaceRadian -= D3DX_PI * 2.0f;
+			}
+			m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian + D3DX_PI);
+		}
+		else if (m_pInputManager->IsKeyDown('T')) {
+			m_FaceRadian -= m_RotateSpeed;
+			if (m_FaceRadian < 0.0f) {
+				m_FaceRadian += D3DX_PI * 2.0f;
+			}
+			m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian + D3DX_PI);
+		}
 	}
 }
 
@@ -248,23 +328,19 @@ void Controller::OnWalkKeyDown(unsigned int direction) {
 
 	switch (direction) {
 	case DIRECTION_UP:
-		m_FaceRadian = m_CameraRadian + D3DX_PI;
-		m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian);
+		m_TargetRadian = m_CameraRadian;
 		break;
 
 	case DIRECTION_DOWN:
-		m_FaceRadian = m_CameraRadian;
-		m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian);
-		break; 
+		m_TargetRadian = m_CameraRadian + D3DX_PI;
+		break;
 
 	case DIRECTION_LEFT:
-		m_FaceRadian = m_CameraRadian + D3DX_PI * 0.5f;
-		m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian);
-		break; 
+		m_TargetRadian = m_CameraRadian - D3DX_PI * 0.5f;
+		break;
 
 	case DIRECTION_RIGHT:
-		m_FaceRadian = m_CameraRadian - D3DX_PI * 0.5f;
-		m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian);
+		m_TargetRadian = m_CameraRadian + D3DX_PI * 0.5f;
 		break;
 
 	default:
@@ -391,5 +467,79 @@ void Controller::OnSkillKeyDown(unsigned int skillID) {
 		}
 
 		m_ActionState = ACTION_ATTACK;
+	}
+}
+
+void Controller::EnhanceMaterial(unsigned int attributeID) {
+	D3DXCOLOR white(1.0f, 1.0f, 1.0f, 1.0f);
+
+	switch (attributeID) {
+	case MATERIAL_AMBIENT:
+		for (int i = 0; i < m_MeshNum; ++i) {
+			m_Ambient += m_DeltaColor;
+			m_Meshes[i].SetMaterialAmbient(white * m_Ambient);
+		}
+		break;
+
+	case MATERIAL_DIFFUSE:
+		for (int i = 0; i < m_MeshNum; ++i) {
+			m_Diffuse += m_DeltaColor;
+			m_Meshes[i].SetMaterialDiffuse(white * m_Diffuse);
+		}
+		break;
+
+	case MATERIAL_SPECULAR:
+		for (int i = 0; i < m_MeshNum; ++i) {
+			m_Specular += m_DeltaColor;
+			m_Meshes[i].SetMaterialSpecular(white * m_Specular);
+		}
+		break;
+
+	case MATERIAL_POWER:
+		for (int i = 0; i < m_MeshNum; ++i) {
+			m_Power += m_DeltaColor;
+			m_Meshes[i].SetMaterialPower(m_Power);
+		}
+		break;
+
+	default:
+		break;
+	}
+}
+
+void Controller::WeakenMaterial(unsigned int attributeID) {
+	D3DXCOLOR white(1.0f, 1.0f, 1.0f, 1.0f);
+
+	switch (attributeID) {
+	case MATERIAL_AMBIENT:
+		for (int i = 0; i < m_MeshNum; ++i) {
+			m_Ambient -= m_DeltaColor;
+			m_Meshes[i].SetMaterialAmbient(white * m_Ambient);
+		}
+		break;
+
+	case MATERIAL_DIFFUSE:
+		for (int i = 0; i < m_MeshNum; ++i) {
+			m_Diffuse -= m_DeltaColor;
+			m_Meshes[i].SetMaterialDiffuse(white * m_Diffuse);
+		}
+		break;
+
+	case MATERIAL_SPECULAR:
+		for (int i = 0; i < m_MeshNum; ++i) {
+			m_Specular -= m_DeltaColor;
+			m_Meshes[i].SetMaterialSpecular(white * m_Specular);
+		}
+		break;
+
+	case MATERIAL_POWER:
+		for (int i = 0; i < m_MeshNum; ++i) {
+			m_Power -= m_DeltaColor;
+			m_Meshes[i].SetMaterialPower(m_Power);
+		}
+		break;
+
+	default:
+		break;
 	}
 }

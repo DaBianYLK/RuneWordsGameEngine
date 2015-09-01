@@ -59,12 +59,22 @@ public:
 	static void SetDevice(IDirect3DDevice9* pDevice);
 	static void SetVertexShader(RwgeVertexShader* pVertexShader);
 	static void SetPixelShader(RwgePixelShader* pPixelShader);
+	static void SetVertexDeclaration(D3DVERTEXELEMENT9* pVertexElements);
 
 	void UploadVertices();
 	void UploadIndices();
 
 	void Update(int frameIndex);
 	void Draw();
+
+	void SetMaterialAmbient(const D3DXCOLOR& color);
+	void SetMaterialDiffuse(const D3DXCOLOR& color);
+	void SetMaterialSpecular(const D3DXCOLOR& color);
+	void SetMaterialPower(float power);
+	D3DXCOLOR GetMaterialAmbient();
+	D3DXCOLOR GetMaterialDiffuse();
+	D3DXCOLOR GetMaterialSpecular();
+	float GetMaterialPower();
 
 	int GetVertexNum();
 	int GetIndexNum();
@@ -105,5 +115,8 @@ private:
 
 	// ∂Øª≠œ‡πÿ
 	Sprite* m_pSprite;
+
+	static D3DVERTEXELEMENT9* m_pVertexElements;
+	static IDirect3DVertexDeclaration9* m_pVertexDeclaration;
 };
 

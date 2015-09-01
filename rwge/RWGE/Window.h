@@ -23,6 +23,7 @@ public:
 	int GetWidth();
 	int GetHeight();
 	bool IsFullScreen();
+	Viewport* GetViewport();
 
 private:
 	HWND m_hWnd;
