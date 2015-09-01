@@ -202,11 +202,14 @@ void Mesh::Multiply(float* position, float* matrix) {
 
 void Mesh::Update(int frameIndex) {
 	int matrixStride = 4 * 4;
-	int boneDataStride = m_pSprite->GetFrameNum() * matrixStride;
+	int frameDataStride = m_pSprite->GetBoneNum() * matrixStride;
 
 	m_pVertexBuffer->Lock(0, 0, (void**)&m_Vertices, 0);
 
 	for (int vertexIndex = 0; vertexIndex < m_VertexNum; ++vertexIndex) {
+		MaxVertex& maxVertex = m_pVertexData[vertexIndex];
+		Vertex* pVertex = &(m_Vertices[vertexIndex]);
+
 		D3DXVECTOR4 position[2];
 		D3DXVECTOR4 normal[2];
 
@@ -214,26 +217,27 @@ void Mesh::Update(int frameIndex) {
 		float normalResult[] = { 0.0f, 0.0f, 0.0f };
 
 		for (int boneIndex = 0; boneIndex < 2; ++boneIndex) {
-			if (m_pVertexData[vertexIndex].boneID[boneIndex] < 0 || m_pVertexData[vertexIndex].boneID[boneIndex] >= m_pSprite->GetBoneNum()) {
+			unsigned int boneID = maxVertex.boneID[boneIndex];
+			if (boneID < 0 || boneID >= m_pSprite->GetBoneNum()) {
 				continue;
 			}
 
 			// =========================== 执行骨骼变换 =========================== 
 			// 获取骨骼变换矩阵
-			float* matrix = m_pSprite->GetBoneData() + boneDataStride * m_pVertexData[vertexIndex].boneID[boneIndex] + matrixStride * frameIndex;
+			float* matrix = m_pSprite->GetBoneData() + frameDataStride * frameIndex + matrixStride * boneID;
 
 			// 顶点变换
-			position[boneIndex].x = m_pVertexData[vertexIndex].x;
-			position[boneIndex].y = m_pVertexData[vertexIndex].y;
-			position[boneIndex].z = m_pVertexData[vertexIndex].z;
+			position[boneIndex].x = maxVertex.x;
+			position[boneIndex].y = maxVertex.y;
+			position[boneIndex].z = maxVertex.z;
 			position[boneIndex].w = 1.0f;
 
 			D3DXVec4Transform(&(position[boneIndex]), &(position[boneIndex]), (D3DXMATRIX*)matrix);
 
 			// 法向量变换
-			normal[boneIndex].x = m_pVertexData[vertexIndex].nX;
-			normal[boneIndex].y = m_pVertexData[vertexIndex].nY;
-			normal[boneIndex].z = m_pVertexData[vertexIndex].nZ;
+			normal[boneIndex].x = maxVertex.nX;
+			normal[boneIndex].y = maxVertex.nY;
+			normal[boneIndex].z = maxVertex.nZ;
 			normal[boneIndex].w = 0.0f;
 
 			D3DXVec4Transform(&(normal[boneIndex]), &(normal[boneIndex]), (D3DXMATRIX*)matrix);
@@ -242,15 +246,15 @@ void Mesh::Update(int frameIndex) {
 			float* pPositionValue = &(position[boneIndex].x);
 			float* pNormalValue = &(normal[boneIndex].x);
 			for (int i = 0; i < 3; ++i) {
-				postionResult[i] += pPositionValue[i] * m_pVertexData[vertexIndex].blend[boneIndex];
-				normalResult[i] += pNormalValue[i] * m_pVertexData[vertexIndex].blend[boneIndex];
+				postionResult[i] += pPositionValue[i] * maxVertex.blend[boneIndex];
+				normalResult[i] += pNormalValue[i] * maxVertex.blend[boneIndex];
 			}
 		}
 
 		// 对顶点赋值
-		m_Vertices[vertexIndex].x = postionResult[0];
-		m_Vertices[vertexIndex].y = postionResult[1];
-		m_Vertices[vertexIndex].z = postionResult[2];
+		pVertex->x = postionResult[0];
+		pVertex->y = postionResult[1];
+		pVertex->z = postionResult[2];
 
 		// 对法向量赋值
 		D3DXVECTOR3 normalVector;
@@ -259,9 +263,9 @@ void Mesh::Update(int frameIndex) {
 		normalVector.z = normalResult[2];
 		D3DXVec3Normalize(&normalVector, &normalVector);
 
-		m_Vertices[vertexIndex].normalX = normalVector.x;
-		m_Vertices[vertexIndex].normalY = normalVector.y;
-		m_Vertices[vertexIndex].normalZ = normalVector.z;
+		pVertex->normalX = normalVector.x;
+		pVertex->normalY = normalVector.y;
+		pVertex->normalZ = normalVector.z;
 	}
 
 	m_pVertexBuffer->Unlock();

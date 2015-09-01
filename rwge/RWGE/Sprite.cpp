@@ -100,7 +100,7 @@ float* Sprite::GetBoneData() {
 	return m_BoneData;
 }
 
-int Sprite::GetBoneNum() {
+unsigned int Sprite::GetBoneNum() {
 	return m_ModelHead.boneNum;
 }
 

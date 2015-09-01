@@ -19,7 +19,7 @@ public:
 	Mesh* GetMeshes();
 	int GetMeshNum();
 	float* GetBoneData();
-	int GetBoneNum();
+	unsigned int GetBoneNum();
 	int GetFrameNum();
 
 	void Update(float deltaTime);
