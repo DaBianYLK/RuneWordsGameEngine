@@ -53,6 +53,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;d3dcompiler.lib;d3dx9d.lib;dxerr.lib;RWGE.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Profile>true</Profile>
     </Link>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>

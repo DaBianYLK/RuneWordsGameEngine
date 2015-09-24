@@ -44,9 +44,29 @@ HINSTANCE Application::GetHandle() {
 	return m_hInstance;
 }
 
+LRESULT CALLBACK Application::AppWndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam) {
+	return InputManager::GetInstance()->MessageHandler(hwnd, umessage, wparam, lparam);
+}
+
 void Application::Initialize() {
 	QueryPerformanceFrequency(&m_Frequency);	// 获取系统时钟频率（每秒运行次数）
 	QueryPerformanceCounter(&m_LastCount);		// 获取当前系统时钟计数
+
+	// Register class
+	WNDCLASSEX wcex;
+	wcex.cbSize = sizeof(WNDCLASSEX);
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = AppWndProc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = m_hInstance;
+	wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.lpszMenuName = NULL;
+	wcex.lpszClassName = "MainWindow";
+	wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+	RegisterClassEx(&wcex);
 
 	m_pGraphics = Graphics::GetInstance();
 	m_pGraphics->Initialize();
@@ -73,11 +93,15 @@ void Application::Update() {
 	// 记录结束更新时的系统时钟计数
 	QueryPerformanceCounter(&m_EndUpdateCount);
 
-	// 计算更新使用的时间
-	m_UpdateTime = (float)(m_EndUpdateCount.QuadPart - m_StartUpdateCount.QuadPart) / m_Frequency.QuadPart;
-	if (m_MinIntervalTime > m_UpdateTime) {
-		Sleep((int)(m_MinIntervalTime - m_UpdateTime) * 1000);
+	if (AppConfig::lockFPS) {
+		// 计算更新使用的时间
+		m_UpdateTime = (float)(m_EndUpdateCount.QuadPart - m_StartUpdateCount.QuadPart) / m_Frequency.QuadPart;
+		if (m_MinIntervalTime > m_UpdateTime) {
+			Sleep((int)(m_MinIntervalTime - m_UpdateTime) * 1000);
+		}
 	}
+
+	LOG("FPS = %d", (int)(1.0f / m_DeltaTime));
 }
 
 void Application::Cleanup() {

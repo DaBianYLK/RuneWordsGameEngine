@@ -1,5 +1,4 @@
-
-struct D3D9Material 
+struct D3D9Material
 {
 	vector	diffuse;	/* Diffuse color RGBA */
 	vector	ambient;	/* Ambient color RGB */
@@ -8,7 +7,7 @@ struct D3D9Material
 	float	power;		/* Sharpness if specular highlight */
 };
 
-struct D3D9Light 
+struct D3D9Light
 {
 	int		type;            /* Type of light source */
 	vector	diffuse;         /* Diffuse color of light */
@@ -25,12 +24,12 @@ struct D3D9Light
 	float	phi;              /* Outer angle of spotlight cone */
 };
 
-matrix ViewMatrix;
-matrix WorldMatrix;
-matrix WorldViewProjectionMatrix;
+matrix g_ViewMatrix;
+matrix g_WorldMatrix;
+matrix g_WvpMatrix;			// World View Projection Matrix
 
-D3D9Material Material;
-D3D9Light Light;
+D3D9Material	g_Material;
+D3D9Light		g_Light;
 
 struct VS_INPUT
 {
@@ -51,25 +50,25 @@ VS_OUTPUT Main(VS_INPUT input)
 {
 	VS_OUTPUT output = (VS_OUTPUT)0;
 
-	output.position = mul(input.position, WorldViewProjectionMatrix);
+	output.position = mul(input.position, g_WvpMatrix);
 	output.texCoord = input.texCoord;
 
 	// 计算法线变换
 	input.normal.w = 0.0f;
-	input.normal = mul(input.normal, WorldMatrix);
+	input.normal = mul(input.normal, g_WorldMatrix);
 
-	float3 viewVector = normalize((float3)(ViewMatrix[3]));
+	float3 viewVector = normalize((float3)(g_ViewMatrix[3]));
 
 	// 计算光线方向与顶点法线方向的夹角余弦值（光的方向向量和法线向量都是单位向量）
-	float dotNL = max(0.0f, dot(Light.direction, (float3)input.normal));
+	float dotNL = max(0.0f, dot(g_Light.direction, (float3)input.normal));
 	float dotNH = max(dot((float3)input.normal, viewVector), 0.0f);
 	output.sufaceColor
-		= Material.emissive									// 发射 Emissive
-		+ (Material.ambient * Light.ambient)				// 环境	Ambient
-		+ (Material.diffuse * Light.diffuse * dotNL);		// 漫射 Diffuse
-		//+ (Material.specular * Light.specular * (dotNL > 0.0f ? 1.0f : 0.0f) * pow(dotNH, Material.power));	// 镜面 Specular
+		= g_Material.emissive									// 发射 Emissive
+		+ (g_Material.ambient * g_Light.ambient)				// 环境	Ambient
+		+ (g_Material.diffuse * g_Light.diffuse * dotNL);		// 漫射 Diffuse
+	//+ (g_Material.specular * g_Light.specular * (dotNL > 0.0f ? 1.0f : 0.0f) * pow(dotNH, g_Material.power));	// 镜面 Specular
 
-	output.specularColor = Material.specular * Light.specular * (dotNL > 0.0f ? 1.0f : 0.0f) * pow(dotNH, Material.power);
+	output.specularColor = g_Material.specular * g_Light.specular * (dotNL > 0.0f ? 1.0f : 0.0f) * pow(dotNH, g_Material.power);
 
 	return output;
 }

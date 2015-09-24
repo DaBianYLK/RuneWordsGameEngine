@@ -4,10 +4,6 @@
 #include "InputManager.h"
 #include "Viewport.h"
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam) {
-	return InputManager::GetInstance()->MessageHandler(hwnd, umessage, wparam, lparam);
-}
-
 Window::Window() {
 
 }
@@ -18,22 +14,6 @@ Window::~Window() {
 
 void Window::Initialize() {
 	HINSTANCE hInstance = Application::GetInstance()->GetHandle();
-
-	// Register class
-	WNDCLASSEX wcex;
-	wcex.cbSize = sizeof(WNDCLASSEX);
-	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc = WndProc;
-	wcex.cbClsExtra = 0;
-	wcex.cbWndExtra = 0;
-	wcex.hInstance = hInstance;
-	wcex.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszMenuName = NULL;
-	wcex.lpszClassName = "MainWindow";
-	wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-	RegisterClassEx(&wcex);
 
 	// Create window
 	m_hWnd = CreateWindow("MainWindow", AppConfig::winName, WS_OVERLAPPEDWINDOW,

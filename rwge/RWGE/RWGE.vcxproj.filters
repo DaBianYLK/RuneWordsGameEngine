@@ -187,11 +187,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="DefaultVertexShader.fx">
+    <FxCompile Include="Default.vs">
       <Filter>着色器</Filter>
-    </None>
-    <None Include="DefaultPixelShader.fx">
+    </FxCompile>
+    <FxCompile Include="DefualtWithAnimationCalculation.vs">
       <Filter>着色器</Filter>
-    </None>
+    </FxCompile>
+    <FxCompile Include="Default.ps">
+      <Filter>着色器</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

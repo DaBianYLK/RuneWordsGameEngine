@@ -2,12 +2,16 @@
 
 
 RwgeVertexShader::RwgeVertexShader() {
-	m_hViewMatrix = GetConstantHandle("ViewMatrix");
-	m_hWorldMatrix = GetConstantHandle("WorldMatrix");
-	m_hWorldViewProjectionMatrix = GetConstantHandle("WorldViewProjectionMatrix");
+	m_hViewMatrix = GetConstantHandle("g_ViewMatrix");
+	m_hWorldMatrix = GetConstantHandle("g_WorldMatrix");
+	m_hWorldViewProjectionMatrix = GetConstantHandle("g_WvpMatrix");
 
-	m_hMaterial = GetConstantHandle("Material");
-	m_hLight = GetConstantHandle("Light");
+#ifdef SHADER_ANIMATION
+	m_hModelMatrices = GetConstantHandle("g_ModelMatrices");
+#endif
+
+	m_hMaterial = GetConstantHandle("g_Material");
+	m_hLight = GetConstantHandle("g_Light");
 }
 
 
@@ -26,6 +30,12 @@ void RwgeVertexShader::SetWorldTransform(const D3DXMATRIX* pMatrix) {
 void RwgeVertexShader::SetWorldViewProjectionTransform(const D3DXMATRIX* pMatrix) {
 	m_pConstantTable->SetMatrix(m_pDevice, m_hWorldViewProjectionMatrix, pMatrix);
 }
+
+#ifdef SHADER_ANIMATION
+void RwgeVertexShader::SetModelTransform(const D3DXMATRIX* matrices, unsigned int num) {
+	m_pConstantTable->SetMatrixArray(m_pDevice, m_hModelMatrices, matrices, num);
+}
+#endif
 
 void RwgeVertexShader::SetMaterial(const D3DMATERIAL9* pMaterial) {
 	m_pConstantTable->SetValue(m_pDevice, m_hMaterial, (void*)pMaterial, sizeof(D3DMATERIAL9));

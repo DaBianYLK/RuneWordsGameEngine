@@ -17,6 +17,7 @@ public:
 	HINSTANCE GetHandle();
 
 private:
+	static LRESULT CALLBACK AppWndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
 	void Initialize();
 	void Update();
 	void Cleanup();

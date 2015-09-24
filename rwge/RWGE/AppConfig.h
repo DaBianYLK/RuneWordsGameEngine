@@ -2,7 +2,8 @@
 
 #include <d3d9.h>
 
-#define RWGE_SHADER_ENABLED
+#define RWGE_SHADER_ENABLED		// 使用RWGE着色器
+#define SHADER_ANIMATION		// 使用着色器计算模型动画
 
 namespace AppConfig {
 	// 窗口参数
@@ -10,6 +11,7 @@ namespace AppConfig {
 	const int winY = 100;
 	const int winWidth = 800;
 	const int winHeight = 600;
+	const bool lockFPS = false;
 	const float maxFPS = 60.0f;
 	const bool fullScreen = false;
 	const char winName[] = "RwgeSample";
@@ -26,7 +28,7 @@ namespace AppConfig {
 	const D3DFORMAT autoDepthStencilFormat2 = D3DFMT_D16;
 	const DWORD flags = 0;
 	const unsigned int fullScreenRefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
-	const unsigned int presentationInterval = D3DPRESENT_INTERVAL_ONE;	// 垂直同步选项
+	const unsigned int presentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;	// 垂直同步选项，开启：D3DPRESENT_INTERVAL_ONE，关闭：D3DPRESENT_INTERVAL_IMMEDIATE
 
 	// 摄像机参数
 	const float cameraPosX = 0.0f;
@@ -41,8 +43,8 @@ namespace AppConfig {
 	const float cameraLookAxisX = 0.0f;
 	const float cameraLookAxisY = 0.0f;
 	const float cameraLookAxisZ = 1.0f;
-	const float cameraMoveSpeed = 100.0f / 60.0f;
-	const float cameraRotateSpeed = 2.0f / 60.0f;
+	const float cameraMoveSpeed = 100.0f;
+	const float cameraRotateSpeed = 2.0f;
 	const float cameraFovy = 3.141592654f * 0.25f;
 	const float cameraAspect = (float)winWidth / winHeight;
 	const float cameraLookNear = 20.0f;
@@ -52,10 +54,14 @@ namespace AppConfig {
 	const float animationFrameInterval = 2.0f / 60.0f;
 
 	// 着色器
-	const char defaultVertexShaderPath[] = "../RWGE/DefaultVertexShader.fx";
+#ifdef SHADER_ANIMATION
+	const char defaultVertexShaderPath[] = "../RWGE/DefualtWithAnimationCalculation.vs";
+#else
+	const char defaultVertexShaderPath[] = "../RWGE/Default.vs";
+#endif
 	const char defaultVertexShaderEntryFuncName[] = "Main";
 	const unsigned int defaultVertexShaderTarget = 1;
-	const char defaultPixelShaderPath[] = "../RWGE/DefaultPixelShader.fx";
+	const char defaultPixelShaderPath[] = "../RWGE/Default.ps";
 	const char defaultPixelShaderEntryFuncName[] = "Main";
 	const unsigned int defaultPixelShaderTarget = 1;
 };

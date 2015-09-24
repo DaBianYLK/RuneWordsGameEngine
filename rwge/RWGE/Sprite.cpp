@@ -40,7 +40,7 @@ Sprite* Sprite::Load(const char* filePath) {
 
 	// 获取网格数据
 	pSprite->m_Meshes = new Mesh[pSprite->m_ModelHead.meshNum];
-	for (int i = 0; i < pSprite->m_ModelHead.meshNum; ++i) {
+	for (unsigned int i = 0; i < pSprite->m_ModelHead.meshNum; ++i) {
 		// 获取网格首字段的数据
 		MaxMeshHead head;
 		modelFile.read((char*)&head, sizeof(MaxMeshHead));
@@ -68,7 +68,7 @@ Sprite* Sprite::Load(const char* filePath) {
 	pSprite->m_Animations = new Animation[animationNum]; 
 	pSprite->m_AnimationID = 0;
 
-	for (int i = 0; i < animationNum; ++i) {
+	for (unsigned int i = 0; i < animationNum; ++i) {
 		pSprite->m_Animations[i].Set(animationData[i].startFrame, animationData[i].frameNum);
 	}
 
@@ -112,11 +112,13 @@ void Sprite::Update(float deltaTime) {
 	if (m_Animations && m_AnimationID < m_AnimationNum) {
 		m_Animations[m_AnimationID].Update(deltaTime);
 
+#ifndef SHADER_ANIMATION
 		if (m_ModelHead.boneNum > 0) {
 			for (int i = 0; i < m_ModelHead.meshNum; ++i) {
 				m_Meshes[i].Update(m_Animations[m_AnimationID].GetFrameIndex());
 			}
 		}
+#endif
 	}
 }
 
@@ -125,9 +127,20 @@ void Sprite::Cleanup() {
 }
 
 void Sprite::Draw() {
-	for (int i = 0; i < m_ModelHead.meshNum; ++i) {
+#ifdef SHADER_ANIMATION
+	for (unsigned int i = 0; i < m_ModelHead.meshNum; ++i) {
+		if (m_Animations && m_AnimationID < m_AnimationNum) {
+			m_Meshes[i].Draw(m_Animations[m_AnimationID].GetFrameIndex());
+		}
+		else {
+			m_Meshes[i].Draw(-1);
+		}
+	}
+#else
+	for (unsigned int i = 0; i < m_ModelHead.meshNum; ++i) {
 		m_Meshes[i].Draw();
 	}
+#endif
 }
 
 int Sprite::GetAnimationNum() {

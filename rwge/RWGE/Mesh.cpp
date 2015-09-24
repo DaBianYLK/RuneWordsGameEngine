@@ -98,8 +98,8 @@ Mesh* Mesh::CreatePanel(const D3DXVECTOR3& position, float length, float width) 
 	pPanel->m_pIndexData = NULL;
 
 	if (m_pDevice) {
-		m_pDevice->CreateVertexBuffer(sizeof(Vertex)* pPanel->m_VertexNum, D3DUSAGE_WRITEONLY, VertexFVF, D3DPOOL_MANAGED, &(pPanel->m_pVertexBuffer), 0);
-		m_pDevice->CreateIndexBuffer(sizeof(WORD)* pPanel->m_IndexNum, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_MANAGED, &(pPanel->m_pIndexBuffer), 0);
+		m_pDevice->CreateVertexBuffer(sizeof(Vertex)* pPanel->m_VertexNum, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &(pPanel->m_pVertexBuffer), 0);
+		m_pDevice->CreateIndexBuffer(sizeof(WORD)* pPanel->m_IndexNum, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &(pPanel->m_pIndexBuffer), 0);
 	}
 
 	pPanel->m_pSprite = NULL;
@@ -115,10 +115,17 @@ Mesh* Mesh::CreatePanel(const D3DXVECTOR3& position, float length, float width) 
 	// 更新顶点缓存
 	pPanel->m_pVertexBuffer->Lock(0, 0, (void**)&(pPanel->m_Vertices), 0);
 
+#ifdef SHADER_ANIMATION
+	pPanel->m_Vertices[0] = Vertex(left,  position.y, bottom, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, -1, -1, 0.0f, 0.0f);
+	pPanel->m_Vertices[1] = Vertex(right, position.y, bottom, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, -1, -1, 0.0f, 0.0f);
+	pPanel->m_Vertices[2] = Vertex(right, position.y, top,    0.0f, 1.0f, 0.0f, 1.0f, 0.0f, -1, -1, 0.0f, 0.0f);
+	pPanel->m_Vertices[3] = Vertex(left,  position.y, top,    0.0f, 1.0f, 0.0f, 0.0f, 0.0f, -1, -1, 0.0f, 0.0f);
+#else
 	pPanel->m_Vertices[0] = Vertex(left,  position.y, bottom, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f);
 	pPanel->m_Vertices[1] = Vertex(right, position.y, bottom, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f);
 	pPanel->m_Vertices[2] = Vertex(right, position.y, top,    0.0f, 1.0f, 0.0f, 1.0f, 0.0f);
 	pPanel->m_Vertices[3] = Vertex(left,  position.y, top,    0.0f, 1.0f, 0.0f, 0.0f, 0.0f);
+#endif
 
 	pPanel->m_pVertexBuffer->Unlock();
 
@@ -166,7 +173,14 @@ void Mesh::UploadVertices() {
 
 		MaxVertex* pVertex = m_pVertexData;
 		for (int i = 0; i < m_VertexNum; ++i) {
-			m_Vertices[i] = Vertex(pVertex->x, pVertex->y, pVertex->z, pVertex->nX, pVertex->nY, pVertex->nZ, pVertex->u, pVertex->v);
+			memcpy(&(m_Vertices[i]), pVertex, sizeof(Vertex));
+
+#ifdef SHADER_ANIMATION
+			// Vertex中的boneID与MaxVertex中的boneID类型不同，需要重新转换
+			m_Vertices[i].boneID[0] = pVertex->boneID[0];
+			m_Vertices[i].boneID[1] = pVertex->boneID[1];
+#endif
+			//m_Vertices[i] = Vertex(pVertex->x, pVertex->y, pVertex->z, pVertex->nX, pVertex->nY, pVertex->nZ, pVertex->u, pVertex->v, pVertex->boneID[0], pVertex->boneID[1], pVertex->blend[0], pVertex->blend[1]);
 
 			++pVertex;
 		}
@@ -179,9 +193,10 @@ void Mesh::UploadIndices() {
 	if (m_pIndexData) {
 		m_pIndexBuffer->Lock(0, 0, (void**)&m_Indices, 0);
 
-		for (int i = 0; i < m_IndexNum; ++i) {
+		memcpy(m_Indices, m_pIndexData, sizeof(unsigned short)* m_IndexNum);
+		/*for (int i = 0; i < m_IndexNum; ++i) {
 			m_Indices[i] = m_pIndexData[i];
-		}
+		}*/
 
 		m_pIndexBuffer->Unlock();
 	}
@@ -215,12 +230,14 @@ void Mesh::Update(int frameIndex) {
 
 		float postionResult[] = { 0.0f, 0.0f, 0.0f };
 		float normalResult[] = { 0.0f, 0.0f, 0.0f };
+		bool hasTransform = false;
 
 		for (int boneIndex = 0; boneIndex < 2; ++boneIndex) {
 			unsigned int boneID = maxVertex.boneID[boneIndex];
 			if (boneID < 0 || boneID >= m_pSprite->GetBoneNum()) {
 				continue;
 			}
+			hasTransform = true;
 
 			// =========================== 执行骨骼变换 =========================== 
 			// 获取骨骼变换矩阵
@@ -251,35 +268,44 @@ void Mesh::Update(int frameIndex) {
 			}
 		}
 
-		// 对顶点赋值
-		pVertex->x = postionResult[0];
-		pVertex->y = postionResult[1];
-		pVertex->z = postionResult[2];
+		if (hasTransform) {
+			// 对顶点赋值
+			pVertex->x = postionResult[0];
+			pVertex->y = postionResult[1];
+			pVertex->z = postionResult[2];
 
-		// 对法向量赋值
-		D3DXVECTOR3 normalVector;
-		normalVector.x = normalResult[0];
-		normalVector.y = normalResult[1];
-		normalVector.z = normalResult[2];
-		D3DXVec3Normalize(&normalVector, &normalVector);
+			// 对法向量赋值
+			D3DXVECTOR3 normalVector;
+			normalVector.x = normalResult[0];
+			normalVector.y = normalResult[1];
+			normalVector.z = normalResult[2];
+			D3DXVec3Normalize(&normalVector, &normalVector);
 
-		pVertex->normalX = normalVector.x;
-		pVertex->normalY = normalVector.y;
-		pVertex->normalZ = normalVector.z;
+			pVertex->normalX = normalVector.x;
+			pVertex->normalY = normalVector.y;
+			pVertex->normalZ = normalVector.z;
+		}
 	}
 
 	m_pVertexBuffer->Unlock();
 }
 
-void Mesh::Draw() {
+#ifdef SHADER_ANIMATION
+void Mesh::Draw(int frameIndex) {
 	if (m_pDevice) {
-		#ifdef RWGE_SHADER_ENABLED
-			m_pVertexShader->SetMaterial(m_pMaterial);
-			m_pPixelShader->SetTexture(m_pTexture);
-		#else
-			m_pDevice->SetMaterial(m_pMaterial);
-			m_pDevice->SetTexture(0, m_pTexture);
-		#endif
+#ifdef RWGE_SHADER_ENABLED
+		m_pVertexShader->SetMaterial(m_pMaterial);
+		m_pPixelShader->SetTexture(m_pTexture);
+#else
+		m_pDevice->SetMaterial(m_pMaterial);
+		m_pDevice->SetTexture(0, m_pTexture);
+#endif
+
+		if (frameIndex >= 0) {
+			int frameDataStride = m_pSprite->GetBoneNum() * 4 * 4;
+			float* matrices = m_pSprite->GetBoneData() + frameDataStride * frameIndex;
+			m_pVertexShader->SetModelTransform((D3DXMATRIX*)matrices, m_pSprite->GetBoneNum());
+		}
 
 		//m_pDevice->SetFVF(VertexFVF);
 		m_pDevice->SetVertexDeclaration(m_pVertexDeclaration);
@@ -288,6 +314,26 @@ void Mesh::Draw() {
 		m_pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_VertexNum, 0, m_MeshHead.triangleNum);
 	}
 }
+#else
+void Mesh::Draw() {
+	if (m_pDevice) {
+#ifdef RWGE_SHADER_ENABLED
+		m_pVertexShader->SetMaterial(m_pMaterial);
+		m_pPixelShader->SetTexture(m_pTexture);
+#else
+		m_pDevice->SetMaterial(m_pMaterial);
+		m_pDevice->SetTexture(0, m_pTexture);
+#endif
+
+		//m_pDevice->SetFVF(VertexFVF);
+		m_pDevice->SetVertexDeclaration(m_pVertexDeclaration);
+		m_pDevice->SetStreamSource(0, m_pVertexBuffer, 0, sizeof(Vertex));
+		m_pDevice->SetIndices(m_pIndexBuffer);
+		m_pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_VertexNum, 0, m_MeshHead.triangleNum);
+	}
+}
+#endif
+
 
 void Mesh::SetMaterialAmbient(const D3DXCOLOR& color) {
 	m_pMaterial->Ambient = color;

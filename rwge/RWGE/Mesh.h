@@ -3,6 +3,7 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 
+#include "AppConfig.h"
 #include "MaxModel.h"
 #include "RwgeClasses.h"
 
@@ -18,6 +19,11 @@ struct Vertex {
 	float u;
 	float v;
 
+#ifdef SHADER_ANIMATION
+	float boneID[2];
+	float blend[2];
+#endif
+
 	Vertex() {
 		this->x = 0.0f;
 		this->y = 0.0f;
@@ -29,9 +35,21 @@ struct Vertex {
 
 		u = 0.0f;
 		v = 0.0f;
+
+#ifdef SHADER_ANIMATION
+		boneID[0] = -1.0f;
+		boneID[1] = -1.0f;
+		blend[0] = 0.0f;
+		blend[1] = 0.0f;
+#endif
 	};
 
+#ifdef SHADER_ANIMATION
+	Vertex(float x, float y, float z, float nX, float nY, float nZ, float u, float v, int boneID0, int boneID1, float blend0, float blend1) {
+#else
 	Vertex(float x, float y, float z, float nX, float nY, float nZ, float u, float v) {
+#endif
+			
 		this->x = x;
 		this->y = y;
 		this->z = z;
@@ -42,6 +60,13 @@ struct Vertex {
 
 		this->u = u;
 		this->v = v;
+
+#ifdef SHADER_ANIMATION
+		boneID[0] = boneID0;
+		boneID[1] = boneID1;
+		blend[0] = blend0;
+		blend[1] = blend1;
+#endif
 	}
 };
 
@@ -65,7 +90,11 @@ public:
 	void UploadIndices();
 
 	void Update(int frameIndex);
+#ifdef SHADER_ANIMATION
+	void Draw(int frameIndex);
+#else
 	void Draw();
+#endif
 
 	void SetMaterialAmbient(const D3DXCOLOR& color);
 	void SetMaterialDiffuse(const D3DXCOLOR& color);
