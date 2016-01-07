@@ -11,12 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F79ADA52-025B-4433-A0BA-3CE96932D042}</ProjectGuid>
-    <RootNamespace>RwgeSample</RootNamespace>
+    <ProjectGuid>{8FEFF6E1-E3D4-4268-8A13-06A95DC5FBD2}</ProjectGuid>
+    <RootNamespace>RwgeCore</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -39,25 +39,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeCore;$(SolutionDir)RwgeUtils;$(SolutionDir)RwgeGraphics;$(SolutionDir)RwgeResources;$(IncludePath)</IncludePath>
-    <ReferencePath>$(ReferencePath)</ReferencePath>
-    <LibraryPath>$(SolutionDir)Debug;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics;$(SolutionDir)RwgeMath;$(SolutionDir)RwgeResources;$(SolutionDir)RwgeUtils;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(SolutionDir)RwgeGraphics;$(SolutionDir)RwgeMath;$(SolutionDir)RwgeResources;$(SolutionDir)RwgeUtils;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;d3dcompiler.lib;d3dx9d.lib;dxerr.lib;RwgeCore.lib;RwgeUtils.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <Profile>true</Profile>
     </Link>
-    <Bscmake>
-      <PreserveSbr>true</PreserveSbr>
-    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -74,13 +69,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Controller.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MyApp.cpp" />
+    <ClCompile Include="AppDelegate.cpp" />
+    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="InputListener.cpp" />
+    <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Controller.h" />
-    <ClInclude Include="MyApp.h" />
+    <ClInclude Include="AppConfig.h" />
+    <ClInclude Include="AppDelegate.h" />
+    <ClInclude Include="Application.h" />
+    <ClInclude Include="InputListener.h" />
+    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RwgeGraphics\RwgeGraphics.vcxproj">
+      <Project>{f1c2d02a-4281-474b-b88c-7218320a37ff}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="..\RwgeMath\RwgeMath.vcxproj">
+      <Project>{6277fe95-0800-45b8-b3ad-ce1ca0cdd61a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\RwgeResources\RwgeResources.vcxproj">
+      <Project>{693a10ac-daf4-44df-8490-03d26331967a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\RwgeUtils\RwgeUtils.vcxproj">
+      <Project>{1723d939-f091-4023-9816-75ad0332270b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

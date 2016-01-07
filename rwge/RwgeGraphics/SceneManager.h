@@ -4,7 +4,10 @@
 #include <d3dx9.h>
 #include <stack>
 
-#include "RwgeClasses.h"
+class Viewport;
+class SceneNode;
+class Camera;
+class RwgeVertexShader;
 
 class SceneManager {
 public:

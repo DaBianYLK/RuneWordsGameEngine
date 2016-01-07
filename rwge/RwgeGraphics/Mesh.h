@@ -5,7 +5,10 @@
 
 #include "AppConfig.h"
 #include "MaxModel.h"
-#include "RwgeClasses.h"
+
+class RwgeVertexShader;
+class RwgePixelShader;
+class Sprite;
 
 struct Vertex {
 	float x;

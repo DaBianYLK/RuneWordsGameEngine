@@ -1,6 +1,5 @@
 #include "RwgeVertexShader.h"
 
-
 RwgeVertexShader::RwgeVertexShader() {
 	m_hViewMatrix = GetConstantHandle("g_ViewMatrix");
 	m_hWorldMatrix = GetConstantHandle("g_WorldMatrix");

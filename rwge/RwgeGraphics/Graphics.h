@@ -4,10 +4,12 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 
-#include "RwgeClasses.h"
 #include "Singleton.h"
 #include "RwgeVertexShader.h"
 #include "RwgePixelShader.h"
+
+class SceneManager;
+class Window;
 
 class Graphics : public Singleton<Graphics> {
 public:
@@ -18,10 +20,10 @@ public:
 	void Update(float deltaTime);
 	void Cleanup();
 
-	IDirect3DDevice9* GetD3D9Device();
-	SceneManager* GetSceneManager();
-	Window* GetWindow();
-	RwgeVertexShader* GetVertexShader();
+	IDirect3DDevice9* GetD3D9Device() const;
+	SceneManager* GetSceneManager() const;
+	Window* GetWindow() const;
+	RwgeVertexShader* GetVertexShader() const;
 
 private:
 	void InitWindow();

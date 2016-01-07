@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="源文件\Animation">
+      <UniqueIdentifier>{4b58a56f-c7e9-4b8e-8ee9-890e25d59a27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Scene">
+      <UniqueIdentifier>{38be9e6e-d39b-4933-b5a6-34a5de44a8df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Renderer">
+      <UniqueIdentifier>{9589cd4f-ad28-46bb-9f7f-109fe0337cec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Material">
+      <UniqueIdentifier>{946d1a21-029a-4430-be4e-851c1af5d94e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Common">
+      <UniqueIdentifier>{cf5bde1c-99ac-401d-b16f-e7733b9f36cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Shader">
+      <UniqueIdentifier>{88ea9101-b02a-4d97-8995-be556e721de6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\HLSL">
+      <UniqueIdentifier>{ff665be3-6c9e-4ba4-b4fe-4be9703bf2b4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Animation.cpp">
+      <Filter>源文件\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>源文件\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>源文件\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>源文件\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>源文件\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="PixelShader.cpp">
+      <Filter>源文件\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="RwgePixelShader.cpp">
+      <Filter>源文件\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="RwgeVertexShader.cpp">
+      <Filter>源文件\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>源文件\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneNode.cpp">
+      <Filter>源文件\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>源文件\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewport.cpp">
+      <Filter>源文件\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexShader.cpp">
+      <Filter>源文件\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialTemplate.cpp">
+      <Filter>源文件\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>源文件\Common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Animation.h">
+      <Filter>源文件\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>源文件\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>源文件\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="PixelShader.h">
+      <Filter>源文件\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="RwgePixelShader.h">
+      <Filter>源文件\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="RwgeVertexShader.h">
+      <Filter>源文件\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>源文件\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneNode.h">
+      <Filter>源文件\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>源文件\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewport.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexShader.h">
+      <Filter>源文件\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialTemplate.h">
+      <Filter>源文件\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsDefinitions.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialInput.h">
+      <Filter>源文件\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Default.ps">
+      <Filter>源文件\HLSL</Filter>
+    </None>
+    <None Include="Default.vs">
+      <Filter>源文件\HLSL</Filter>
+    </None>
+    <None Include="DefualtWithAnimationCalculation.vs">
+      <Filter>源文件\HLSL</Filter>
+    </None>
+  </ItemGroup>
+</Project>

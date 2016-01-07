@@ -62,19 +62,23 @@ void Graphics::Cleanup() {
 
 }
 
-IDirect3DDevice9* Graphics::GetD3D9Device() {
+IDirect3DDevice9* Graphics::GetD3D9Device() const
+{
 	return m_pDevice;
 }
 
-SceneManager* Graphics::GetSceneManager() {
+SceneManager* Graphics::GetSceneManager() const
+{
 	return m_pSceneManager;
 }
 
-Window* Graphics::GetWindow() {
+Window* Graphics::GetWindow() const
+{
 	return m_pWindow;
 }
 
-RwgeVertexShader* Graphics::GetVertexShader() {
+RwgeVertexShader* Graphics::GetVertexShader() const
+{
 	return m_pVertexShader;
 }
 
@@ -86,7 +90,7 @@ void Graphics::InitWindow() {
 void Graphics::InitD3D9() {
 	m_pD3D9 = Direct3DCreate9(D3D_SDK_VERSION);
 	if (!m_pD3D9) {
-		MessageBox(0, "Initialize Direct3D-9 failed.", 0, 0);
+		MessageBox(nullptr, "Initialize Direct3D-9 failed.", nullptr, 0);
 		return;
 	}
 
@@ -149,8 +153,8 @@ void Graphics::InitD3D9() {
 	m_pD3D9->Release(); // done with d3d9 object
 
 
-	m_pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
-	m_pDevice->SetRenderState(D3DRS_SPECULARENABLE, true);
+	//m_pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
+	//m_pDevice->SetRenderState(D3DRS_SPECULARENABLE, true);
 
 	m_pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 	m_pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);

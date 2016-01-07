@@ -1,7 +1,5 @@
 #pragma once
 
-#include "RwgeClasses.h"
-
 #include <list>
 #include <d3dx9.h>
 

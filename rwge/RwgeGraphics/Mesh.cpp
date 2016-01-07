@@ -130,7 +130,7 @@ Mesh* Mesh::CreatePanel(const D3DXVECTOR3& position, float length, float width) 
 	pPanel->m_pVertexBuffer->Unlock();
 
 	// 更新索引缓存
-	pPanel->m_pIndexBuffer->Lock(0, 0, (void**)&(pPanel->m_Indices), 0);
+	pPanel->m_pIndexBuffer->Lock(0, 0, reinterpret_cast<void**>(&(pPanel->m_Indices)), 0);
 
 	pPanel->m_Indices[0] = 0;
 	pPanel->m_Indices[1] = 2;
@@ -169,7 +169,7 @@ void Mesh::SetVertexDeclaration(D3DVERTEXELEMENT9* pVertexElements) {
 
 void Mesh::UploadVertices() {
 	if (m_pVertexData) {
-		m_pVertexBuffer->Lock(0, 0, (void**)&m_Vertices, 0);
+		m_pVertexBuffer->Lock(0, 0, reinterpret_cast<void**>(&m_Vertices), 0);
 
 		MaxVertex* pVertex = m_pVertexData;
 		for (int i = 0; i < m_VertexNum; ++i) {
@@ -219,7 +219,7 @@ void Mesh::Update(int frameIndex) {
 	int matrixStride = 4 * 4;
 	int frameDataStride = m_pSprite->GetBoneNum() * matrixStride;
 
-	m_pVertexBuffer->Lock(0, 0, (void**)&m_Vertices, 0);
+	m_pVertexBuffer->Lock(0, 0, reinterpret_cast<void**>(&m_Vertices), 0);
 
 	for (int vertexIndex = 0; vertexIndex < m_VertexNum; ++vertexIndex) {
 		MaxVertex& maxVertex = m_pVertexData[vertexIndex];
@@ -249,7 +249,7 @@ void Mesh::Update(int frameIndex) {
 			position[boneIndex].z = maxVertex.z;
 			position[boneIndex].w = 1.0f;
 
-			D3DXVec4Transform(&(position[boneIndex]), &(position[boneIndex]), (D3DXMATRIX*)matrix);
+			D3DXVec4Transform(&(position[boneIndex]), &(position[boneIndex]), reinterpret_cast<D3DXMATRIX*>(matrix));
 
 			// 法向量变换
 			normal[boneIndex].x = maxVertex.nX;
@@ -257,7 +257,7 @@ void Mesh::Update(int frameIndex) {
 			normal[boneIndex].z = maxVertex.nZ;
 			normal[boneIndex].w = 0.0f;
 
-			D3DXVec4Transform(&(normal[boneIndex]), &(normal[boneIndex]), (D3DXMATRIX*)matrix);
+			D3DXVec4Transform(&(normal[boneIndex]), &(normal[boneIndex]), reinterpret_cast<D3DXMATRIX*>(matrix));
 
 			// 合成
 			float* pPositionValue = &(position[boneIndex].x);

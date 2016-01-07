@@ -2,7 +2,8 @@
 
 #include <Windows.h>
 
-#include "RwgeClasses.h"
+class Viewport;
+class Camera;
 
 class Window {
 public:

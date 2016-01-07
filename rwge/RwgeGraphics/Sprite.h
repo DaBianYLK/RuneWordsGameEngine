@@ -2,9 +2,10 @@
 
 #include <d3dx9.h>
 
-#include "RwgeClasses.h"
 #include "SceneNode.h"
 #include "MaxModel.h"
+
+class Animation;
 
 class Sprite : public SceneNode {
 	friend class Mesh;

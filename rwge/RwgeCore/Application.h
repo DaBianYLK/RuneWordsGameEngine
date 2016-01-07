@@ -2,9 +2,12 @@
 
 #include <Windows.h>
 
-#include "RwgeClasses.h"
 #include "AppConfig.h"
 #include "Singleton.h"
+
+class AppDelegate;
+class Graphics;
+class InputManager;
 
 class Application : public Singleton<Application> {
 public:
@@ -14,7 +17,7 @@ public:
 	void SetDelegate(AppDelegate* pDelegate);
 	void Run();
 
-	HINSTANCE GetHandle();
+	HINSTANCE GetHandle() const;
 
 private:
 	static LRESULT CALLBACK AppWndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);

@@ -3,8 +3,9 @@
 #include <Windows.h>
 #include <list>
 
-#include "RwgeClasses.h"
 #include "Singleton.h"
+
+class InputListener;
 
 class InputManager : public Singleton<InputManager> {
 public:

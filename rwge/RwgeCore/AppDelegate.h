@@ -3,7 +3,7 @@
 class AppDelegate {
 public:
 	AppDelegate();
-	~AppDelegate();
+	virtual ~AppDelegate();
 
 	virtual void Initialize() = 0;
 	virtual void Update(float deltaTime) = 0;

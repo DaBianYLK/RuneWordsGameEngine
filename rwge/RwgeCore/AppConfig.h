@@ -46,7 +46,7 @@ namespace AppConfig {
 	const float cameraMoveSpeed = 100.0f;
 	const float cameraRotateSpeed = 2.0f;
 	const float cameraFovy = 3.141592654f * 0.25f;
-	const float cameraAspect = (float)winWidth / winHeight;
+	const float cameraAspect = static_cast<float>(winWidth) / winHeight;
 	const float cameraLookNear = 20.0f;
 	const float cameraLookFar = 5000.0f;
 
@@ -55,13 +55,13 @@ namespace AppConfig {
 
 	// ×ÅÉ«Æ÷
 #ifdef SHADER_ANIMATION
-	const char defaultVertexShaderPath[] = "../RWGE/DefualtWithAnimationCalculation.vs";
+	const char defaultVertexShaderPath[] = "../RwgeGraphics/DefualtWithAnimationCalculation.vs";
 #else
-	const char defaultVertexShaderPath[] = "../RWGE/Default.vs";
+	const char defaultVertexShaderPath[] = "../RwgeGraphics/Default.vs";
 #endif
 	const char defaultVertexShaderEntryFuncName[] = "Main";
 	const unsigned int defaultVertexShaderTarget = 1;
-	const char defaultPixelShaderPath[] = "../RWGE/Default.ps";
+	const char defaultPixelShaderPath[] = "../RwgeGraphics/Default.ps";
 	const char defaultPixelShaderEntryFuncName[] = "Main";
 	const unsigned int defaultPixelShaderTarget = 1;
 };

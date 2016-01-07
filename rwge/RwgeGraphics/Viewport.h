@@ -2,7 +2,8 @@
 
 #include <d3dx9.h>
 
-#include "RwgeClasses.h"
+class Camera;
+class RwgeVertexShader;
 
 class Viewport {
 	friend class Window;

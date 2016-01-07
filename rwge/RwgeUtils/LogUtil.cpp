@@ -1,3 +1,5 @@
+#pragma warning (disable : 4996)
+
 #include "LogUtil.h"
 
 #include <time.h>
