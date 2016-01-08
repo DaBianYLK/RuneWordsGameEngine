@@ -18,12 +18,3 @@ enum EShadingModel
 
 	ShadingModel_MAX
 };
-
-enum EMaterialDomain
-{
-	MD_Surface,
-	MD_LightFunction,
-	MD_PostProcess,
-
-	MaterialDomain_MAX
-};

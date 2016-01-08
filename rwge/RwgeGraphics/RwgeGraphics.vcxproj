@@ -71,16 +71,22 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="IndexStream.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="MaterialTemplate.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="PixelShader.cpp" />
+    <ClCompile Include="RenderPrimitive.cpp" />
+    <ClCompile Include="RenderSystem.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="RwgePixelShader.cpp" />
     <ClCompile Include="RwgeVertexShader.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="UniformList.cpp" />
     <ClCompile Include="VertexShader.cpp" />
+    <ClCompile Include="VertexStream.cpp" />
     <ClCompile Include="Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -89,17 +95,23 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="GraphicsDefinitions.h" />
+    <ClInclude Include="IndexStream.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="MaterialInput.h" />
     <ClInclude Include="MaterialTemplate.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="PixelShader.h" />
+    <ClInclude Include="RenderPrimitive.h" />
+    <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="RwgePixelShader.h" />
     <ClInclude Include="RwgeVertexShader.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="UniformList.h" />
     <ClInclude Include="VertexShader.h" />
+    <ClInclude Include="VertexStream.h" />
     <ClInclude Include="Viewport.h" />
   </ItemGroup>
   <ItemGroup>

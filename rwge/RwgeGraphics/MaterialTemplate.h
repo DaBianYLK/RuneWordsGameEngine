@@ -22,8 +22,7 @@ protected:
 	MaterialInput<float>		m_OpacityMask;
 
 	bool						m_bTwoSided;
-	float						m_OpacityMaskClipValue;
-	EMaterialDomain				m_MaterialDomain;
+	float						m_fOpacityMaskClipValue;
 	EBlendMode					m_BlendMode;
 	EShadingModel				m_ShadingModel;
 };

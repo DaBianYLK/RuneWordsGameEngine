@@ -15,9 +15,6 @@
     <Filter Include="源文件\Scene">
       <UniqueIdentifier>{38be9e6e-d39b-4933-b5a6-34a5de44a8df}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Renderer">
-      <UniqueIdentifier>{9589cd4f-ad28-46bb-9f7f-109fe0337cec}</UniqueIdentifier>
-    </Filter>
     <Filter Include="源文件\Material">
       <UniqueIdentifier>{946d1a21-029a-4430-be4e-851c1af5d94e}</UniqueIdentifier>
     </Filter>
@@ -29,6 +26,9 @@
     </Filter>
     <Filter Include="源文件\HLSL">
       <UniqueIdentifier>{ff665be3-6c9e-4ba4-b4fe-4be9703bf2b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Render">
+      <UniqueIdentifier>{9589cd4f-ad28-46bb-9f7f-109fe0337cec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +76,24 @@
     </ClCompile>
     <ClCompile Include="Color.cpp">
       <Filter>源文件\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="UniformList.cpp">
+      <Filter>源文件\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSystem.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPrimitive.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexStream.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexStream.cpp">
+      <Filter>源文件\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +147,24 @@
     </ClInclude>
     <ClInclude Include="Color.h">
       <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="UniformList.h">
+      <Filter>源文件\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSystem.h">
+      <Filter>源文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>源文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPrimitive.h">
+      <Filter>源文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexStream.h">
+      <Filter>源文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexStream.h">
+      <Filter>源文件\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
