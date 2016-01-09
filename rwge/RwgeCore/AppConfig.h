@@ -5,7 +5,8 @@
 #define RWGE_SHADER_ENABLED		// 使用RWGE着色器
 #define SHADER_ANIMATION		// 使用着色器计算模型动画
 
-namespace AppConfig {
+namespace AppConfig
+{
 	// 窗口参数
 	const int winX = 100;
 	const int winY = 100;
@@ -16,19 +17,7 @@ namespace AppConfig {
 	const bool fullScreen = false;
 	const char winName[] = "RwgeSample";
 
-	// D3D9参数
-	const D3DDEVTYPE deviceType = D3DDEVTYPE_HAL;
-	const D3DFORMAT backBufferFormat = D3DFMT_A8R8G8B8;
-	const unsigned int backBufferCount = 1;
-	const D3DMULTISAMPLE_TYPE multiSampleType = D3DMULTISAMPLE_NONE;
-	const DWORD multiSampleQuality = 0;
-	const D3DSWAPEFFECT swapEffect = D3DSWAPEFFECT_DISCARD;
-	const bool enableAutoDepthStencil = true;
-	const D3DFORMAT autoDepthStencilFormat = D3DFMT_D24S8;
-	const D3DFORMAT autoDepthStencilFormat2 = D3DFMT_D16;
-	const DWORD flags = 0;
-	const unsigned int fullScreenRefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
-	const unsigned int presentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;	// 垂直同步选项，开启：D3DPRESENT_INTERVAL_ONE，关闭：D3DPRESENT_INTERVAL_IMMEDIATE
+	
 
 	// 摄像机参数
 	const float cameraPosX = 0.0f;

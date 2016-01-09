@@ -2,9 +2,11 @@
 
 #include "d3dx9.h"
 
-class PixelShader {
+class PixelShader
+{
 public:
-	enum Target {
+	enum Target
+{
 		PS_1_1 = 0,
 		PS_2_0 = 1,
 		PS_3_0 = 2

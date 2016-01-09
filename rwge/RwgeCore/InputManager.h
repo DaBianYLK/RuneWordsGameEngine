@@ -7,7 +7,8 @@
 
 class InputListener;
 
-class InputManager : public Singleton<InputManager> {
+class InputManager : public Singleton<InputManager>
+{
 public:
 	InputManager();
 	~InputManager();

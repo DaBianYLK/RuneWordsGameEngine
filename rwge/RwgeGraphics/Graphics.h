@@ -9,9 +9,10 @@
 #include "RwgePixelShader.h"
 
 class SceneManager;
-class Window;
+class DisplayWindow;
 
-class Graphics : public Singleton<Graphics> {
+class Graphics : public Singleton<Graphics>
+{
 public:
 	Graphics();
 	~Graphics();
@@ -22,7 +23,7 @@ public:
 
 	IDirect3DDevice9* GetD3D9Device() const;
 	SceneManager* GetSceneManager() const;
-	Window* GetWindow() const;
+	DisplayWindow* GetWindow() const;
 	RwgeVertexShader* GetVertexShader() const;
 
 private:
@@ -32,11 +33,10 @@ private:
 	
 
 private:
-	Window* m_pWindow;
+	DisplayWindow* m_pWindow;
 
 	IDirect3D9* m_pD3D9;
 	IDirect3DDevice9* m_pDevice;
-	int m_VertexProcType;
 
 	SceneManager* m_pSceneManager;
 

@@ -1,6 +1,7 @@
 #pragma once
 
-class InputListener {
+class InputListener
+{
 public:
 	InputListener();
 	virtual ~InputListener();

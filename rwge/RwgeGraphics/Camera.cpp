@@ -2,10 +2,11 @@
 
 #include "AppConfig.h"
 #include "Graphics.h"
-#include "Window.h"
+#include "DisplayWindow.h"
 #include "SceneManager.h"
 
-Camera::Camera() {
+Camera::Camera()
+{
 	m_NodeType = SceneNode::Type::CameraNode;
 
 	m_RightAxis = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
@@ -24,7 +25,8 @@ Camera::Camera() {
 }
 
 Camera::Camera(const D3DXVECTOR3& position, const D3DXVECTOR3& rightAxis, const D3DXVECTOR3& upAxis, const D3DXVECTOR3& lookAxis, 
-			   float fovy, float aspect, float lookNear, float lookFar) {
+			   float fovy, float aspect, float lookNear, float lookFar)
+{
 	m_NodeType = SceneNode::Type::CameraNode;
 
 	m_Position = position;
@@ -39,21 +41,25 @@ Camera::Camera(const D3DXVECTOR3& position, const D3DXVECTOR3& rightAxis, const 
 	D3DXMatrixPerspectiveFovLH(&m_ProjectionMatrix, fovy, aspect, lookNear, lookFar);
 }
 
-Camera::~Camera() {
+Camera::~Camera()
+{
 
 }
 
-void Camera::SetLookAxes(const D3DXVECTOR3& rightAxis, const D3DXVECTOR3& upAxis, const D3DXVECTOR3& lookAxis) {
+void Camera::SetLookAxes(const D3DXVECTOR3& rightAxis, const D3DXVECTOR3& upAxis, const D3DXVECTOR3& lookAxis)
+{
 	m_RightAxis = rightAxis;
 	m_UpAxis = upAxis;
 	m_LookAxis = lookAxis;
 }
 
-void Camera::SetPerspective(float fovy, float aspect, float lookNear, float lookFar) {
+void Camera::SetPerspective(float fovy, float aspect, float lookNear, float lookFar)
+{
 	D3DXMatrixPerspectiveFovLH(&m_ProjectionMatrix, fovy, aspect, lookNear, lookFar);
 }
 
-D3DXMATRIX* Camera::GetViewMatrix() {
+D3DXMATRIX* Camera::GetViewMatrix()
+{
 	// 标准化相机的前，上，右三个轴，并确保它们保持正交
 	D3DXVec3Normalize(&m_LookAxis, &m_LookAxis);
 
@@ -74,8 +80,9 @@ D3DXMATRIX* Camera::GetViewMatrix() {
 	SceneNode* pRootNode = Graphics::GetInstance()->GetSceneManager()->GetSceneRootNode();
 	SceneNode* pNode = this;
 
-	while (pNode && pNode != pRootNode) {
-		D3DXMatrixInverse(&tempMatrix, NULL, pNode->GetTransformMatrix());
+	while (pNode && pNode != pRootNode)
+{
+		D3DXMatrixInverse(&tempMatrix, nullptr, pNode->GetTransformMatrix());
 		D3DXMatrixMultiply(&m_ViewMatrix, &tempMatrix, &m_ViewMatrix);
 
 		pNode = pNode->GetFather();
@@ -84,15 +91,18 @@ D3DXMATRIX* Camera::GetViewMatrix() {
 	return &m_ViewMatrix;
 }
 
-D3DXMATRIX* Camera::GetProjectionMatrix() {
+D3DXMATRIX* Camera::GetProjectionMatrix()
+{
 	return &m_ProjectionMatrix;
 }
 
-//void Camera::Move(float x, float y, float z) {
+//void Camera::Move(float x, float y, float z)
+{
 //	m_Position += m_RightAxis * x + m_UpAxis * y + m_LookAxis * z;
 //}
 //
-//void Camera::Pitch(float radian) {
+//void Camera::Pitch(float radian)
+{
 //	D3DXMATRIX transform;
 //	D3DXMatrixRotationAxis(&transform, &m_RightAxis, radian);
 //
@@ -101,7 +111,8 @@ D3DXMATRIX* Camera::GetProjectionMatrix() {
 //	D3DXVec3TransformCoord(&m_LookAxis, &m_LookAxis, &transform);
 //}
 //
-//void Camera::Yaw(float radian) {
+//void Camera::Yaw(float radian)
+{
 //	D3DXMATRIX transform;
 //	D3DXMatrixRotationAxis(&transform, &m_UpAxis, radian);
 //
@@ -110,7 +121,8 @@ D3DXMATRIX* Camera::GetProjectionMatrix() {
 //	D3DXVec3TransformCoord(&m_LookAxis, &m_LookAxis, &transform);
 //}
 //
-//void Camera::Roll(float radian) {
+//void Camera::Roll(float radian)
+{
 //	D3DXMATRIX transform;
 //	D3DXMatrixRotationAxis(&transform, &m_LookAxis, radian);
 //

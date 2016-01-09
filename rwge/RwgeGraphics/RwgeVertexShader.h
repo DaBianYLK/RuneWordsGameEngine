@@ -3,7 +3,8 @@
 #include "AppConfig.h"
 #include "VertexShader.h"
 
-class RwgeVertexShader : public VertexShader {
+class RwgeVertexShader : public VertexShader
+{
 public:
 	RwgeVertexShader();
 	~RwgeVertexShader();

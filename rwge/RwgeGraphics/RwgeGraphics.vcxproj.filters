@@ -95,6 +95,12 @@
     <ClCompile Include="IndexStream.cpp">
       <Filter>源文件\Render</Filter>
     </ClCompile>
+    <ClCompile Include="VertexDeclaration.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D9Device.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -164,6 +170,12 @@
       <Filter>源文件\Render</Filter>
     </ClInclude>
     <ClInclude Include="IndexStream.h">
+      <Filter>源文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexDeclaration.h">
+      <Filter>源文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D9Device.h">
       <Filter>源文件\Render</Filter>
     </ClInclude>
   </ItemGroup>

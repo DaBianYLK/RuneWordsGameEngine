@@ -10,7 +10,8 @@ class RwgeVertexShader;
 class RwgePixelShader;
 class Sprite;
 
-struct Vertex {
+struct Vertex
+{
 	float x;
 	float y;
 	float z;
@@ -27,7 +28,8 @@ struct Vertex {
 	float blend[2];
 #endif
 
-	Vertex() {
+	Vertex()
+{
 		this->x = 0.0f;
 		this->y = 0.0f;
 		this->z = 0.0f;
@@ -48,9 +50,11 @@ struct Vertex {
 	};
 
 #ifdef SHADER_ANIMATION
-	Vertex(float x, float y, float z, float nX, float nY, float nZ, float u, float v, int boneID0, int boneID1, float blend0, float blend1) {
+	Vertex(float x, float y, float z, float nX, float nY, float nZ, float u, float v, int boneID0, int boneID1, float blend0, float blend1)
+{
 #else
-	Vertex(float x, float y, float z, float nX, float nY, float nZ, float u, float v) {
+	Vertex(float x, float y, float z, float nX, float nY, float nZ, float u, float v)
+{
 #endif
 			
 		this->x = x;
@@ -75,7 +79,8 @@ struct Vertex {
 
 #define VertexFVF D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1
 
-class Mesh {
+class Mesh
+{
 public:
 	Mesh();
 	Mesh(const MaxMeshHead& head, MaxVertex* vertexData, unsigned short* indexData, Sprite* pSprite);

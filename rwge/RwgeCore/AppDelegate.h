@@ -1,6 +1,7 @@
 #pragma once
 
-class AppDelegate {
+class AppDelegate
+{
 public:
 	AppDelegate();
 	virtual ~AppDelegate();

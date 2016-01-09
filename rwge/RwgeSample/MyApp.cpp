@@ -7,18 +7,21 @@
 #include <InputManager.h>
 #include <LogUtil.h>
 #include <AppConfig.h>
-#include <Window.h>
+#include <DisplayWindow.h>
 
-MyApp::MyApp() {
-
-}
-
-
-MyApp::~MyApp() {
+MyApp::MyApp()
+{
 
 }
 
-void MyApp::Initialize() {
+
+MyApp::~MyApp()
+{
+
+}
+
+void MyApp::Initialize()
+{
 	m_pSpriteNode = new SceneNode();
 	Graphics::GetInstance()->GetSceneManager()->GetSceneRootNode()->AttachChild(m_pSpriteNode);
 
@@ -61,10 +64,12 @@ void MyApp::Initialize() {
 	Graphics::GetInstance()->GetSceneManager()->SetViewport(pViewport);
 }
 
-void MyApp::Update(float deltaTime) {
+void MyApp::Update(float deltaTime)
+{
 	m_pController->Update(deltaTime);
 }
 
-void MyApp::Cleanup() {
+void MyApp::Cleanup()
+{
 	delete LogUtil::GetInstance();
 }

@@ -3,11 +3,13 @@
 #include <list>
 #include <d3dx9.h>
 
-class SceneNode {
+class SceneNode
+{
 	friend class SceneManager;
 
 public:
-	enum Type {
+	enum Type
+{
 		EmptyNode,
 		SpriteNode,
 		CameraNode

@@ -4,17 +4,22 @@
 
 #include "Singleton.h"
 
-#define LOG LogUtil::GetInstance()->Log
+class LogUtil : public Singleton<LogUtil>
+{
+	friend class Singleton<LogUtil>;
 
-class LogUtil : public Singleton<LogUtil> {
-public:
+private:
 	LogUtil();
-	~LogUtil();
 
-	void Log(const char* message);
+public:
+	virtual ~LogUtil();
+
+private:
+	bool Init();
+	bool Release();
+
+public:
 	void Log(const char* format, ...);
-
-	void Cleanup();
 
 private:
 	char* m_OutputPath;
@@ -23,3 +28,6 @@ private:
 	std::ofstream m_LogStream;
 };
 
+extern LogUtil g_LogUtil;
+
+#define LOG(...) g_LogUtil.Log(__VA_ARGS__)

@@ -31,7 +31,8 @@
 
 #define ANIMATION_NUM					20
 
-class Controller : public InputListener {
+class Controller : public InputListener
+{
 public:
 	Controller(Sprite* pSprite, Light* pPointLight, Light* pDirectionalLight, Light* pSpotLight, Camera* pCamera);
 	~Controller();

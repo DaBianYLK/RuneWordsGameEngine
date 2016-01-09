@@ -3,28 +3,35 @@
 #include "InputListener.h"
 #include "Application.h"
 
-InputManager::InputManager() {
+InputManager::InputManager()
+{
 	memset(m_IsKeyDown, 0, sizeof(bool)* 256);
 }
 
-InputManager::~InputManager() {
+InputManager::~InputManager()
+{
 
 }
 
-void InputManager::Initialize() {
+void InputManager::Initialize()
+{
 
 }
 
-void InputManager::Update(float deltaTime) {
+void InputManager::Update(float deltaTime)
+{
 
 }
 
-void InputManager::Cleanup() {
+void InputManager::Cleanup()
+{
 
 }
 
-LRESULT CALLBACK InputManager::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam) {
-	switch (umsg) {
+LRESULT CALLBACK InputManager::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
+{
+	switch (umsg)
+{
 		// Check if the window is being destroyed.
 	case WM_DESTROY:
 		PostQuitMessage(0);
@@ -52,32 +59,38 @@ LRESULT CALLBACK InputManager::MessageHandler(HWND hwnd, UINT umsg, WPARAM wpara
 	}
 }
 
-void InputManager::KeyUp(unsigned int key) {
+void InputManager::KeyUp(unsigned int key)
+{
 	m_IsKeyDown[key] = false;
 
 	std::list<InputListener*>::iterator listener = m_InputListeners.begin();
-	while (listener != m_InputListeners.end()) {
+	while (listener != m_InputListeners.end())
+{
 		(*listener)->OnKeyUp(key);
 
 		listener++;
 	}
 }
 
-void InputManager::KeyDown(unsigned int key) {
+void InputManager::KeyDown(unsigned int key)
+{
 	m_IsKeyDown[key] = true;
 
 	std::list<InputListener*>::iterator listener = m_InputListeners.begin();
-	while (listener != m_InputListeners.end()) {
+	while (listener != m_InputListeners.end())
+{
 		(*listener)->OnKeyDown(key);
 
 		listener++;
 	}
 }
 
-bool InputManager::IsKeyDown(unsigned int key) {
+bool InputManager::IsKeyDown(unsigned int key)
+{
 	return m_IsKeyDown[key];
 }
 
-void InputManager::AddListener(InputListener* listener) {
+void InputManager::AddListener(InputListener* listener)
+{
 	m_InputListeners.push_back(listener);
 }

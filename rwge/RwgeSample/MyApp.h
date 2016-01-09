@@ -7,7 +7,8 @@
 class Sprite;
 class Light;
 
-class MyApp : public AppDelegate {
+class MyApp : public AppDelegate
+{
 public:
 	MyApp();
 	~MyApp();

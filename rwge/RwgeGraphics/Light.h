@@ -2,9 +2,11 @@
 
 #include <d3dx9.h>
 
-class Light {
+class Light
+{
 public:
-	enum Type {
+	enum Type
+{
 		Point,
 		Directional,
 		Spot

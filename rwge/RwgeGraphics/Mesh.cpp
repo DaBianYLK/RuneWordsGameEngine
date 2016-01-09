@@ -4,35 +4,37 @@
 #include "Graphics.h"
 #include "Sprite.h"
 
-IDirect3DDevice9* Mesh::m_pDevice = NULL;
-RwgeVertexShader* Mesh::m_pVertexShader = NULL;
-RwgePixelShader* Mesh::m_pPixelShader = NULL;
+IDirect3DDevice9* Mesh::m_pDevice = nullptr;
+RwgeVertexShader* Mesh::m_pVertexShader = nullptr;
+RwgePixelShader* Mesh::m_pPixelShader = nullptr;
 const string Mesh::m_TextureFolderPath = "textures/";
 const string Mesh::m_TextureSuffix = ".bmp";
-D3DVERTEXELEMENT9* Mesh::m_pVertexElements = NULL;
-IDirect3DVertexDeclaration9* Mesh::m_pVertexDeclaration = NULL;
+D3DVERTEXELEMENT9* Mesh::m_pVertexElements = nullptr;
+IDirect3DVertexDeclaration9* Mesh::m_pVertexDeclaration = nullptr;
 
-Mesh::Mesh() {
+Mesh::Mesh()
+{
 	ZeroMemory(&m_MeshHead, sizeof(MaxMeshHead));
-	m_pVertexData = NULL;
-	m_pIndexData = NULL;
+	m_pVertexData = nullptr;
+	m_pIndexData = nullptr;
 
 	m_VertexNum = 0;
-	m_Vertices = NULL;
+	m_Vertices = nullptr;
 
 	m_IndexNum = 0;
-	m_Indices = NULL;
+	m_Indices = nullptr;
 
-	m_pTexture = NULL;
-	m_pMaterial = NULL;
+	m_pTexture = nullptr;
+	m_pMaterial = nullptr;
 
-	m_pVertexBuffer = NULL;
-	m_pIndexBuffer = NULL;
+	m_pVertexBuffer = nullptr;
+	m_pIndexBuffer = nullptr;
 
-	m_pSprite = NULL;
+	m_pSprite = nullptr;
 }
 
-Mesh::Mesh(const MaxMeshHead& head, MaxVertex* vertexData, unsigned short* indexData, Sprite* pSprite) {
+Mesh::Mesh(const MaxMeshHead& head, MaxVertex* vertexData, unsigned short* indexData, Sprite* pSprite)
+{
 	m_MeshHead = head;
 	m_pVertexData = vertexData;
 	m_pIndexData = indexData;
@@ -46,7 +48,8 @@ Mesh::Mesh(const MaxMeshHead& head, MaxVertex* vertexData, unsigned short* index
 	string texturePath = m_TextureFolderPath;
 	texturePath.append(m_MeshHead.name);
 	texturePath.append(m_TextureSuffix);
-	if (m_pDevice) {
+	if (m_pDevice)
+{
 		D3DXCreateTextureFromFile(m_pDevice, texturePath.c_str(), &m_pTexture);
 	}
 
@@ -57,7 +60,8 @@ Mesh::Mesh(const MaxMeshHead& head, MaxVertex* vertexData, unsigned short* index
 	m_pMaterial->Emissive = D3DXCOLOR(D3DCOLOR_XRGB(0, 0, 0));
 	m_pMaterial->Power = 2.0f;
 
-	if (m_pDevice) {
+	if (m_pDevice)
+{
 		m_pDevice->CreateVertexBuffer(sizeof(Vertex)* m_VertexNum, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_pVertexBuffer, 0);
 		m_pDevice->CreateIndexBuffer(sizeof(WORD)* m_IndexNum, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &m_pIndexBuffer, 0);
 
@@ -68,11 +72,13 @@ Mesh::Mesh(const MaxMeshHead& head, MaxVertex* vertexData, unsigned short* index
 	m_pSprite = pSprite;
 }
 
-Mesh::~Mesh() {
+Mesh::~Mesh()
+{
 
 }
 
-Mesh* Mesh::CreatePanel(const D3DXVECTOR3& position, float length, float width) {
+Mesh* Mesh::CreatePanel(const D3DXVECTOR3& position, float length, float width)
+{
 	Mesh* pPanel = new Mesh();
 
 	pPanel->m_VertexNum = 4;
@@ -81,7 +87,8 @@ Mesh* Mesh::CreatePanel(const D3DXVECTOR3& position, float length, float width) 
 	pPanel->m_IndexNum = 6;
 	pPanel->m_Indices = new unsigned short[pPanel->m_IndexNum];
 
-	if (m_pDevice) {
+	if (m_pDevice)
+{
 		D3DXCreateTextureFromFile(m_pDevice, "WoodenBox.jpg", &(pPanel->m_pTexture));
 	}
 
@@ -94,15 +101,16 @@ Mesh* Mesh::CreatePanel(const D3DXVECTOR3& position, float length, float width) 
 
 	ZeroMemory(&(pPanel->m_MeshHead), sizeof(MaxMeshHead));
 	pPanel->m_MeshHead.triangleNum = 2;
-	pPanel->m_pVertexData = NULL;
-	pPanel->m_pIndexData = NULL;
+	pPanel->m_pVertexData = nullptr;
+	pPanel->m_pIndexData = nullptr;
 
-	if (m_pDevice) {
+	if (m_pDevice)
+{
 		m_pDevice->CreateVertexBuffer(sizeof(Vertex)* pPanel->m_VertexNum, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &(pPanel->m_pVertexBuffer), 0);
 		m_pDevice->CreateIndexBuffer(sizeof(WORD)* pPanel->m_IndexNum, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_DEFAULT, &(pPanel->m_pIndexBuffer), 0);
 	}
 
-	pPanel->m_pSprite = NULL;
+	pPanel->m_pSprite = nullptr;
 
 	// =======================================================================
 	float halfLength = length * 0.5f;
@@ -144,35 +152,43 @@ Mesh* Mesh::CreatePanel(const D3DXVECTOR3& position, float length, float width) 
 	return pPanel;
 }
 
-Mesh* Mesh::CreateBox(const D3DXVECTOR3& position, float length, float width, float height) {
+Mesh* Mesh::CreateBox(const D3DXVECTOR3& position, float length, float width, float height)
+{
 	Mesh* pBox = new Mesh();
 
 	return pBox;
 }
 
-void Mesh::SetDevice(IDirect3DDevice9* pDevice) {
+void Mesh::SetDevice(IDirect3DDevice9* pDevice)
+{
 	m_pDevice = pDevice;
 }
 
-void Mesh::SetVertexShader(RwgeVertexShader* pVertexShader) {
+void Mesh::SetVertexShader(RwgeVertexShader* pVertexShader)
+{
 	m_pVertexShader = pVertexShader;
 }
 
-void Mesh::SetPixelShader(RwgePixelShader* pPixelShader) {
+void Mesh::SetPixelShader(RwgePixelShader* pPixelShader)
+{
 	m_pPixelShader = pPixelShader;
 }
 
-void Mesh::SetVertexDeclaration(D3DVERTEXELEMENT9* pVertexElements) {
+void Mesh::SetVertexDeclaration(D3DVERTEXELEMENT9* pVertexElements)
+{
 	m_pVertexElements = pVertexElements;
 	m_pDevice->CreateVertexDeclaration(pVertexElements, &m_pVertexDeclaration);
 }
 
-void Mesh::UploadVertices() {
-	if (m_pVertexData) {
+void Mesh::UploadVertices()
+{
+	if (m_pVertexData)
+{
 		m_pVertexBuffer->Lock(0, 0, reinterpret_cast<void**>(&m_Vertices), 0);
 
 		MaxVertex* pVertex = m_pVertexData;
-		for (int i = 0; i < m_VertexNum; ++i) {
+		for (int i = 0; i < m_VertexNum; ++i)
+{
 			memcpy(&(m_Vertices[i]), pVertex, sizeof(Vertex));
 
 #ifdef SHADER_ANIMATION
@@ -189,12 +205,15 @@ void Mesh::UploadVertices() {
 	}
 }
 
-void Mesh::UploadIndices() {
-	if (m_pIndexData) {
+void Mesh::UploadIndices()
+{
+	if (m_pIndexData)
+{
 		m_pIndexBuffer->Lock(0, 0, (void**)&m_Indices, 0);
 
 		memcpy(m_Indices, m_pIndexData, sizeof(unsigned short)* m_IndexNum);
-		/*for (int i = 0; i < m_IndexNum; ++i) {
+		/*for (int i = 0; i < m_IndexNum; ++i)
+{
 			m_Indices[i] = m_pIndexData[i];
 		}*/
 
@@ -202,7 +221,8 @@ void Mesh::UploadIndices() {
 	}
 }
 
-void Mesh::Multiply(float* position, float* matrix) {
+void Mesh::Multiply(float* position, float* matrix)
+{
 	float temp[4];
 
 	temp[0] = position[0] * matrix[0] + position[1] * matrix[4] + position[2] * matrix[8] + position[3] * matrix[12];
@@ -210,31 +230,38 @@ void Mesh::Multiply(float* position, float* matrix) {
 	temp[2] = position[0] * matrix[2] + position[1] * matrix[6] + position[2] * matrix[10] + position[3] * matrix[14];
 	temp[3] = position[0] * matrix[3] + position[1] * matrix[7] + position[2] * matrix[11] + position[3] * matrix[15];
 
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < 4; ++i)
+{
 		position[i] = temp[i];
 	}
 }
 
-void Mesh::Update(int frameIndex) {
+void Mesh::Update(int frameIndex)
+{
 	int matrixStride = 4 * 4;
 	int frameDataStride = m_pSprite->GetBoneNum() * matrixStride;
 
 	m_pVertexBuffer->Lock(0, 0, reinterpret_cast<void**>(&m_Vertices), 0);
 
-	for (int vertexIndex = 0; vertexIndex < m_VertexNum; ++vertexIndex) {
+	for (int vertexIndex = 0; vertexIndex < m_VertexNum; ++vertexIndex)
+{
 		MaxVertex& maxVertex = m_pVertexData[vertexIndex];
 		Vertex* pVertex = &(m_Vertices[vertexIndex]);
 
 		D3DXVECTOR4 position[2];
 		D3DXVECTOR4 normal[2];
 
-		float postionResult[] = { 0.0f, 0.0f, 0.0f };
-		float normalResult[] = { 0.0f, 0.0f, 0.0f };
+		float postionResult[] =
+{ 0.0f, 0.0f, 0.0f };
+		float normalResult[] =
+{ 0.0f, 0.0f, 0.0f };
 		bool hasTransform = false;
 
-		for (int boneIndex = 0; boneIndex < 2; ++boneIndex) {
+		for (int boneIndex = 0; boneIndex < 2; ++boneIndex)
+{
 			unsigned int boneID = maxVertex.boneID[boneIndex];
-			if (boneID < 0 || boneID >= m_pSprite->GetBoneNum()) {
+			if (boneID < 0 || boneID >= m_pSprite->GetBoneNum())
+{
 				continue;
 			}
 			hasTransform = true;
@@ -262,13 +289,15 @@ void Mesh::Update(int frameIndex) {
 			// 合成
 			float* pPositionValue = &(position[boneIndex].x);
 			float* pNormalValue = &(normal[boneIndex].x);
-			for (int i = 0; i < 3; ++i) {
+			for (int i = 0; i < 3; ++i)
+{
 				postionResult[i] += pPositionValue[i] * maxVertex.blend[boneIndex];
 				normalResult[i] += pNormalValue[i] * maxVertex.blend[boneIndex];
 			}
 		}
 
-		if (hasTransform) {
+		if (hasTransform)
+{
 			// 对顶点赋值
 			pVertex->x = postionResult[0];
 			pVertex->y = postionResult[1];
@@ -291,8 +320,10 @@ void Mesh::Update(int frameIndex) {
 }
 
 #ifdef SHADER_ANIMATION
-void Mesh::Draw(int frameIndex) {
-	if (m_pDevice) {
+void Mesh::Draw(int frameIndex)
+{
+	if (m_pDevice)
+{
 #ifdef RWGE_SHADER_ENABLED
 		m_pVertexShader->SetMaterial(m_pMaterial);
 		m_pPixelShader->SetTexture(m_pTexture);
@@ -301,7 +332,8 @@ void Mesh::Draw(int frameIndex) {
 		m_pDevice->SetTexture(0, m_pTexture);
 #endif
 
-		if (frameIndex >= 0) {
+		if (frameIndex >= 0)
+{
 			int frameDataStride = m_pSprite->GetBoneNum() * 4 * 4;
 			float* matrices = m_pSprite->GetBoneData() + frameDataStride * frameIndex;
 			m_pVertexShader->SetModelTransform((D3DXMATRIX*)matrices, m_pSprite->GetBoneNum());
@@ -315,8 +347,10 @@ void Mesh::Draw(int frameIndex) {
 	}
 }
 #else
-void Mesh::Draw() {
-	if (m_pDevice) {
+void Mesh::Draw()
+{
+	if (m_pDevice)
+{
 #ifdef RWGE_SHADER_ENABLED
 		m_pVertexShader->SetMaterial(m_pMaterial);
 		m_pPixelShader->SetTexture(m_pTexture);
@@ -335,66 +369,82 @@ void Mesh::Draw() {
 #endif
 
 
-void Mesh::SetMaterialAmbient(const D3DXCOLOR& color) {
+void Mesh::SetMaterialAmbient(const D3DXCOLOR& color)
+{
 	m_pMaterial->Ambient = color;
 }
 
-void Mesh::SetMaterialDiffuse(const D3DXCOLOR& color) {
+void Mesh::SetMaterialDiffuse(const D3DXCOLOR& color)
+{
 	m_pMaterial->Diffuse = color;
 }
 
-void Mesh::SetMaterialSpecular(const D3DXCOLOR& color) {
+void Mesh::SetMaterialSpecular(const D3DXCOLOR& color)
+{
 	m_pMaterial->Specular = color;
 }
 
-void Mesh::SetMaterialPower(float power) {
+void Mesh::SetMaterialPower(float power)
+{
 	m_pMaterial->Power = power;
 }
 
-D3DXCOLOR Mesh::GetMaterialAmbient() {
+D3DXCOLOR Mesh::GetMaterialAmbient()
+{
 	return m_pMaterial->Ambient;
 }
 
-D3DXCOLOR Mesh::GetMaterialDiffuse() {
+D3DXCOLOR Mesh::GetMaterialDiffuse()
+{
 	return m_pMaterial->Diffuse;
 }
 
-D3DXCOLOR Mesh::GetMaterialSpecular() {
+D3DXCOLOR Mesh::GetMaterialSpecular()
+{
 	return m_pMaterial->Specular;
 }
 
-float Mesh::GetMaterialPower() {
+float Mesh::GetMaterialPower()
+{
 	return m_pMaterial->Power;
 }
 
-int Mesh::GetVertexNum() {
+int Mesh::GetVertexNum()
+{
 	return m_MeshHead.vertexNum;
 }
 
-int Mesh::GetIndexNum() {
+int Mesh::GetIndexNum()
+{
 	return m_IndexNum;
 }
 
-Vertex* Mesh::GetVertices() {
+Vertex* Mesh::GetVertices()
+{
 	return m_Vertices;
 }
 
-unsigned short* Mesh::GetIndices() {
+unsigned short* Mesh::GetIndices()
+{
 	return m_Indices;
 }
 
-Vertex** Mesh::GetVerticesPtr() {
+Vertex** Mesh::GetVerticesPtr()
+{
 	return &m_Vertices;
 }
 
-unsigned short** Mesh::GetIndicesPtr() {
+unsigned short** Mesh::GetIndicesPtr()
+{
 	return &m_Indices;
 }
 
-IDirect3DTexture9* Mesh::GetTexture() {
+IDirect3DTexture9* Mesh::GetTexture()
+{
 	return m_pTexture;
 }
 
-D3DMATERIAL9* Mesh::GetMaterial() {
+D3DMATERIAL9* Mesh::GetMaterial()
+{
 	return m_pMaterial;
 }

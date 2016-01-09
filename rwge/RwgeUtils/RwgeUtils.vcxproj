@@ -67,6 +67,7 @@
     <ClCompile Include="LogUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AssertUtil.h" />
     <ClInclude Include="LogUtil.h" />
     <ClInclude Include="Singleton.h" />
   </ItemGroup>

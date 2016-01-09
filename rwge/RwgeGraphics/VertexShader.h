@@ -2,9 +2,11 @@
 
 #include <d3dx9.h>
 
-class VertexShader {
+class VertexShader
+{
 public:
-	enum Target {
+	enum Target
+{
 		VS_1_1 = 0,
 		VS_2_0 = 1,
 		VS_3_0 = 2

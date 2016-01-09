@@ -1,11 +1,42 @@
 #include "Color.h"
 
 
-Color::Color() : R(0), G(0), B(0), A(0)
+FColorRGB::FColorRGB()
 {
 }
 
+FColorRGB::FColorRGB(float fGray)
+{
+}
 
-Color::~Color()
+FColorRGB::FColorRGB(float fR, float fG, float fB)
+{
+}
+
+FColorRGB::FColorRGB(const FColorRGB& color)
+{
+}
+
+FColorRGB::FColorRGB(const FColorRGBA& color)
+{
+}
+
+FColorRGB::~FColorRGB()
+{
+}
+
+void FColorRGB::Set(float fGray)
+{
+}
+
+void FColorRGB::Set(float fR, float fG, float fB)
+{
+}
+
+void FColorRGB::Set(const FColorRGB& color)
+{
+}
+
+void FColorRGB::Set(const FColorRGBA& color)
 {
 }

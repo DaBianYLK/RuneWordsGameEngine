@@ -7,7 +7,8 @@
 
 class Animation;
 
-class Sprite : public SceneNode {
+class Sprite : public SceneNode
+{
 	friend class Mesh;
 
 public:

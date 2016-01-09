@@ -9,7 +9,8 @@ class AppDelegate;
 class Graphics;
 class InputManager;
 
-class Application : public Singleton<Application> {
+class Application : public Singleton<Application>
+{
 public:
 	Application();
 	~Application();

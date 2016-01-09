@@ -1,6 +1,7 @@
 #pragma once
 
-class Animation {
+class Animation
+{
 public:
 	Animation();
 	Animation(int startFrame, int frameNum);

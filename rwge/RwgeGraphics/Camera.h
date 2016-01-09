@@ -4,9 +4,11 @@
 
 #include "SceneNode.h"
 
-class Camera : public SceneNode {
+class Camera : public SceneNode
+{
 public:
-	enum Type {
+	enum Type
+{
 		Perspective,
 		Orthographic
 	};

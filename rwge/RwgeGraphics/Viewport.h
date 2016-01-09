@@ -5,8 +5,9 @@
 class Camera;
 class RwgeVertexShader;
 
-class Viewport {
-	friend class Window;
+class Viewport
+{
+	friend class DisplayWindow;
 
 private:
 	Viewport(Camera* pCamera);

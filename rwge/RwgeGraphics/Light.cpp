@@ -5,16 +5,19 @@
 
 unsigned short Light::m_LightNum = 0;
 
-Light::Light() {
+Light::Light()
+{
 	ZeroMemory(&m_Light, sizeof(m_Light));
 }
 
-Light::~Light() {
+Light::~Light()
+{
 
 }
 
 Light* Light::CreatePointLight(const D3DCOLORVALUE& diffuse, const D3DCOLORVALUE& specular, const D3DCOLORVALUE& ambient, const D3DXVECTOR3& position,
-	float range, float attenuation0, float attenuation1, float attenuation2) {
+	float range, float attenuation0, float attenuation1, float attenuation2)
+{
 	Light* light = new Light();
 
 	light->m_Light.Type = D3DLIGHT_POINT;
@@ -34,7 +37,8 @@ Light* Light::CreatePointLight(const D3DCOLORVALUE& diffuse, const D3DCOLORVALUE
 	return light;
 }
 
-Light* Light::CreateDirectionalLight(const D3DCOLORVALUE& diffuse, const D3DCOLORVALUE& specular, const D3DCOLORVALUE& ambient, const D3DXVECTOR3& direction) {
+Light* Light::CreateDirectionalLight(const D3DCOLORVALUE& diffuse, const D3DCOLORVALUE& specular, const D3DCOLORVALUE& ambient, const D3DXVECTOR3& direction)
+{
 	Light* light = new Light();
 
 	light->m_Light.Type = D3DLIGHT_DIRECTIONAL;
@@ -56,7 +60,8 @@ Light* Light::CreateDirectionalLight(const D3DCOLORVALUE& diffuse, const D3DCOLO
 
 Light* Light::CreateSpotLight(const D3DCOLORVALUE& diffuse, const D3DCOLORVALUE& specular, const D3DCOLORVALUE& ambient,
 	const D3DXVECTOR3& position, const D3DXVECTOR3& direction,
-	float range, float falloff, float attenuation0, float attenuation1, float attenuation2, float theta, float phi) {
+	float range, float falloff, float attenuation0, float attenuation1, float attenuation2, float theta, float phi)
+{
 	Light* light = new Light();
 
 	light->m_Light.Type = D3DLIGHT_SPOT;
@@ -84,7 +89,8 @@ Light* Light::CreateSpotLight(const D3DCOLORVALUE& diffuse, const D3DCOLORVALUE&
 	return light;
 }
 
-void Light::Enable() {
+void Light::Enable()
+{
 	#ifdef RWGE_SHADER_ENABLED
 		RwgeVertexShader* pVertexShader = Graphics::GetInstance()->GetVertexShader();
 		pVertexShader->SetLight(&m_Light);
@@ -93,13 +99,15 @@ void Light::Enable() {
 	#endif
 }
 
-void Light::Disable() {
+void Light::Disable()
+{
 	#ifndef RWGE_SHADER_ENABLED
 		Graphics::GetInstance()->GetD3D9Device()->LightEnable(m_Index, false);
 	#endif
 }
 
-void Light::Register() {
+void Light::Register()
+{
 	m_Index = m_LightNum;
 	++m_LightNum;
 

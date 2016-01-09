@@ -33,7 +33,8 @@
 #define MATERIAL_SPECULAR	2
 #define MATERIAL_POWER		3
 
-Controller::Controller(Sprite* pSprite, Light* pPointLight, Light* pDirectionalLight, Light* pSpotLight, Camera* pCamera) {
+Controller::Controller(Sprite* pSprite, Light* pPointLight, Light* pDirectionalLight, Light* pSpotLight, Camera* pCamera)
+{
 	m_pInputManager = InputManager::GetInstance();
 
 	m_pSpriteNode = pSprite->GetFather();
@@ -84,12 +85,15 @@ Controller::Controller(Sprite* pSprite, Light* pPointLight, Light* pDirectionalL
 }
 
 
-Controller::~Controller() {
+Controller::~Controller()
+{
 
 }
 
-void Controller::OnKeyUp(unsigned int key) {
-	switch (key) {
+void Controller::OnKeyUp(unsigned int key)
+{
+	switch (key)
+{
 	case 'W':
 		OnWalkKeyUp(DIRECTION_UP);
 		break;
@@ -111,8 +115,10 @@ void Controller::OnKeyUp(unsigned int key) {
 	}
 }
 
-void Controller::OnKeyDown(unsigned int key) {
-	switch (key) {
+void Controller::OnKeyDown(unsigned int key)
+{
+	switch (key)
+{
 	case 'P':
 		OnLightKeyDown();
 		break;
@@ -210,13 +216,17 @@ void Controller::OnKeyDown(unsigned int key) {
 	}
 }
 
-void Controller::Update(float deltaTime) {
+void Controller::Update(float deltaTime)
+{
 	// 人物动作控制
-	if (!m_pSprite->IsCurrentAnimationPlaying()) {
-		if (m_UseWeapon) {
+	if (!m_pSprite->IsCurrentAnimationPlaying())
+{
+		if (m_UseWeapon)
+{
 			m_pSprite->PlayAnimation(ANIMATION_STAND_WEAPON, true);
 		}
-		else {
+		else
+{
 			m_pSprite->PlayAnimation(ANIMATION_STAND, true);
 		}
 
@@ -224,66 +234,84 @@ void Controller::Update(float deltaTime) {
 	}
 
 	// 镜头控制
-	if (m_pInputManager->IsKeyDown('Q')) {
+	if (m_pInputManager->IsKeyDown('Q'))
+{
 		//m_pCameraYawPivot->Yaw(-AppConfig::cameraRotateSpeed);
 		m_CameraRadian -= AppConfig::cameraRotateSpeed * deltaTime;
 		m_pCameraYawPivot->SetRotation(0.0f, 1.0f, 0.0f, m_CameraRadian);
 	}
-	else if (m_pInputManager->IsKeyDown('E')) {
+	else if (m_pInputManager->IsKeyDown('E'))
+{
 		//m_pCameraYawPivot->Yaw(AppConfig::cameraRotateSpeed);
 		m_CameraRadian += AppConfig::cameraRotateSpeed * deltaTime;
 		m_pCameraYawPivot->SetRotation(0.0f, 1.0f, 0.0f, m_CameraRadian);
 	}
 
-	if (m_pInputManager->IsKeyDown('Z')) {
+	if (m_pInputManager->IsKeyDown('Z'))
+{
 		m_pCameraPitchPivot->Pitch(-AppConfig::cameraRotateSpeed * deltaTime);
 	}
-	else if (m_pInputManager->IsKeyDown('X')) {
+	else if (m_pInputManager->IsKeyDown('X'))
+{
 		m_pCameraPitchPivot->Pitch(AppConfig::cameraRotateSpeed * deltaTime);
 	}
 
-	if (m_pInputManager->IsKeyDown('C')) {
-		if (m_CameraDistance < m_CameraMaxDistance) {
+	if (m_pInputManager->IsKeyDown('C'))
+{
+		if (m_CameraDistance < m_CameraMaxDistance)
+{
 			m_CameraDistance += AppConfig::cameraMoveSpeed * deltaTime;
 
 			m_pCamera->SetPosition(0.0f, m_CameraDistance, -m_CameraDistance * 2.0f);
 		}
 	}
-	else if (m_pInputManager->IsKeyDown('V')) {
-		if (m_CameraDistance > m_CameraMinDistance) {
+	else if (m_pInputManager->IsKeyDown('V'))
+{
+		if (m_CameraDistance > m_CameraMinDistance)
+{
 			m_CameraDistance -= AppConfig::cameraMoveSpeed * deltaTime;
 
 			m_pCamera->SetPosition(0.0f, m_CameraDistance, -m_CameraDistance * 2.0f);
 		}
 	}
 
-	if (m_ActionState == ACTION_RUN) {
+	if (m_ActionState == ACTION_RUN)
+{
 		// 人物移动控制
-		if (m_pInputManager->IsKeyDown('Q') || m_pInputManager->IsKeyDown('E')) {
-			if (m_pInputManager->IsKeyDown('W')) {
+		if (m_pInputManager->IsKeyDown('Q') || m_pInputManager->IsKeyDown('E'))
+{
+			if (m_pInputManager->IsKeyDown('W'))
+{
 				m_TargetRadian = m_CameraRadian;
 			}
-			else if (m_pInputManager->IsKeyDown('A')) {
+			else if (m_pInputManager->IsKeyDown('A'))
+{
 				m_TargetRadian = m_CameraRadian - D3DX_PI * 0.5f;
 			}
-			else if (m_pInputManager->IsKeyDown('S')) {
+			else if (m_pInputManager->IsKeyDown('S'))
+{
 				m_TargetRadian = m_CameraRadian + D3DX_PI;
 			}
-			else if (m_pInputManager->IsKeyDown('D')) {
+			else if (m_pInputManager->IsKeyDown('D'))
+{
 				m_TargetRadian = m_CameraRadian + D3DX_PI * 0.5f;
 			}
 		}
 
 		// 行走过程中的人物转身控制
 		float rotateRadian = m_RotateSpeed * deltaTime;
-		if (m_FaceRadian != m_TargetRadian) {
-			if (m_FaceRadian > m_TargetRadian + rotateRadian) {
+		if (m_FaceRadian != m_TargetRadian)
+{
+			if (m_FaceRadian > m_TargetRadian + rotateRadian)
+{
 				m_FaceRadian -= rotateRadian;
 			}
-			else if (m_FaceRadian < m_TargetRadian - rotateRadian) {
+			else if (m_FaceRadian < m_TargetRadian - rotateRadian)
+{
 				m_FaceRadian += rotateRadian;
 			}
-			else {
+			else
+{
 				m_FaceRadian = m_TargetRadian;
 			}
 
@@ -296,18 +324,23 @@ void Controller::Update(float deltaTime) {
 		m_pSpriteNode->Translate(x, 0.0f, z);
 	}
 
-	if (m_ActionState == ACTION_STAND) {
+	if (m_ActionState == ACTION_STAND)
+{
 		// 站立时的人物转身控制
-		if (m_pInputManager->IsKeyDown('R')) {
+		if (m_pInputManager->IsKeyDown('R'))
+{
 			m_FaceRadian += m_RotateSpeed * deltaTime;
-			if (m_FaceRadian > D3DX_PI * 2.0f) {
+			if (m_FaceRadian > D3DX_PI * 2.0f)
+{
 				m_FaceRadian -= D3DX_PI * 2.0f;
 			}
 			m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian + D3DX_PI);
 		}
-		else if (m_pInputManager->IsKeyDown('T')) {
+		else if (m_pInputManager->IsKeyDown('T'))
+{
 			m_FaceRadian -= m_RotateSpeed * deltaTime;
-			if (m_FaceRadian < 0.0f) {
+			if (m_FaceRadian < 0.0f)
+{
 				m_FaceRadian += D3DX_PI * 2.0f;
 			}
 			m_pSprite->SetRotation(0.0f, 1.0f, 0.0f, m_FaceRadian + D3DX_PI);
@@ -315,20 +348,25 @@ void Controller::Update(float deltaTime) {
 	}
 }
 
-void Controller::OnWalkKeyDown(unsigned int direction) {
+void Controller::OnWalkKeyDown(unsigned int direction)
+{
 	// 只有角色站立时才可以控制角色移动
-	if (m_ActionState == ACTION_STAND) {
-		if (m_UseWeapon) {
+	if (m_ActionState == ACTION_STAND)
+{
+		if (m_UseWeapon)
+{
 			m_pSprite->PlayAnimation(ANIMATION_RUN_WEAPON, true);
 		}
-		else {
+		else
+{
 			m_pSprite->PlayAnimation(ANIMATION_RUN, true);
 		}
 
 		m_ActionState = ACTION_RUN;
 	}
 
-	switch (direction) {
+	switch (direction)
+{
 	case DIRECTION_UP:
 		m_TargetRadian = m_CameraRadian;
 		break;
@@ -350,41 +388,54 @@ void Controller::OnWalkKeyDown(unsigned int direction) {
 	}
 }
 
-void Controller::OnWalkKeyUp(unsigned int direction) {
-	if (m_ActionState == ACTION_RUN) {
-		if (m_UseWeapon) {
+void Controller::OnWalkKeyUp(unsigned int direction)
+{
+	if (m_ActionState == ACTION_RUN)
+{
+		if (m_UseWeapon)
+{
 			m_pSprite->PlayAnimation(ANIMATION_STAND_WEAPON, true);
 		}
-		else {
+		else
+{
 			m_pSprite->PlayAnimation(ANIMATION_STAND, true);
 		}
 		m_ActionState = ACTION_STAND;
 	}
 }
 
-void Controller::OnWeaponKeyDown() {
+void Controller::OnWeaponKeyDown()
+{
 	m_UseWeapon = !m_UseWeapon;
 
-	if (m_UseWeapon) {
-		if (m_ActionState == ACTION_STAND) {
+	if (m_UseWeapon)
+{
+		if (m_ActionState == ACTION_STAND)
+{
 			m_pSprite->PlayAnimation(ANIMATION_STAND_WEAPON, true);
 		}
-		else if (m_ActionState == ACTION_RUN) {
+		else if (m_ActionState == ACTION_RUN)
+{
 			m_pSprite->PlayAnimation(ANIMATION_RUN_WEAPON, true);
 		}
 	}
-	else {
-		if (m_ActionState == ACTION_STAND) {
+	else
+{
+		if (m_ActionState == ACTION_STAND)
+{
 			m_pSprite->PlayAnimation(ANIMATION_STAND, true);
 		}
-		else if (m_ActionState == ACTION_RUN) {
+		else if (m_ActionState == ACTION_RUN)
+{
 			m_pSprite->PlayAnimation(ANIMATION_RUN, true);
 		}
 	}
 }
 
-void Controller::OnLightKeyDown() {
-	switch (m_LightType) {
+void Controller::OnLightKeyDown()
+{
+	switch (m_LightType)
+{
 	case POINT_LIGHT:
 		m_pPointLight->Disable();
 		m_pDirectionalLight->Enable();
@@ -415,12 +466,16 @@ void Controller::OnLightKeyDown() {
 	}
 }
 
-void Controller::OnAttackKeyDown() {
-	if (m_ActionState == ACTION_STAND || m_ActionState == ACTION_RUN) {
-		if (m_UseWeapon) {
+void Controller::OnAttackKeyDown()
+{
+	if (m_ActionState == ACTION_STAND || m_ActionState == ACTION_RUN)
+{
+		if (m_UseWeapon)
+{
 			m_pSprite->PlayAnimation(ANIMATION_ATTACK_WEAPON, false);
 		}
-		else {
+		else
+{
 			m_pSprite->PlayAnimation(ANIMATION_ATTACK, false);
 		}
 
@@ -428,9 +483,12 @@ void Controller::OnAttackKeyDown() {
 	}
 }
 
-void Controller::OnSkillKeyDown(unsigned int skillID) {
-	if (m_ActionState == ACTION_STAND || m_ActionState == ACTION_RUN) {
-		switch (skillID) {
+void Controller::OnSkillKeyDown(unsigned int skillID)
+{
+	if (m_ActionState == ACTION_STAND || m_ActionState == ACTION_RUN)
+{
+		switch (skillID)
+{
 		case SKILL_0:
 			m_pSprite->PlayAnimation(ANIMATION_SKILL_FNYJ01, false);
 			break;
@@ -472,33 +530,39 @@ void Controller::OnSkillKeyDown(unsigned int skillID) {
 	}
 }
 
-void Controller::EnhanceMaterial(unsigned int attributeID) {
+void Controller::EnhanceMaterial(unsigned int attributeID)
+{
 	D3DXCOLOR white(1.0f, 1.0f, 1.0f, 1.0f);
 
-	switch (attributeID) {
+	switch (attributeID)
+{
 	case MATERIAL_AMBIENT:
-		for (unsigned int i = 0; i < m_MeshNum; ++i) {
+		for (unsigned int i = 0; i < m_MeshNum; ++i)
+{
 			m_Ambient += m_DeltaColor;
 			m_Meshes[i].SetMaterialAmbient(white * m_Ambient);
 		}
 		break;
 
 	case MATERIAL_DIFFUSE:
-		for (unsigned int i = 0; i < m_MeshNum; ++i) {
+		for (unsigned int i = 0; i < m_MeshNum; ++i)
+{
 			m_Diffuse += m_DeltaColor;
 			m_Meshes[i].SetMaterialDiffuse(white * m_Diffuse);
 		}
 		break;
 
 	case MATERIAL_SPECULAR:
-		for (unsigned int i = 0; i < m_MeshNum; ++i) {
+		for (unsigned int i = 0; i < m_MeshNum; ++i)
+{
 			m_Specular += m_DeltaColor;
 			m_Meshes[i].SetMaterialSpecular(white * m_Specular);
 		}
 		break;
 
 	case MATERIAL_POWER:
-		for (unsigned int i = 0; i < m_MeshNum; ++i) {
+		for (unsigned int i = 0; i < m_MeshNum; ++i)
+{
 			m_Power += m_DeltaColor;
 			m_Meshes[i].SetMaterialPower(m_Power);
 		}
@@ -509,33 +573,39 @@ void Controller::EnhanceMaterial(unsigned int attributeID) {
 	}
 }
 
-void Controller::WeakenMaterial(unsigned int attributeID) {
+void Controller::WeakenMaterial(unsigned int attributeID)
+{
 	D3DXCOLOR white(1.0f, 1.0f, 1.0f, 1.0f);
 
-	switch (attributeID) {
+	switch (attributeID)
+{
 	case MATERIAL_AMBIENT:
-		for (unsigned int i = 0; i < m_MeshNum; ++i) {
+		for (unsigned int i = 0; i < m_MeshNum; ++i)
+{
 			m_Ambient -= m_DeltaColor;
 			m_Meshes[i].SetMaterialAmbient(white * m_Ambient);
 		}
 		break;
 
 	case MATERIAL_DIFFUSE:
-		for (unsigned int i = 0; i < m_MeshNum; ++i) {
+		for (unsigned int i = 0; i < m_MeshNum; ++i)
+{
 			m_Diffuse -= m_DeltaColor;
 			m_Meshes[i].SetMaterialDiffuse(white * m_Diffuse);
 		}
 		break;
 
 	case MATERIAL_SPECULAR:
-		for (unsigned int i = 0; i < m_MeshNum; ++i) {
+		for (unsigned int i = 0; i < m_MeshNum; ++i)
+{
 			m_Specular -= m_DeltaColor;
 			m_Meshes[i].SetMaterialSpecular(white * m_Specular);
 		}
 		break;
 
 	case MATERIAL_POWER:
-		for (unsigned int i = 0; i < m_MeshNum; ++i) {
+		for (unsigned int i = 0; i < m_MeshNum; ++i)
+{
 			m_Power -= m_DeltaColor;
 			m_Meshes[i].SetMaterialPower(m_Power);
 		}

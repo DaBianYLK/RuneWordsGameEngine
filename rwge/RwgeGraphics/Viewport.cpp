@@ -4,7 +4,8 @@
 #include "Graphics.h"
 #include "Camera.h"
 
-Viewport::Viewport(Camera* pCamera) {
+Viewport::Viewport(Camera* pCamera)
+{
 	m_pDevice = Graphics::GetInstance()->GetD3D9Device();
 	m_pVertexShader = Graphics::GetInstance()->GetVertexShader();
 
@@ -15,11 +16,13 @@ Viewport::Viewport(Camera* pCamera) {
 	#endif
 }
 
-Viewport::~Viewport() {
+Viewport::~Viewport()
+{
 	
 }
 
-void Viewport::Update(float deltaTime) {
+void Viewport::Update(float deltaTime)
+{
 	m_pDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_BackgroundColor, 1.0f, 0);
 
 	#ifdef RWGE_SHADER_ENABLED
@@ -30,22 +33,27 @@ void Viewport::Update(float deltaTime) {
 	#endif
 }
 
-void Viewport::Clear() {
+void Viewport::Clear()
+{
 	m_pDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_BackgroundColor, 1.0f, 0);
 }
 
-void Viewport::SetBackgroundColor(const D3DCOLOR& color) {
+void Viewport::SetBackgroundColor(const D3DCOLOR& color)
+{
 	m_BackgroundColor = color;
 }
 
-D3DXMATRIX* Viewport::GetViewTransform() {
+D3DXMATRIX* Viewport::GetViewTransform()
+{
 	return m_pViewMatrix;
 }
 
-D3DXMATRIX* Viewport::GetViewportTransform() {
+D3DXMATRIX* Viewport::GetViewportTransform()
+{
 	return &m_ViewProjectionMatrix;
 }
 
-Camera* Viewport::GetCamera() {
+Camera* Viewport::GetCamera()
+{
 	return m_pCamera;
 }

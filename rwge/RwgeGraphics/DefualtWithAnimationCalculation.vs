@@ -64,13 +64,17 @@ VS_OUTPUT Main(VS_INPUT input)
 	// ========= 使用shader计算动画 ==========
 	if (input.boneID[0] >= 0 || input.boneID[1] >= 0)
 	{
-		vector pos = { 0.0f, 0.0f, 0.0f, 0.0f };
-		vector normal = { 0.0f, 0.0f, 0.0f, 0.0f };
-		if (input.boneID[0] >= 0) {
+		vector pos =
+{ 0.0f, 0.0f, 0.0f, 0.0f };
+		vector normal =
+{ 0.0f, 0.0f, 0.0f, 0.0f };
+		if (input.boneID[0] >= 0)
+{
 			pos += mul(input.position, g_ModelMatrices[input.boneID[0]]) * input.blend[0];
 			normal += mul(input.normal, g_ModelMatrices[input.boneID[0]]) * input.blend[0];
 		}
-		if (input.boneID[1] >= 0) {
+		if (input.boneID[1] >= 0)
+{
 			pos += mul(input.position, g_ModelMatrices[input.boneID[1]]) * input.blend[1];
 			normal += mul(input.normal, g_ModelMatrices[input.boneID[1]]) * input.blend[1];
 		}

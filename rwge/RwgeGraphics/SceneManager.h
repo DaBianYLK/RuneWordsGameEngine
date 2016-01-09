@@ -9,7 +9,8 @@ class SceneNode;
 class Camera;
 class RwgeVertexShader;
 
-class SceneManager {
+class SceneManager
+{
 public:
 	SceneManager();
 	~SceneManager();

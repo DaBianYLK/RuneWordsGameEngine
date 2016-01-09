@@ -1,7 +1,8 @@
 #include "RwgePixelShader.h"
 
 
-RwgePixelShader::RwgePixelShader() {
+RwgePixelShader::RwgePixelShader()
+{
 	m_hTextureSampler = m_pConstantTable->GetConstantByName(0, "TextureSampler");
 
 	unsigned int count;
@@ -9,9 +10,11 @@ RwgePixelShader::RwgePixelShader() {
 }
 
 
-RwgePixelShader::~RwgePixelShader() {
+RwgePixelShader::~RwgePixelShader()
+{
 }
 
-void RwgePixelShader::SetTexture(IDirect3DTexture9* pTexture) {
+void RwgePixelShader::SetTexture(IDirect3DTexture9* pTexture)
+{
 	m_pDevice->SetTexture(m_TextureDesc.RegisterIndex, pTexture);
 }

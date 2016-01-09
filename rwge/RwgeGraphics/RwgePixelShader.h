@@ -2,7 +2,8 @@
 
 #include "PixelShader.h"
 
-class RwgePixelShader : public PixelShader {
+class RwgePixelShader : public PixelShader
+{
 public:
 	RwgePixelShader();
 	~RwgePixelShader();

@@ -4,7 +4,8 @@
 
 using namespace std;
 
-struct MaxVertex {
+struct MaxVertex
+{
 	float x;
 	float y;
 	float z;
@@ -20,18 +21,21 @@ struct MaxVertex {
 	float blend[2];
 };
 
-struct MaxMeshHead {
+struct MaxMeshHead
+{
 	char name[256];
 	unsigned int vertexNum;
 	unsigned int triangleNum;
 };
 
-struct MaxMesh {
+struct MaxMesh
+{
 	MaxMeshHead head;
 	vector<MaxVertex> vertices;
 };
 
-struct MaxModelHead {
+struct MaxModelHead
+{
 	unsigned int boneNum;
 	int startTime;
 	int endTime;
@@ -41,7 +45,8 @@ struct MaxModelHead {
 	unsigned int meshNum;
 };
 
-struct MaxAnimation {
+struct MaxAnimation
+{
 	char name[256];
 	unsigned int startFrame;
 	unsigned int frameNum;

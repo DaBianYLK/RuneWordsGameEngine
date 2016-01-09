@@ -4,19 +4,22 @@
 #include "Application.h"
 #include "InputManager.h"
 #include "SceneManager.h"
-#include "Window.h"
+#include "DisplayWindow.h"
 #include "Mesh.h"
 
-Graphics::Graphics() {
-	m_pDevice = NULL;
-	m_pSceneManager = NULL;
+Graphics::Graphics()
+{
+	m_pDevice = nullptr;
+	m_pSceneManager = nullptr;
 }
 
-Graphics::~Graphics() {
+Graphics::~Graphics()
+{
 
 }
 
-void Graphics::Initialize() {
+void Graphics::Initialize()
+{
 	InitWindow();
 	InitD3D9();
 
@@ -42,8 +45,10 @@ void Graphics::Initialize() {
 	Mesh::SetVertexDeclaration(declaration);
 }
 
-void Graphics::Update(float deltaTime) {
-	if (m_pDevice && m_pSceneManager) {
+void Graphics::Update(float deltaTime)
+{
+	if (m_pDevice && m_pSceneManager)
+{
 		#ifdef RWGE_SHADER_ENABLED
 			m_pVertexShader->Enable();
 			m_pPixelShader->Enable();
@@ -58,7 +63,8 @@ void Graphics::Update(float deltaTime) {
 	}
 }
 
-void Graphics::Cleanup() {
+void Graphics::Cleanup()
+{
 
 }
 
@@ -72,7 +78,7 @@ SceneManager* Graphics::GetSceneManager() const
 	return m_pSceneManager;
 }
 
-Window* Graphics::GetWindow() const
+DisplayWindow* Graphics::GetWindow() const
 {
 	return m_pWindow;
 }
@@ -82,86 +88,19 @@ RwgeVertexShader* Graphics::GetVertexShader() const
 	return m_pVertexShader;
 }
 
-void Graphics::InitWindow() {
-	m_pWindow = new Window();
+void Graphics::InitWindow()
+{
+	m_pWindow = new DisplayWindow();
 	m_pWindow->Initialize();
 }
 
-void Graphics::InitD3D9() {
-	m_pD3D9 = Direct3DCreate9(D3D_SDK_VERSION);
-	if (!m_pD3D9) {
-		MessageBox(nullptr, "Initialize Direct3D-9 failed.", nullptr, 0);
-		return;
-	}
-
-	D3DCAPS9 caps;
-	m_pD3D9->GetDeviceCaps(D3DADAPTER_DEFAULT, AppConfig::deviceType, &caps);
-
-
-	if (caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT) {
-		m_VertexProcType = D3DCREATE_HARDWARE_VERTEXPROCESSING;
-	}
-	else {
-		m_VertexProcType = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
-	}
-
-	HWND hWnd = m_pWindow->GetHandle();
-
-	D3DPRESENT_PARAMETERS d3dpp;
-	d3dpp.BackBufferWidth = m_pWindow->GetWidth();
-	d3dpp.BackBufferHeight = m_pWindow->GetHeight();
-	d3dpp.BackBufferFormat = AppConfig::backBufferFormat;
-	d3dpp.BackBufferCount = AppConfig::backBufferCount;
-	d3dpp.MultiSampleType = AppConfig::multiSampleType;
-	d3dpp.MultiSampleQuality = AppConfig::multiSampleQuality;
-	d3dpp.SwapEffect = AppConfig::swapEffect;
-	d3dpp.hDeviceWindow = hWnd;
-	d3dpp.Windowed = !m_pWindow->IsFullScreen();
-	d3dpp.EnableAutoDepthStencil = AppConfig::enableAutoDepthStencil;
-	d3dpp.AutoDepthStencilFormat = AppConfig::autoDepthStencilFormat;
-	d3dpp.Flags = AppConfig::flags;
-	d3dpp.FullScreen_RefreshRateInHz = AppConfig::fullScreenRefreshRateInHz;
-	d3dpp.PresentationInterval = AppConfig::presentationInterval;
-
-	HRESULT result = m_pD3D9->CreateDevice(
-		D3DADAPTER_DEFAULT,				// primary adapter
-		AppConfig::deviceType,			// device type
-		hWnd,							// window associated with device
-		m_VertexProcType,				// vertex processing
-		&d3dpp,							// present parameters
-		&m_pDevice);					// return created device
-
-	if (FAILED(result)) {
-		// try again using a 16-bit depth buffer
-		d3dpp.AutoDepthStencilFormat = AppConfig::autoDepthStencilFormat2;
-
-		result = m_pD3D9->CreateDevice(
-			D3DADAPTER_DEFAULT,
-			AppConfig::deviceType,
-			hWnd,
-			m_VertexProcType,
-			&d3dpp,
-			&m_pDevice);
-
-		if (FAILED(result)) {
-			m_pD3D9->Release(); // done with d3d9 object
-			MessageBox(0, "Create Direct3D-9 device failed.", 0, 0);
-			return;
-		}
-	}
-
-	m_pD3D9->Release(); // done with d3d9 object
-
-
-	//m_pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
-	//m_pDevice->SetRenderState(D3DRS_SPECULARENABLE, true);
-
-	m_pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-	m_pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-	m_pDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
+void Graphics::InitD3D9()
+{
+	
 }
 
-void Graphics::InitSceneManager() {
+void Graphics::InitSceneManager()
+{
 	m_pSceneManager = new SceneManager();
 	m_pSceneManager->Initialize();
 }

@@ -9,7 +9,7 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="源文件\Log">
+    <Filter Include="源文件\LogUtil">
       <UniqueIdentifier>{01c6b293-d19d-4c71-8211-3102bfcfcdbe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -18,12 +18,15 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="LogUtil.h">
-      <Filter>源文件\Log</Filter>
+      <Filter>源文件\LogUtil</Filter>
+    </ClInclude>
+    <ClInclude Include="AssertUtil.h">
+      <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LogUtil.cpp">
-      <Filter>源文件\Log</Filter>
+      <Filter>源文件\LogUtil</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
