@@ -1,5 +1,6 @@
 #include "RenderTarget.h"
 
+#include "GraphicsDefinitions.h"
 
 RenderTarget::RenderTarget()
 {

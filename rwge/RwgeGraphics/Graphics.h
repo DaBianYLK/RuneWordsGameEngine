@@ -1,8 +1,7 @@
 #pragma once
 
 #include <Windows.h>
-#include <d3d9.h>
-#include <d3dx9.h>
+#include "GraphicsDefinitions.h"
 
 #include "Singleton.h"
 #include "RwgeVertexShader.h"

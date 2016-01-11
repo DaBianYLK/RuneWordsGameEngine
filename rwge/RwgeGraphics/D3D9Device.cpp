@@ -46,15 +46,15 @@ void D3D9Device::SetDefaultParam()
 
 bool D3D9Device::Init(const DisplayWindow& window)
 {
-	IDirect3D9* m_pD3D9 = Direct3DCreate9(D3D_SDK_VERSION);
-	if (!m_pD3D9)
+	IDirect3D9* pD3D9 = Direct3DCreate9(D3D_SDK_VERSION);
+	if (!pD3D9)
 	{
 		MessageBox(nullptr, "Initialize Direct3D-9 failed.", nullptr, 0);
 		return;
 	}
 
 	D3DCAPS9 caps;
-	m_pD3D9->GetDeviceCaps(m_uAdapterID, m_DeviceType, &caps);
+	pD3D9->GetDeviceCaps(m_uAdapterID, m_DeviceType, &caps);
 
 	if (caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT)
 	{
@@ -72,7 +72,7 @@ bool D3D9Device::Init(const DisplayWindow& window)
 	m_PresentParam.hDeviceWindow = hWnd;
 	m_PresentParam.Windowed = !window.IsFullScreen();
 	
-	HRESULT result = m_pD3D9->CreateDevice(
+	HRESULT result = pD3D9->CreateDevice(
 		m_uAdapterID,					// primary adapter
 		m_DeviceType,					// device type
 		hWnd,							// window associated with device
@@ -85,7 +85,7 @@ bool D3D9Device::Init(const DisplayWindow& window)
 		// try again using a 16-bit depth buffer
 		m_PresentParam.AutoDepthStencilFormat = DefaultAutoDepthStencilFormat2;
 
-		result = m_pD3D9->CreateDevice(
+		result = pD3D9->CreateDevice(
 			m_uAdapterID,
 			m_DeviceType,
 			hWnd,
@@ -95,13 +95,13 @@ bool D3D9Device::Init(const DisplayWindow& window)
 
 		if (FAILED(result))
 		{
-			m_pD3D9->Release();
+			pD3D9->Release();
 			ErrorBox("Create Direct3D9 device failed.");
 			return;
 		}
 	}
 
-	m_pD3D9->Release();
+	pD3D9->Release();
 
 	//m_pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
 	//m_pDevice->SetRenderState(D3DRS_SPECULARENABLE, true);
@@ -115,7 +115,7 @@ bool D3D9Device::Init(const DisplayWindow& window)
 
 bool D3D9Device::Release()
 {
-	m_pDevice->Release();
+	D3D9SafeRelease(m_pDevice);
 
 	return true;
 }

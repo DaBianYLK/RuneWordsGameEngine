@@ -1,5 +1,7 @@
 #pragma once
 
+#include <d3dx9.h>
+
 enum EBlendMode
 {
 	BM_Opacity,
@@ -18,3 +20,10 @@ enum EShadingModel
 
 	ShadingModel_MAX
 };
+
+#define D3D9SafeRelease(ptr) \
+	if (ptr)\
+	{\
+		ptr->Release(); \
+		ptr = nullptr; \
+	}

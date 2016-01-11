@@ -18,6 +18,9 @@
     <Filter Include="源文件\Display">
       <UniqueIdentifier>{ad881196-c9a1-4799-b403-0dc4c34e1d3b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Common">
+      <UniqueIdentifier>{5c997a6b-69f0-45ae-82db-18edb7afdea7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppDelegate.cpp">
@@ -54,6 +57,9 @@
     </ClInclude>
     <ClInclude Include="DisplayWindow.h">
       <Filter>源文件\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreDefinitions.h">
+      <Filter>源文件\Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

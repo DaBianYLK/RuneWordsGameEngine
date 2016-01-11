@@ -1,6 +1,8 @@
 #pragma once
 
-#include <d3dx9.h>
+
+#include <list>
+#include "GraphicsDefinitions.h"
 
 class Camera;
 class RwgeVertexShader;
@@ -34,3 +36,4 @@ private:
 	D3DXMATRIX m_ViewProjectionMatrix;
 };
 
+typedef std::list<Viewport> ViewportList;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <d3d9.h>
+#include "GraphicsDefinitions.h"
 
 /*
 D3D9Device仅能由RenderTarget创建和释放

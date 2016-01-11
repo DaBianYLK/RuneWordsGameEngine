@@ -79,6 +79,7 @@
     <ClInclude Include="AppConfig.h" />
     <ClInclude Include="AppDelegate.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="CoreDefinitions.h" />
     <ClInclude Include="InputListener.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="DisplayWindow.h" />
