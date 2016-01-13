@@ -13,7 +13,7 @@ SceneNode::SceneNode()
 
 	m_Scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 
-	m_pFather = nullptr;
+	m_pParent = nullptr;
 }
 
 
@@ -24,34 +24,19 @@ SceneNode::~SceneNode()
 
 void SceneNode::AttachChild(SceneNode* pNode)
 {
-	if (pNode->m_pFather)
+	if (pNode->m_pParent)
 {
-		pNode->m_pFather->RemoveChild(pNode);
+		pNode->m_pParent->RemoveChild(pNode);
 	}
 
 	m_pChildren.push_back(pNode);
-	pNode->m_pFather = this;
+	pNode->m_pParent = this;
 }
 
 void SceneNode::RemoveChild(SceneNode* pNode)
 {
 	m_pChildren.remove(pNode);
-	pNode->m_pFather = nullptr;
-}
-
-void SceneNode::TranslateX(float x)
-{
-	m_Position.x += x;
-}
-
-void SceneNode::TranslateY(float y)
-{
-	m_Position.y += y;
-}
-
-void SceneNode::TranslateZ(float z)
-{
-	m_Position.z += z;
+	pNode->m_pParent = nullptr;
 }
 
 void SceneNode::Translate(float x, float y, float z)
@@ -59,21 +44,6 @@ void SceneNode::Translate(float x, float y, float z)
 	m_Position.x += x;
 	m_Position.y += y;
 	m_Position.z += z;
-}
-
-void SceneNode::SetPositionX(float x)
-{
-	m_Position.x = x;
-}
-
-void SceneNode::SetPositionY(float y)
-{
-	m_Position.y = y;
-}
-
-void SceneNode::SetPositionZ(float z)
-{
-	m_Position.z = z;
 }
 
 void SceneNode::SetPosition(float x, float y, float z)
@@ -108,7 +78,7 @@ void SceneNode::Pitch(float radian)
 	float halfRotationRadian = acosf(d3);
 	// 如果旋转角为0，则重置旋转轴为Y轴
 	if (halfRotationRadian > -0.000001 && halfRotationRadian < 0.000001)
-{
+	{
 		m_RotationAxis.x = 0.0f;
 		m_RotationAxis.y = 1.0f;
 		m_RotationAxis.z = 0.0f;
@@ -116,7 +86,7 @@ void SceneNode::Pitch(float radian)
 		m_RotationRadian = 0.0f;
 	}
 	else
-{
+	{
 		float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
 
 		m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
@@ -152,7 +122,7 @@ void SceneNode::Yaw(float radian)
 	float halfRotationRadian = acosf(d3);
 	// 如果旋转角为0，则重置旋转轴为Y轴
 	if (halfRotationRadian > -0.000001 && halfRotationRadian < 0.000001)
-{
+	{
 		m_RotationAxis.x = 0.0f;
 		m_RotationAxis.y = 1.0f;
 		m_RotationAxis.z = 0.0f;
@@ -160,7 +130,7 @@ void SceneNode::Yaw(float radian)
 		m_RotationRadian = 0.0f;
 	}
 	else
-{
+	{
 		float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
 
 		m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
@@ -196,7 +166,7 @@ void SceneNode::Roll(float radian)
 	float halfRotationRadian = acosf(d3);
 	// 如果旋转角为0，则重置旋转轴为Y轴
 	if (halfRotationRadian > -0.000001 && halfRotationRadian < 0.000001)
-{
+	{
 		m_RotationAxis.x = 0.0f;
 		m_RotationAxis.y = 1.0f;
 		m_RotationAxis.z = 0.0f;
@@ -204,7 +174,7 @@ void SceneNode::Roll(float radian)
 		m_RotationRadian = 0.0f;
 	}
 	else
-{
+	{
 		float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
 
 		m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
@@ -241,7 +211,7 @@ void SceneNode::Rotate(float axisX, float axisY, float axisZ, float radian)
 	float halfRotationRadian = acosf(d3);
 	// 如果旋转角为0，则重置旋转轴为Y轴
 	if (halfRotationRadian > -0.000001 && halfRotationRadian < 0.000001)
-{
+	{
 		m_RotationAxis.x = 0.0f;
 		m_RotationAxis.y = 1.0f;
 		m_RotationAxis.z = 0.0f;
@@ -249,7 +219,7 @@ void SceneNode::Rotate(float axisX, float axisY, float axisZ, float radian)
 		m_RotationRadian = 0.0f;
 	}
 	else
-{
+	{
 		float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
 
 		m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
@@ -283,21 +253,6 @@ void SceneNode::Scale(float x, float y, float z)
 	m_Scale.z *= z;
 }
 
-void SceneNode::ScaleX(float x)
-{
-	m_Scale.x *= x;
-}
-
-void SceneNode::ScaleY(float y)
-{
-	m_Scale.y *= y;
-}
-
-void SceneNode::ScaleZ(float z)
-{
-	m_Scale.z *= z;
-}
-
 void SceneNode::SetScale(float scale)
 {
 	m_Scale.x = scale;
@@ -311,22 +266,6 @@ void SceneNode::SetScale(float x, float y, float z)
 	m_Scale.y = y;
 	m_Scale.z = z;
 }
-
-void SceneNode::SetScaleX(float x)
-{
-	m_Scale.x = x;
-}
-
-void SceneNode::SetScaleY(float y)
-{
-	m_Scale.y = y;
-}
-
-void SceneNode::SetScaleZ(float z)
-{
-	m_Scale.z = z;
-}
-
 
 D3DXMATRIX* SceneNode::GetTransformMatrix()
 {
@@ -422,17 +361,17 @@ void SceneNode::GetTransformMatrix(float* outputMatrix)
 	outputMatrix[12] = translateX;			outputMatrix[13] = translateY;			outputMatrix[14] = translateZ;			outputMatrix[15] = 1.0f;
 }
 
-SceneNode* SceneNode::GetFather()
+SceneNode* SceneNode::GetParent()
 {
-	return m_pFather;
+	return m_pParent;
 }
 
-D3DXVECTOR3 SceneNode::GetPosition()
+D3DXVECTOR3& SceneNode::GetPosition()
 {
 	return m_Position;
 }
 
-D3DXVECTOR3 SceneNode::GetRotationAxis()
+D3DXVECTOR3& SceneNode::GetRotationAxis()
 {
 	return m_RotationAxis;
 }
@@ -442,7 +381,12 @@ float SceneNode::GetRotationRadian()
 	return m_RotationRadian;
 }
 
-D3DXVECTOR3 SceneNode::GetScale()
+D3DXVECTOR3& SceneNode::GetScale()
 {
 	return m_Scale;
+}
+
+void SceneNode::Update()
+{
+
 }

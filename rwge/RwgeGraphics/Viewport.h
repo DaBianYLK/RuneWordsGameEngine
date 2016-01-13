@@ -9,7 +9,7 @@ class RwgeVertexShader;
 
 class Viewport
 {
-	friend class DisplayWindow;
+	friend class RenderTarget;
 
 private:
 	Viewport(Camera* pCamera);

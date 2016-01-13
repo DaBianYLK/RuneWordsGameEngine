@@ -9,8 +9,6 @@
 
 class DisplayWindow
 {
-	friend class Application;
-
 private:
 	DisplayWindow(HINSTANCE hAppInstance, bool bFullScreen = false);
 	DisplayWindow(HINSTANCE hAppInstance, const char* strName, bool bFullScreen = false);
@@ -18,6 +16,7 @@ private:
 	DisplayWindow(HINSTANCE hAppInstance, const char* strName, int x, int y, int width, int height);
 	~DisplayWindow();
 
+private:
 	void SetDefaultSize();		// 此函数仅在构造函数中使用，窗口构造完成后使用无效
 	void Init(HINSTANCE hAppInstance);
 	void Release();

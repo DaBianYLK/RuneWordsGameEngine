@@ -10,7 +10,7 @@ using namespace std;
 
 Sprite::Sprite()
 {
-	m_NodeType = Type::SpriteNode;
+	m_NodeType = SceneNodeType::SpriteNode;
 	
 	m_Meshes = nullptr;
 	m_Animations = nullptr;

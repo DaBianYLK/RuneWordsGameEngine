@@ -1,44 +1,64 @@
 #include "Camera.h"
 
-#include "AppConfig.h"
 #include "Graphics.h"
-#include "DisplayWindow.h"
 #include "SceneManager.h"
 
-Camera::Camera()
+const D3DXVECTOR3	DefaultCameraPosition(0.0f, 0.0f, 10.0f);
+const D3DXVECTOR3	DefaultCameraLookAtOffset(0.0f, 0.0f, -10.0f);
+const D3DXVECTOR3	DefaultCameraUpAxis(0.0f, 1.0f, 0.0f);
+const bool			DefaultLockLookAt = false;
+const float			DefaultFovy = D3DX_PI * 0.5f;
+const float			DefaultAspect = 800.0f / 600.0f;
+const float			DefaultLookNear = 2.0f;
+const float			DefaultLookFar = 1000.0f;
+
+Camera::Camera() :
+	m_LookAtPosition(DefaultCameraPosition + DefaultCameraLookAtOffset),
+	m_UpAxis(DefaultCameraUpAxis),
+	m_bLockLookAt(DefaultLockLookAt),
+	m_fFovy(DefaultFovy),
+	m_fAspect(DefaultAspect),
+	m_fLookNear(DefaultLookNear),
+	m_fLookFar(DefaultLookFar)
 {
-	m_NodeType = SceneNode::Type::CameraNode;
-
-	m_RightAxis = D3DXVECTOR3(1.0f, 0.0f, 0.0f);
-	m_UpAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	m_LookAxis = D3DXVECTOR3(0.0f, 0.0f, 1.0f);
-
-	m_ViewMatrix = D3DXMATRIX();
-	m_ProjectionMatrix = D3DXMATRIX();
-
-	D3DXMatrixPerspectiveFovLH(
-		&m_ProjectionMatrix,
-		AppConfig::cameraFovy,
-		AppConfig::cameraAspect,
-		AppConfig::cameraLookNear,
-		AppConfig::cameraLookFar);
+	m_Position = DefaultCameraPosition;
 }
 
-Camera::Camera(const D3DXVECTOR3& position, const D3DXVECTOR3& rightAxis, const D3DXVECTOR3& upAxis, const D3DXVECTOR3& lookAxis, 
-			   float fovy, float aspect, float lookNear, float lookFar)
+Camera::Camera(const D3DXVECTOR3& pos) :
+	m_LookAtPosition(DefaultCameraPosition + DefaultCameraLookAtOffset),
+	m_UpAxis(DefaultCameraUpAxis),
+	m_bLockLookAt(DefaultLockLookAt),
+	m_fFovy(DefaultFovy),
+	m_fAspect(DefaultAspect),
+	m_fLookNear(DefaultLookNear),
+	m_fLookFar(DefaultLookFar)
 {
-	m_NodeType = SceneNode::Type::CameraNode;
+	m_Position = pos;
+}
 
-	m_Position = position;
+Camera::Camera(const D3DXVECTOR3& pos, const D3DXVECTOR3& lookAtPos, const D3DXVECTOR3& upAxis, bool bLockLookAt) :
+	m_LookAtPosition(lookAtPos),
+	m_UpAxis(upAxis),
+	m_bLockLookAt(bLockLookAt),
+	m_fFovy(DefaultFovy),
+	m_fAspect(DefaultAspect),
+	m_fLookNear(DefaultLookNear),
+	m_fLookFar(DefaultLookFar)
+{
+	m_Position = pos;
+}
 
-	m_RightAxis = rightAxis;
-	m_UpAxis = upAxis;
-	m_LookAxis = lookAxis;
-
-	m_ViewMatrix = D3DXMATRIX();
-	m_ProjectionMatrix = D3DXMATRIX();
-
-	D3DXMatrixPerspectiveFovLH(&m_ProjectionMatrix, fovy, aspect, lookNear, lookFar);
+Camera::Camera(const D3DXVECTOR3& pos, const D3DXVECTOR3& lookAtPos, const D3DXVECTOR3& upAxis, bool bLockLookAt, 
+	float fFovy, float fAspect, float fLookNear, float fLookFar) :
+	m_LookAtPosition(lookAtPos),
+	m_UpAxis(upAxis),
+	m_bLockLookAt(bLockLookAt),
+	m_fFovy(fFovy),
+	m_fAspect(fAspect),
+	m_fLookNear(fLookNear),
+	m_fLookFar(fLookFar)
+{
+	m_Position = pos;
 }
 
 Camera::~Camera()
@@ -46,47 +66,29 @@ Camera::~Camera()
 
 }
 
-void Camera::SetLookAxes(const D3DXVECTOR3& rightAxis, const D3DXVECTOR3& upAxis, const D3DXVECTOR3& lookAxis)
+void Camera::SetUpAxis(const D3DXVECTOR3& upAxis)
 {
-	m_RightAxis = rightAxis;
 	m_UpAxis = upAxis;
-	m_LookAxis = lookAxis;
 }
 
-void Camera::SetPerspective(float fovy, float aspect, float lookNear, float lookFar)
+void Camera::LookAtPosition(const D3DXVECTOR3& lookAtPos)
 {
-	D3DXMatrixPerspectiveFovLH(&m_ProjectionMatrix, fovy, aspect, lookNear, lookFar);
+	m_LookAtPosition = lookAtPos;
+}
+
+void Camera::SetPerspective(float fFovy, float fAspect, float fLookNear, float fLookFar)
+{
+	m_fFovy = fFovy;
+	m_fAspect = fAspect;
+	m_fLookNear = fLookNear;
+	m_fLookFar = fLookFar;
+
+	D3DXMatrixPerspectiveFovLH(&m_ProjectionMatrix, fFovy, fAspect, fLookNear, fLookFar);
 }
 
 D3DXMATRIX* Camera::GetViewMatrix()
 {
-	// 标准化相机的前，上，右三个轴，并确保它们保持正交
-	D3DXVec3Normalize(&m_LookAxis, &m_LookAxis);
-
-	D3DXVec3Cross(&m_UpAxis, &m_LookAxis, &m_RightAxis);
-	D3DXVec3Normalize(&m_UpAxis, &m_UpAxis);
-
-	D3DXVec3Cross(&m_RightAxis, &m_UpAxis, &m_LookAxis);
-	D3DXVec3Normalize(&m_RightAxis, &m_RightAxis);
-
-	m_ViewMatrix(0, 0) = m_RightAxis.x;		m_ViewMatrix(0, 1) = m_UpAxis.x;		m_ViewMatrix(0, 2) = m_LookAxis.x;		m_ViewMatrix(0, 3) = 0.0f;
-	m_ViewMatrix(1, 0) = m_RightAxis.y;		m_ViewMatrix(1, 1) = m_UpAxis.y;		m_ViewMatrix(1, 2) = m_LookAxis.y;		m_ViewMatrix(1, 3) = 0.0f;
-	m_ViewMatrix(2, 0) = m_RightAxis.z;		m_ViewMatrix(2, 1) = m_UpAxis.z;		m_ViewMatrix(2, 2) = m_LookAxis.z;		m_ViewMatrix(2, 3) = 0.0f;
-	m_ViewMatrix(3, 0) = 0.0f;				m_ViewMatrix(3, 1) = 0.0f;				m_ViewMatrix(3, 2) = 0.0f;				m_ViewMatrix(3, 3) = 1.0f;
-
-	// 视图矩阵与相机的变换矩阵互逆
-	// 通过将相机变换矩阵的逆矩阵与父节点变换矩阵的逆矩阵依次相乘可以求得
-	D3DXMATRIX tempMatrix;
-	SceneNode* pRootNode = Graphics::GetInstance()->GetSceneManager()->GetSceneRootNode();
-	SceneNode* pNode = this;
-
-	while (pNode && pNode != pRootNode)
-{
-		D3DXMatrixInverse(&tempMatrix, nullptr, pNode->GetTransformMatrix());
-		D3DXMatrixMultiply(&m_ViewMatrix, &tempMatrix, &m_ViewMatrix);
-
-		pNode = pNode->GetFather();
-	}
+	Update();
 
 	return &m_ViewMatrix;
 }
@@ -96,37 +98,29 @@ D3DXMATRIX* Camera::GetProjectionMatrix()
 	return &m_ProjectionMatrix;
 }
 
-//void Camera::Move(float x, float y, float z)
+void Camera::Update()
 {
-//	m_Position += m_RightAxis * x + m_UpAxis * y + m_LookAxis * z;
-//}
-//
-//void Camera::Pitch(float radian)
-{
-//	D3DXMATRIX transform;
-//	D3DXMatrixRotationAxis(&transform, &m_RightAxis, radian);
-//
-//	// 修正其他两个轴的方向
-//	D3DXVec3TransformCoord(&m_UpAxis, &m_UpAxis, &transform);
-//	D3DXVec3TransformCoord(&m_LookAxis, &m_LookAxis, &transform);
-//}
-//
-//void Camera::Yaw(float radian)
-{
-//	D3DXMATRIX transform;
-//	D3DXMatrixRotationAxis(&transform, &m_UpAxis, radian);
-//
-//	// 修正其他两个轴的方向
-//	D3DXVec3TransformCoord(&m_RightAxis, &m_RightAxis, &transform);
-//	D3DXVec3TransformCoord(&m_LookAxis, &m_LookAxis, &transform);
-//}
-//
-//void Camera::Roll(float radian)
-{
-//	D3DXMATRIX transform;
-//	D3DXMatrixRotationAxis(&transform, &m_LookAxis, radian);
-//
-//	// 修正其他两个轴的方向
-//	D3DXVec3TransformCoord(&m_UpAxis, &m_UpAxis, &transform);
-//	D3DXVec3TransformCoord(&m_RightAxis, &m_RightAxis, &transform);
-//}
+	if (m_bNeedUpdate)
+	{
+		// 获取父节点的世界变换矩阵前父节点会进行更新
+		D3DXMATRIX* pParentTransform = m_pParent->GetTransformMatrix();
+		D3DXVECTOR3 WorldPosition;
+
+		// 如果LookAtPosition被锁定，则不使用父节点世界变换矩阵对LookAtPosition进行变换
+		if (m_bLockLookAt)
+		{
+			
+			D3DXMATRIX tempMatrix;
+
+			ASSERT(D3DXMatrixInverse(&tempMatrix, nullptr, pParentTransform));	// 若D3DXMatrixInverse返回空，说明pParentTransform行列式的值为0，不存在逆矩阵
+
+			D3DXMatrixLookAtLH
+		}
+		else
+		{
+
+		}
+	}
+
+	m_bNeedUpdate = false;
+}

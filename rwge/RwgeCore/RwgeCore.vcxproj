@@ -73,7 +73,6 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="InputListener.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="DisplayWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppConfig.h" />
@@ -82,7 +81,6 @@
     <ClInclude Include="CoreDefinitions.h" />
     <ClInclude Include="InputListener.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="DisplayWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RwgeGraphics\RwgeGraphics.vcxproj">

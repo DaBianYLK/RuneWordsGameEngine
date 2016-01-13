@@ -65,9 +65,6 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>源文件\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Viewport.cpp">
-      <Filter>源文件\Common</Filter>
-    </ClCompile>
     <ClCompile Include="VertexShader.cpp">
       <Filter>源文件\Shader</Filter>
     </ClCompile>
@@ -99,6 +96,12 @@
       <Filter>源文件\Render</Filter>
     </ClCompile>
     <ClCompile Include="D3D9Device.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="DisplayWindow.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Viewport.cpp">
       <Filter>源文件\Render</Filter>
     </ClCompile>
   </ItemGroup>
@@ -135,9 +138,6 @@
     </ClInclude>
     <ClInclude Include="Sprite.h">
       <Filter>源文件\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Viewport.h">
-      <Filter>源文件\Common</Filter>
     </ClInclude>
     <ClInclude Include="VertexShader.h">
       <Filter>源文件\Shader</Filter>
@@ -176,6 +176,12 @@
       <Filter>源文件\Render</Filter>
     </ClInclude>
     <ClInclude Include="D3D9Device.h">
+      <Filter>源文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="DisplayWindow.h">
+      <Filter>源文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Viewport.h">
       <Filter>源文件\Render</Filter>
     </ClInclude>
   </ItemGroup>

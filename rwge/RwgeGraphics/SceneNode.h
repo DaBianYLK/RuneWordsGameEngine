@@ -8,8 +8,8 @@ class SceneNode
 	friend class SceneManager;
 
 public:
-	enum Type
-{
+	enum SceneNodeType
+	{
 		EmptyNode,
 		SpriteNode,
 		CameraNode
@@ -17,18 +17,12 @@ public:
 
 public:
 	SceneNode();
-	~SceneNode();
+	virtual ~SceneNode();
 
 	void AttachChild(SceneNode* pNode);
 	void RemoveChild(SceneNode* pNode);
 
-	void TranslateX(float x);
-	void TranslateY(float y);
-	void TranslateZ(float z);
 	void Translate(float x, float y, float z);
-	void SetPositionX(float x);
-	void SetPositionY(float y);
-	void SetPositionZ(float z);
 	void SetPosition(float x, float y, float z);
 
 	void Pitch(float radian);		// 绕X轴旋转
@@ -39,25 +33,23 @@ public:
 
 	void Scale(float scale);
 	void Scale(float x, float y, float z);
-	void ScaleX(float x);
-	void ScaleY(float y);
-	void ScaleZ(float z);
 	void SetScale(float scale);
 	void SetScale(float x, float y, float z);
-	void SetScaleX(float x);
-	void SetScaleY(float y);
-	void SetScaleZ(float z);
 
 	D3DXMATRIX* GetTransformMatrix();
 	void GetTransformMatrix(float* outputMatrix);		// 矩阵中数据排列顺序为先行后列
-	SceneNode* GetFather();
-	D3DXVECTOR3 GetPosition();
-	D3DXVECTOR3 GetRotationAxis();
+	SceneNode* GetParent();
+	D3DXVECTOR3& GetPosition();
+	D3DXVECTOR3& GetRotationAxis();
 	float GetRotationRadian();
-	D3DXVECTOR3 GetScale();
+	D3DXVECTOR3& GetScale();
+
+	virtual void Update();
 
 protected:
-	Type m_NodeType;
+	SceneNodeType m_NodeType;
+
+	bool m_bNeedUpdate;
 
 	D3DXVECTOR3 m_Position;
 
@@ -68,7 +60,7 @@ protected:
 
 	D3DXMATRIX m_TransformMatrix;
 
-	SceneNode* m_pFather;
+	SceneNode* m_pParent;
 	std::list<SceneNode*> m_pChildren;
 };
 

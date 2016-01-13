@@ -2,6 +2,7 @@
 
 #include "DisplayWindow.h"
 #include "AssertUtil.h"
+#include "RenderSystem.h"
 
 const D3DDEVTYPE			DefaultDeviceType				= D3DDEVTYPE_HAL;
 const unsigned int			DefaultAdapterID				= D3DADAPTER_DEFAULT;
@@ -23,6 +24,15 @@ D3D9Device::D3D9Device(const DisplayWindow& window)
 	Init(window);
 }
 
+D3D9Device::D3D9Device(D3D9Device&& device) :
+	m_DeviceType(device.m_DeviceType), 
+	m_PresentParam(device.m_PresentParam), 
+	m_uAdapterID(device.m_uAdapterID), 
+	m_uVertexProcessType(device.m_uVertexProcessType), 
+	m_pDevice(device.m_pDevice)
+{
+	device.m_pDevice = nullptr;
+}
 
 D3D9Device::~D3D9Device()
 {
@@ -46,11 +56,10 @@ void D3D9Device::SetDefaultParam()
 
 bool D3D9Device::Init(const DisplayWindow& window)
 {
-	IDirect3D9* pD3D9 = Direct3DCreate9(D3D_SDK_VERSION);
+	IDirect3D9* pD3D9 = g_RenderSystem.GetD3D9Ptr();
 	if (!pD3D9)
 	{
-		MessageBox(nullptr, "Initialize Direct3D-9 failed.", nullptr, 0);
-		return;
+		return false;
 	}
 
 	D3DCAPS9 caps;
@@ -95,13 +104,10 @@ bool D3D9Device::Init(const DisplayWindow& window)
 
 		if (FAILED(result))
 		{
-			pD3D9->Release();
 			ErrorBox("Create Direct3D9 device failed.");
 			return;
 		}
 	}
-
-	pD3D9->Release();
 
 	//m_pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
 	//m_pDevice->SetRenderState(D3DRS_SPECULARENABLE, true);

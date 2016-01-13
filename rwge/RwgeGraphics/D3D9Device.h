@@ -10,15 +10,14 @@ class DisplayWindow;
 
 class D3D9Device
 {
-	friend class RenderTarget;
-
-private:
+protected:
 	D3D9Device(const DisplayWindow& window);
+	D3D9Device(D3D9Device&& device);		// 转移构造函数
 	~D3D9Device();
 
 	void SetDefaultParam();
 	bool Init(const DisplayWindow& window);
-	bool Release();
+	virtual bool Release();
 
 private:
 	D3DDEVTYPE m_DeviceType;

@@ -87,7 +87,7 @@ void SceneManager::TraversalSceneNode(SceneNode* pNode, float deltaTime)
 	m_pVertexShader->SetWorldViewProjectionTransform(&m_WorldViewProjectionMatrix);
 
 	// 如果当前节点为精灵，则进行绘制
-	if (pNode->m_NodeType == SceneNode::Type::SpriteNode)
+	if (pNode->m_NodeType == SceneNode::SceneNodeType::SpriteNode)
 {
 		Sprite* pSprite = static_cast<Sprite*>(pNode);
 
