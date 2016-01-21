@@ -5,7 +5,7 @@
 struct AngleDegree;
 
 /*
-弧度，圆周取值范围[0, 2 * PI)
+弧度，圆周取值范围[0.0f, 2 * PI)
 */
 class AngleRadian
 {
@@ -17,16 +17,33 @@ public:
 	inline AngleRadian(const AngleDegree& angle);
 	inline ~AngleRadian();
 
+	inline float ToFloat() const;
+	inline AngleDegree ToDegree() const;
+
+	inline AngleRadian operator* (const AngleRadian& angle) const;
+	inline AngleRadian operator/ (const AngleRadian& angle) const;
+	inline AngleRadian operator+ (const AngleRadian& angle) const;
+	inline AngleRadian operator- (const AngleRadian& angle) const;
+
+	inline AngleRadian& operator= (float angle);
 	inline AngleRadian& operator= (const AngleDegree& angle);
 
+	inline bool operator== (float angle) const;
+	inline bool operator== (const AngleRadian& angle) const;
+	inline bool operator== (const AngleDegree& angle) const; 
+	inline bool operator!= (float angle) const;
+	inline bool operator!= (const AngleRadian& angle) const;
+	inline bool operator!= (const AngleDegree& angle) const;
+
 	inline AngleRadian& Clamp();
+	inline static float Clamp(float radian);
 
 private:
 	float m_fValue;
 };
 
 /*
-角度，圆周取值范围[0, 360)
+角度，圆周取值范围[0.0f, 360.0f)
 */
 class AngleDegree
 {
@@ -38,36 +55,92 @@ public:
 	inline AngleDegree(const AngleRadian& value);
 	inline ~AngleDegree();
 
+	inline float ToFloat() const;
+	inline AngleRadian ToDegree() const;
+
+	inline AngleDegree operator* (const AngleDegree& angle) const;
+	inline AngleDegree operator/ (const AngleDegree& angle) const;
+	inline AngleDegree operator+ (const AngleDegree& angle) const;
+	inline AngleDegree operator- (const AngleDegree& angle) const;
+
+	inline AngleDegree& operator= (float angle);
 	inline AngleDegree& operator= (const AngleRadian& angle);
 
+	inline bool operator== (float angle) const;
+	inline bool operator== (const AngleDegree& angle) const;
+	inline bool operator== (const AngleRadian& angle) const;
+	inline bool operator!= (float angle) const;
+	inline bool operator!= (const AngleDegree& angle) const;
+	inline bool operator!= (const AngleRadian& angle) const;
+
 	inline AngleDegree& Clamp();
+	inline static float Clamp(float degree);
 
 private:
 	float m_fValue;
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-AngleRadian::AngleRadian() : m_fValue(0.0f)
+inline AngleRadian::AngleRadian() : m_fValue(0.0f)
 {
 
 }
 
-AngleRadian::AngleRadian(float angle) : m_fValue(angle)
+inline AngleRadian::AngleRadian(float angle) : m_fValue(angle)
 {
-	Clamp();
+	Clamp(m_fValue);
 }
 
-AngleRadian::AngleRadian(const AngleDegree& angle)
+inline AngleRadian::AngleRadian(const AngleDegree& angle)
 {
 	*this = angle;
 }
 
-AngleRadian::~AngleRadian()
+inline AngleRadian::~AngleRadian()
 {
 
 }
 
-AngleRadian& AngleRadian::operator= (const AngleDegree& angle)
+inline float AngleRadian::ToFloat() const
+{
+	return m_fValue;
+}
+
+inline AngleDegree AngleRadian::ToDegree() const
+{
+	return AngleDegree(*this);
+}
+
+inline AngleRadian AngleRadian::operator*(const AngleRadian& angle) const
+{
+	return AngleRadian(m_fValue * angle.m_fValue);
+}
+
+inline AngleRadian AngleRadian::operator/(const AngleRadian& angle) const
+{
+	return AngleRadian(m_fValue / angle.m_fValue);
+}
+
+inline AngleRadian AngleRadian::operator+(const AngleRadian& angle) const
+{
+	return AngleRadian(m_fValue + angle.m_fValue);
+}
+
+inline AngleRadian AngleRadian::operator-(const AngleRadian& angle) const
+{
+	return AngleRadian(m_fValue - angle.m_fValue);
+}
+
+inline AngleRadian& AngleRadian::operator=(float angle)
+{
+	m_fValue = angle;
+	Clamp(m_fValue);
+
+	return *this;
+}
+
+inline AngleRadian& AngleRadian::operator= (const AngleDegree& angle)
 {
 	m_fValue = angle.m_fValue * RwgeMath::lpDegreeToRadian;
 	Clamp();
@@ -75,37 +148,113 @@ AngleRadian& AngleRadian::operator= (const AngleDegree& angle)
 	return *this;
 }
 
-AngleRadian& AngleRadian::Clamp()
+inline bool AngleRadian::operator==(float angle) const
+{
+	return m_fValue == Clamp(angle);
+}
+
+inline bool AngleRadian::operator==(const AngleRadian& angle) const
+{
+	return m_fValue == angle.m_fValue;
+}
+
+inline bool AngleRadian::operator==(const AngleDegree& angle) const
+{
+	return m_fValue == AngleRadian(angle).m_fValue;
+}
+
+inline bool AngleRadian::operator!=(float angle) const
+{
+	return m_fValue != Clamp(angle);
+}
+
+inline bool AngleRadian::operator!=(const AngleRadian& angle) const
+{
+	return m_fValue != angle.m_fValue;
+}
+
+inline bool AngleRadian::operator!=(const AngleDegree& angle) const
+{
+	return m_fValue != AngleRadian(angle).m_fValue;
+}
+
+inline AngleRadian& AngleRadian::Clamp()
 {
 	int iMultiple = m_fValue * RwgeMath::lpDivideTwoPI;
-	m_fValue = m_fValue - static_cast<float>(iMultiple) * RwgeMath::lpTwoPI;
+	m_fValue = m_fValue - static_cast<float>(iMultiple)* RwgeMath::lpTwoPI;
 
 	return *this;
 }
 
+inline float AngleRadian::Clamp(float radian)
+{
+	int iMultiple = radian * RwgeMath::lpDivideTwoPI;
+	radian = radian - static_cast<float>(iMultiple)* RwgeMath::lpTwoPI;
+
+	return radian;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-AngleDegree::AngleDegree() : m_fValue(0.0f)
+inline AngleDegree::AngleDegree() : m_fValue(0.0f)
 {
 
 }
 
-AngleDegree::AngleDegree(float angle) : m_fValue(angle)
+inline AngleDegree::AngleDegree(float angle) : m_fValue(angle)
 {
 	Clamp();
 }
 
-AngleDegree::AngleDegree(const AngleRadian& angle)
+inline AngleDegree::AngleDegree(const AngleRadian& angle)
 {
 	*this = angle;
 }
 
-AngleDegree::~AngleDegree()
+inline AngleDegree::~AngleDegree()
 {
 
 }
 
-AngleDegree& AngleDegree::operator= (const AngleRadian& angle)
+inline float AngleDegree::ToFloat() const
+{
+	return m_fValue;
+}
+
+inline AngleRadian AngleDegree::ToDegree() const
+{
+	return AngleRadian(*this);
+}
+
+inline AngleDegree AngleDegree::operator*(const AngleDegree& angle) const
+{
+	return AngleDegree(m_fValue * angle.m_fValue);
+}
+
+inline AngleDegree AngleDegree::operator/(const AngleDegree& angle) const
+{
+	return AngleDegree(m_fValue / angle.m_fValue);
+}
+
+inline AngleDegree AngleDegree::operator+(const AngleDegree& angle) const
+{
+	return AngleRadian(m_fValue + angle.m_fValue);
+}
+
+inline AngleDegree AngleDegree::operator-(const AngleDegree& angle) const
+{
+	return AngleDegree(m_fValue - angle.m_fValue);
+}
+
+inline AngleDegree& AngleDegree::operator=(float angle)
+{
+	m_fValue = angle;
+	Clamp();
+
+	return *this;
+}
+
+inline AngleDegree& AngleDegree::operator= (const AngleRadian& angle)
 {
 	m_fValue = angle.m_fValue * RwgeMath::lpRadianToDegree;
 	Clamp();
@@ -113,10 +262,48 @@ AngleDegree& AngleDegree::operator= (const AngleRadian& angle)
 	return *this;
 }
 
-AngleDegree& AngleDegree::Clamp()
+inline bool AngleDegree::operator==(float angle) const
+{
+	return m_fValue == Clamp(angle);
+}
+
+inline bool AngleDegree::operator==(const AngleDegree& angle) const
+{
+	return m_fValue == angle.m_fValue;
+}
+
+inline bool AngleDegree::operator==(const AngleRadian& angle) const
+{
+	return m_fValue == AngleDegree(angle).m_fValue;
+}
+
+inline bool AngleDegree::operator!=(float angle) const
+{
+	return m_fValue != Clamp(angle);
+}
+
+inline bool AngleDegree::operator!=(const AngleDegree& angle) const
+{
+	return m_fValue != angle.m_fValue;
+}
+
+inline bool AngleDegree::operator!=(const AngleRadian& angle) const
+{
+	return m_fValue != AngleDegree(angle).m_fValue;
+}
+
+inline AngleDegree& AngleDegree::Clamp()
 {
 	int iMultiple = m_fValue * RwgeMath::lpDivide360;
 	m_fValue = m_fValue - static_cast<float>(iMultiple) * 360.0f;
 
 	return *this;
+}
+
+inline float AngleDegree::Clamp(float degree)
+{
+	int iMultiple = degree * RwgeMath::lpDivide360;
+	degree = degree - static_cast<float>(iMultiple)* 360.0f;
+
+	return degree;
 }

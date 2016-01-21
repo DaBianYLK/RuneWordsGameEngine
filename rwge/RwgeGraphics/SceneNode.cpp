@@ -1,21 +1,20 @@
 #include "SceneNode.h"
 
-#include "LogUtil.h"
+#include <AssertUtil.h>
+#include <MathDefinitions.h>
 
-SceneNode::SceneNode()
+using namespace RwgeMath;
+
+SceneNode::SceneNode() :
+	m_Position				(0.0f, 0.0f, 0.0f),
+	m_Scale					(1.0f, 1.0f, 1.0f),
+	m_pParent				(nullptr),
+	m_bNeedUpdate			(false),
+	m_bIgnoreParentTransform(false)
 {
-	m_NodeType = EmptyNode;
-
-	m_Position = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-
-	m_RotationAxis = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-	m_RotationRadian = 0.0f;
-
-	m_Scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
-
-	m_pParent = nullptr;
+	D3DXMatrixIdentity(&m_WorldSpaceTransform);
+	D3DXMatrixIdentity(&m_ParentSpaceTransform);
 }
-
 
 SceneNode::~SceneNode()
 {
@@ -24,369 +23,452 @@ SceneNode::~SceneNode()
 
 void SceneNode::AttachChild(SceneNode* pNode)
 {
+	ASSERT(pNode);
+
+	// 将节点从旧的父节点的子节点列表中移除
 	if (pNode->m_pParent)
-{
+	{
 		pNode->m_pParent->RemoveChild(pNode);
 	}
 
-	m_pChildren.push_back(pNode);
+	// 将节点加入子节点列表
+	m_listChildren.push_back(pNode);
+
+	// 设置节点的父节点为当前节点
 	pNode->m_pParent = this;
 }
 
 void SceneNode::RemoveChild(SceneNode* pNode)
 {
-	m_pChildren.remove(pNode);
+	ASSERT(pNode);
+
+	// 从子节点列表移除
+	m_listChildren.remove(pNode);
+
+	// 将节点父节点设置为空
 	pNode->m_pParent = nullptr;
 }
 
-void SceneNode::Translate(float x, float y, float z)
-{
-	m_Position.x += x;
-	m_Position.y += y;
-	m_Position.z += z;
-}
-
-void SceneNode::SetPosition(float x, float y, float z)
-{
-	m_Position.x = x;
-	m_Position.y = y;
-	m_Position.z = z;
-}
-
-void SceneNode::Pitch(float radian)
-{
-	float halfAlpha = m_RotationRadian * 0.5f;
-	float sinHalfAlpha = sinf(halfAlpha);
-
-	float a1 = sinHalfAlpha * m_RotationAxis.x;
-	float b1 = sinHalfAlpha * m_RotationAxis.y;
-	float c1 = sinHalfAlpha * m_RotationAxis.z;
-	float d1 = cosf(halfAlpha);
-
-	float halfBeta = radian * 0.5f;
-	
-	float a2 = sinf(halfBeta);
-	//float b2 = 0.0f;
-	//float c2 = 0.0f;
-	float d2 = cosf(halfBeta);
-
-	float a3 =  d1 * a2 /* - c1 * b2 + b1 * c2 */ + a1 * d2;
-	float b3 =  c1 * a2 /* + d1 * b2 - a1 * c2 */ + b1 * d2;
-	float c3 = -b1 * a2 /* + a1 * b2 + d1 * c2 */ + c1 * d2;
-	float d3 = -a1 * a2 /* - b1 * b2 - c1 * c2 */ + d1 * d2;
-
-	float halfRotationRadian = acosf(d3);
-	// 如果旋转角为0，则重置旋转轴为Y轴
-	if (halfRotationRadian > -0.000001 && halfRotationRadian < 0.000001)
-	{
-		m_RotationAxis.x = 0.0f;
-		m_RotationAxis.y = 1.0f;
-		m_RotationAxis.z = 0.0f;
-
-		m_RotationRadian = 0.0f;
-	}
-	else
-	{
-		float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
-
-		m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
-		m_RotationAxis.y = b3 * oneDivSinHalfRotationRadian;
-		m_RotationAxis.z = c3 * oneDivSinHalfRotationRadian;
-
-		m_RotationRadian = halfRotationRadian * 2.0f;
-	}
-}
-
-void SceneNode::Yaw(float radian)
-{
-	float halfAlpha = m_RotationRadian * 0.5f;
-	float sinHalfAlpha = sinf(halfAlpha);
-
-	float a1 = sinHalfAlpha * m_RotationAxis.x;
-	float b1 = sinHalfAlpha * m_RotationAxis.y;
-	float c1 = sinHalfAlpha * m_RotationAxis.z;
-	float d1 = cosf(halfAlpha);
-
-	float halfBeta = radian * 0.5f;
-
-	//float a2 = 0.0f;
-	float b2 = sinf(halfBeta);
-	//float c2 = 0.0f;
-	float d2 = cosf(halfBeta);
-
-	float a3 = /*  d1 * a2 */ - c1 * b2 /* + b1 * c2 */ + a1 * d2;
-	float b3 = /*  c1 * a2 */ + d1 * b2 /* - a1 * c2 */ + b1 * d2;
-	float c3 = /* -b1 * a2 */ + a1 * b2 /* + d1 * c2 */ + c1 * d2;
-	float d3 = /* -a1 * a2 */ - b1 * b2 /* - c1 * c2 */ + d1 * d2;
-
-	float halfRotationRadian = acosf(d3);
-	// 如果旋转角为0，则重置旋转轴为Y轴
-	if (halfRotationRadian > -0.000001 && halfRotationRadian < 0.000001)
-	{
-		m_RotationAxis.x = 0.0f;
-		m_RotationAxis.y = 1.0f;
-		m_RotationAxis.z = 0.0f;
-
-		m_RotationRadian = 0.0f;
-	}
-	else
-	{
-		float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
-
-		m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
-		m_RotationAxis.y = b3 * oneDivSinHalfRotationRadian;
-		m_RotationAxis.z = c3 * oneDivSinHalfRotationRadian;
-
-		m_RotationRadian = halfRotationRadian * 2.0f;
-	}
-}
-
-void SceneNode::Roll(float radian)
-{
-	float halfAlpha = m_RotationRadian * 0.5f;
-	float sinHalfAlpha = sinf(halfAlpha);
-
-	float a1 = sinHalfAlpha * m_RotationAxis.x;
-	float b1 = sinHalfAlpha * m_RotationAxis.y;
-	float c1 = sinHalfAlpha * m_RotationAxis.z;
-	float d1 = cosf(halfAlpha);
-
-	float halfBeta = radian * 0.5f;
-
-	//float a2 = 0.0f;
-	//float b2 = 0.0f;
-	float c2 = sinf(halfBeta);
-	float d2 = cosf(halfBeta);
-
-	float a3 = /*  d1 * a2 -c1 * b2 */ + b1 * c2 + a1 * d2;
-	float b3 = /*  c1 * a2 +d1 * b2 */ - a1 * c2 + b1 * d2;
-	float c3 = /* -b1 * a2 +a1 * b2 */ + d1 * c2 + c1 * d2;
-	float d3 = /* -a1 * a2 -b1 * b2 */ - c1 * c2 + d1 * d2;
-
-	float halfRotationRadian = acosf(d3);
-	// 如果旋转角为0，则重置旋转轴为Y轴
-	if (halfRotationRadian > -0.000001 && halfRotationRadian < 0.000001)
-	{
-		m_RotationAxis.x = 0.0f;
-		m_RotationAxis.y = 1.0f;
-		m_RotationAxis.z = 0.0f;
-
-		m_RotationRadian = 0.0f;
-	}
-	else
-	{
-		float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
-
-		m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
-		m_RotationAxis.y = b3 * oneDivSinHalfRotationRadian;
-		m_RotationAxis.z = c3 * oneDivSinHalfRotationRadian;
-
-		m_RotationRadian = halfRotationRadian * 2.0f;
-	}
-}
-
-void SceneNode::Rotate(float axisX, float axisY, float axisZ, float radian)
-{
-	float halfAlpha = m_RotationRadian * 0.5f;
-	float sinHalfAlpha = sinf(halfAlpha);
-
-	float a1 = sinHalfAlpha * m_RotationAxis.x;
-	float b1 = sinHalfAlpha * m_RotationAxis.y;
-	float c1 = sinHalfAlpha * m_RotationAxis.z;
-	float d1 = cosf(halfAlpha);
-
-	float halfBeta = radian * 0.5f;
-	float sinHalfBeta = sinf(halfBeta);
-
-	float a2 = sinHalfBeta * axisX;
-	float b2 = sinHalfBeta * axisY;
-	float c2 = sinHalfBeta * axisZ;
-	float d2 = cosf(halfBeta);
-
-	float a3 =  d1 * a2 -c1 * b2 +b1 * c2 + a1 * d2;
-	float b3 =  c1 * a2 +d1 * b2 -a1 * c2 + b1 * d2;
-	float c3 = -b1 * a2 +a1 * b2 +d1 * c2 + c1 * d2;
-	float d3 = -a1 * a2 -b1 * b2 -c1 * c2 + d1 * d2;
-
-	float halfRotationRadian = acosf(d3);
-	// 如果旋转角为0，则重置旋转轴为Y轴
-	if (halfRotationRadian > -0.000001 && halfRotationRadian < 0.000001)
-	{
-		m_RotationAxis.x = 0.0f;
-		m_RotationAxis.y = 1.0f;
-		m_RotationAxis.z = 0.0f;
-
-		m_RotationRadian = 0.0f;
-	}
-	else
-	{
-		float oneDivSinHalfRotationRadian = 1.0f / sinf(halfRotationRadian);
-
-		m_RotationAxis.x = a3 * oneDivSinHalfRotationRadian;
-		m_RotationAxis.y = b3 * oneDivSinHalfRotationRadian;
-		m_RotationAxis.z = c3 * oneDivSinHalfRotationRadian;
-
-		m_RotationRadian = halfRotationRadian * 2.0f;
-	}
-}
-
-void SceneNode::SetRotation(float axisX, float axisY, float axisZ, float radian)
-{
-	m_RotationAxis.x = axisX;
-	m_RotationAxis.y = axisY;
-	m_RotationAxis.z = axisZ;
-
-	m_RotationRadian = radian;
-}
-
-void SceneNode::Scale(float scale)
-{
-	m_Scale.x *= scale;
-	m_Scale.y *= scale;
-	m_Scale.z *= scale;
-}
-
-void SceneNode::Scale(float x, float y, float z)
-{
-	m_Scale.x *= x;
-	m_Scale.y *= y;
-	m_Scale.z *= z;
-}
-
-void SceneNode::SetScale(float scale)
-{
-	m_Scale.x = scale;
-	m_Scale.y = scale;
-	m_Scale.z = scale;
-}
-
-void SceneNode::SetScale(float x, float y, float z)
-{
-	m_Scale.x = x;
-	m_Scale.y = y;
-	m_Scale.z = z;
-}
-
-D3DXMATRIX* SceneNode::GetTransformMatrix()
-{
-	// 空间变换顺序为：先缩放，再旋转，最后平移
-	// ********************** 缩放矩阵 ********************** 
-	float scaleX = m_Scale.x;
-	float scaleY = m_Scale.y;
-	float scaleZ = m_Scale.z;
-
-	// ********************** 旋转矩阵 ********************** 
-	// 标准化旋转轴
-	D3DXVec3Normalize(&m_RotationAxis, &m_RotationAxis);
-	float sinAlpha = sinf(m_RotationRadian);
-	float cosAlpha = cosf(m_RotationRadian);
-	float oneSubCosAlpha = 1.0f - cosAlpha;
-	float aX = m_RotationAxis.x;
-	float aY = m_RotationAxis.y;
-	float aZ = m_RotationAxis.z;
-	float x2 = aX * aX;
-	float y2 = aY * aY;
-	float z2 = aZ * aZ;
-	float xy = aX * aY;
-	float xz = aX * aZ;
-	float yz = aY * aZ;
-	
-	float rotMat00 = oneSubCosAlpha * x2 + cosAlpha;
-	float rotMat01 = oneSubCosAlpha * xy + sinAlpha * aZ;
-	float rotMat02 = oneSubCosAlpha * xz - sinAlpha * aY;
-	float rotMat10 = oneSubCosAlpha * xy - sinAlpha * aZ;
-	float rotMat11 = oneSubCosAlpha * y2 + cosAlpha;
-	float rotMat12 = oneSubCosAlpha * yz + sinAlpha * aX;
-	float rotMat20 = oneSubCosAlpha * xz + sinAlpha * aY;
-	float rotMat21 = oneSubCosAlpha * yz - sinAlpha * aX;
-	float rotMat22 = oneSubCosAlpha * z2 + cosAlpha;
-
-	// ********************** 平移矩阵 ********************** 
-	float translateX = m_Position.x;
-	float translateY = m_Position.y;
-	float translateZ = m_Position.z;
-
-	// ********************** 最终变换矩阵 ********************** 
-	m_TransformMatrix(0, 0) = scaleX * rotMat00;	m_TransformMatrix(0, 1) = scaleX * rotMat01;	m_TransformMatrix(0, 2) = scaleX * rotMat02;	m_TransformMatrix(0, 3) = 0.0f;
-	m_TransformMatrix(1, 0) = scaleY * rotMat10;	m_TransformMatrix(1, 1) = scaleY * rotMat11;	m_TransformMatrix(1, 2) = scaleY * rotMat12;	m_TransformMatrix(1, 3) = 0.0f;
-	m_TransformMatrix(2, 0) = scaleZ * rotMat20;	m_TransformMatrix(2, 1) = scaleZ * rotMat21;	m_TransformMatrix(2, 2) = scaleZ * rotMat22;	m_TransformMatrix(2, 3) = 0.0f;
-	m_TransformMatrix(3, 0) = translateX;			m_TransformMatrix(3, 1) = translateY;			m_TransformMatrix(3, 2) = translateZ;			m_TransformMatrix(3, 3) = 1.0f;
-
-	return &m_TransformMatrix;
-}
-
-void SceneNode::GetTransformMatrix(float* outputMatrix)
-{
-	// 空间变换顺序为：先缩放，再旋转，最后平移
-	// ********************** 缩放矩阵 ********************** 
-	float scaleX = m_Scale.x;
-	float scaleY = m_Scale.y;
-	float scaleZ = m_Scale.z;
-
-	// ********************** 旋转矩阵 ********************** 
-	// 标准化旋转轴
-	D3DXVec3Normalize(&m_RotationAxis, &m_RotationAxis);
-	float sinAlpha = sinf(m_RotationRadian);
-	float cosAlpha = cosf(m_RotationRadian);
-	float oneSubCosAlpha = 1 - cosAlpha;
-	float aX = m_RotationAxis.x;
-	float aY = m_RotationAxis.y;
-	float aZ = m_RotationAxis.z;
-	float x2 = aX * aX;
-	float y2 = aY * aY;
-	float z2 = aZ * aZ;
-	float xy = aX * aY;
-	float xz = aX * aZ;
-	float yz = aY * aZ;
-
-	float rotMat00 = oneSubCosAlpha * x2 + cosAlpha;
-	float rotMat01 = oneSubCosAlpha * xy + sinAlpha * aZ;
-	float rotMat02 = oneSubCosAlpha * xz - sinAlpha * aY;
-	float rotMat10 = oneSubCosAlpha * xy - sinAlpha * aZ;
-	float rotMat11 = oneSubCosAlpha * y2 + cosAlpha;
-	float rotMat12 = oneSubCosAlpha * yz + sinAlpha * aX;
-	float rotMat20 = oneSubCosAlpha * xz + sinAlpha * aY;
-	float rotMat21 = oneSubCosAlpha * yz - sinAlpha * aX;
-	float rotMat22 = oneSubCosAlpha * z2 + cosAlpha;
-
-	// ********************** 平移矩阵 ********************** 
-	float translateX = m_Position.x;
-	float translateY = m_Position.y;
-	float translateZ = m_Position.z;
-
-	// ********************** 最终变换矩阵 ********************** 
-	outputMatrix[0] = scaleX * rotMat00;	outputMatrix[1] = scaleX * rotMat01;	outputMatrix[2] = scaleX * rotMat02;	outputMatrix[3] = 0.0f;
-	outputMatrix[4] = scaleY * rotMat10;	outputMatrix[5] = scaleY * rotMat11;	outputMatrix[6] = scaleY * rotMat12;	outputMatrix[7] = 0.0f;
-	outputMatrix[8] = scaleZ * rotMat20;	outputMatrix[9] = scaleZ * rotMat21;	outputMatrix[10] = scaleZ * rotMat22;	outputMatrix[11] = 0.0f;
-	outputMatrix[12] = translateX;			outputMatrix[13] = translateY;			outputMatrix[14] = translateZ;			outputMatrix[15] = 1.0f;
-}
-
-SceneNode* SceneNode::GetParent()
+SceneNode* SceneNode::GetParent() const
 {
 	return m_pParent;
 }
 
-D3DXVECTOR3& SceneNode::GetPosition()
+void SceneNode::Translate(const D3DXVECTOR3& vector, TransformSpace space /* = TB_Parent */)
+{
+	switch (space)
+	{
+	case TS_World:
+		if (m_pParent)
+		{
+			m_Position += m_pParent->GetWorldOrientation().Inverse().RotateVector(vector) / m_pParent->GetWorldScale();
+		}
+		else
+		{
+			// 如果不存在父节点，则假定父节点为世界坐标系原点
+			m_Position += vector;
+		}
+		break;
+
+	case TS_Self:
+		m_Position += m_Orientation.RotateVector(vector);
+		break;
+
+	case TS_Parent:
+	default:
+		m_Position += vector;
+		break;
+	}
+
+	NeedUpdate();
+}
+
+// SetPosition等价于在m_Position = (0, 0, 0)时执行Translate
+void SceneNode::SetPosition(const D3DXVECTOR3& position, TransformSpace space /* = TB_Parent */)
+{
+	switch (space)
+	{
+	case TS_World:
+		if (m_pParent)
+		{
+			m_Position = m_pParent->GetWorldOrientation().Inverse().RotateVector(position) / m_pParent->GetWorldScale();
+		}
+		else
+		{
+			// 如果不存在父节点，则假定父节点为世界坐标系原点
+			m_Position = position;
+		}
+		break;
+
+	case TS_Self:
+		m_Position = m_Orientation.RotateVector(position);
+		break;
+
+	case TS_Parent:
+	default:
+		m_Position = position;
+		break;
+	}
+
+	NeedUpdate();
+}
+
+/* 
+关于Rotate如何作用于不同坐标系空间的说明：
+四元数Q作用于向量V的旋转公式为：ResultV = Q * V * InverseQ
+假设有四元数Q1先作用于V，Q2后作用于V，有：ResultV = Q2 * Q1 * V * InverseQ1 * InverseQ2
+则Q1与Q2的组合等价于四元数CombineQ = Q2 * Q1，即后乘的四元数先作用于V（四元数乘法不满足交换律）
+
+四元数作用于一个向量后，相当于把该向量转换至了该四元数所对应的旋转坐标系：
+假设有定义在B旋转坐标系的向量V，旋转坐标系B相对于旋转坐标系A的旋转可以用四元数Q表示，
+则Q作用于V相当于把V从旋转坐标系B转换到了旋转坐标系A
+*/
+void SceneNode::Rotate(const Quaternion& rotation, TransformSpace space /* = TS_Self */)
+{
+	Quaternion qNormal = rotation;
+	qNormal.Normalise();
+
+	switch (space)
+	{
+	case TS_World:
+		if (m_pParent)
+		{
+			Quaternion parentWorldOrientation = m_pParent->GetWorldOrientation();
+			m_Orientation = parentWorldOrientation.Inverse() * qNormal * parentWorldOrientation * m_Orientation;
+		}
+		else
+		{
+			// 如果不存在父节点，则假定父节点为世界坐标系原点
+			m_Orientation = qNormal * m_Orientation;
+		}
+		break;
+
+	case TS_Parent:
+		m_Orientation = qNormal * m_Orientation;
+		break;
+
+	case TS_Self:
+	default:
+		m_Orientation = m_Orientation * qNormal;
+		break;
+	}
+
+	NeedUpdate();
+}
+
+// SetOrientation等价于在m_Orientation = (1, 0, 0, 0)时执行Rotate
+void SceneNode::SetOrientation(const Quaternion& orientation, TransformSpace space /* = TS_Self */)
+{
+	Quaternion qNormal = orientation;
+	qNormal.Normalise();
+
+	switch (space)
+	{
+	case TS_World:
+		if (m_pParent)
+		{
+			Quaternion parentWorldOrientation = m_pParent->GetWorldOrientation();
+			m_Orientation = parentWorldOrientation.Inverse() * qNormal * parentWorldOrientation;
+		}
+		else
+		{
+			// 如果不存在父节点，则假定父节点为世界坐标系原点
+			m_Orientation = qNormal;
+		}
+		break;
+
+	case TS_Parent:
+	case TS_Self:
+	default:
+		m_Orientation = qNormal;
+		break;
+	}
+
+	NeedUpdate();
+}
+
+void SceneNode::Scale(const D3DXVECTOR3& scale)
+{
+	m_Scale *= scale;
+
+	NeedUpdate();
+}
+
+// SetScale等价于在m_Scale = (1, 1, 1)时执行Scale
+void SceneNode::SetScale(const D3DXVECTOR3& scale, TransformSpace space /* = TS_Self */)
+{
+	switch (space)
+	{
+	case TS_World:
+		if (m_pParent)
+		{
+			m_Scale = m_Scale / m_pParent->GetWorldScale();
+		}
+		else
+		{
+			// 如果不存在父节点，则假定父节点为世界坐标系原点
+			m_Scale = scale;
+		}
+		break;
+
+	case TS_Parent:
+	case TS_Self:
+	default:
+		m_Scale = scale;
+		break;
+	}
+
+	NeedUpdate();
+}
+
+const D3DXVECTOR3& SceneNode::GetPosition() const
 {
 	return m_Position;
 }
 
-D3DXVECTOR3& SceneNode::GetRotationAxis()
+const D3DXVECTOR3& SceneNode::GetWorldPosition() const
 {
-	return m_RotationAxis;
+	// 如果需要更新世界变换
+	if (m_bWorldTransformChanged)
+	{
+		UpdateWorldTransform();
+	}
+
+	return m_WorldPosition;
 }
 
-float SceneNode::GetRotationRadian()
+const Quaternion& SceneNode::GetOrientation() const
 {
-	return m_RotationRadian;
+	return m_Orientation;
 }
 
-D3DXVECTOR3& SceneNode::GetScale()
+const Quaternion& SceneNode::GetWorldOrientation() const
+{
+	// 如果需要更新世界变换
+	if (m_bWorldTransformChanged)
+	{
+		UpdateWorldTransform();
+	}
+
+	return m_WorldOrientation;
+}
+
+const D3DXVECTOR3& SceneNode::GetScale() const
 {
 	return m_Scale;
 }
 
-void SceneNode::Update()
+const D3DXVECTOR3& SceneNode::GetWorldScale() const
 {
+	// 如果需要更新世界变换
+	if (m_bWorldTransformChanged)
+	{
+		UpdateWorldTransform();
+	}
 
+	return m_WorldScale;
+}
+
+const D3DXMATRIX& SceneNode::GetTransform() const
+{
+	if (m_bCachedTransformOutOfDate)
+	{
+		UpdateCachedTransform();
+	}
+
+	return m_Transform;
+}
+
+const D3DXMATRIX& SceneNode::GetWorldTransform() const
+{
+	if (m_bCachedWorldTransformOutOfDate)
+	{
+		UpdateCachedWorldTransform();
+	}
+
+	return m_WorldTransform;
+}
+
+void SceneNode::UpdateWorldTransform() const
+{
+	/*
+	更新世界变换的过程中，会自动递归，直到更新向场景树的根部更新完毕
+	*/
+
+	if (m_pParent)
+	{
+		const Quaternion& parentWorldOrientation = m_pParent->GetWorldOrientation();
+		const D3DXVECTOR3& parentWorldScale = m_pParent->GetWorldScale();
+
+		// 如果继承父节点位移
+		if (m_bInheritTranslation)
+		{
+			m_WorldPosition = parentWorldOrientation.RotateVector(parentWorldScale * m_Position) + m_pParent->GetWorldPosition();
+		}
+		else
+		{
+			m_WorldPosition = m_Position;
+		}
+		
+		// 如果继承父节点旋转
+		if (m_bInheritRotation)
+		{
+			m_WorldOrientation = parentWorldOrientation * m_Orientation;
+		}
+		else
+		{
+			m_WorldOrientation = m_Orientation;
+		}
+
+		// 如果继承父节点缩放
+		if (m_bInheritScale)
+		{
+			m_WorldScale = parentWorldScale * m_Scale;
+		}
+		else
+		{
+			m_WorldScale = m_Scale;
+		}
+	}
+	// 不存在父节点，则世界变换等于自身变换
+	else
+	{
+		m_WorldPosition = m_Position;
+		m_WorldOrientation = m_Orientation;
+		m_WorldScale = m_Scale;
+	}
+
+	// 重置更新世界变换的标志
+	m_bWorldTransformChanged = false;
+	m_bParentHasNotified = false;
+}
+
+void SceneNode::UpdateCachedTransform() const
+{
+	SetTransform(m_Transform, m_Position, m_Orientation, m_Scale);
+
+	m_bCachedTransformOutOfDate = false;
+}
+
+void SceneNode::UpdateCachedWorldTransform() const
+{
+	if (m_bWorldTransformChanged)
+	{
+		UpdateWorldTransform();
+	}
+
+	SetTransform(m_WorldTransform, m_WorldPosition, m_WorldOrientation, m_WorldScale);
+
+	m_bCachedWorldTransformOutOfDate = false;
+}
+
+void SceneNode::NeedUpdate()
+{
+	m_bWorldTransformChanged = true;
+	m_bCachedTransformOutOfDate = true;
+	m_bCachedWorldTransformOutOfDate = true;
+
+	NotifyParentToUpdate();		// 向上通知父节点需要更新
+	NotifyChildrenToUpdate();	// 向下通知子节点需要更新
+}
+
+void SceneNode::NotifyParentToUpdate()
+{
+	// 只有在父节点存在，且父节点未被通知的情况下才执行通知
+	if (m_pParent && !m_bParentHasNotified)
+	{
+		// 若父节点需要更新所有的子节点，说明父节点已经向上传递过通知了，此时不需要再重复传递通知了
+
+		// 如果父节点不会更新所有的子节点，才执行通知
+		if (!m_pParent->m_bNeedAllChildrenUpdate)
+		{
+			m_pParent->m_listChildrenToUpdate.push_back(this);
+
+			// 继续向树的根部传递通知
+			m_pParent->NotifyParentToUpdate();
+		}
+
+		m_bParentHasNotified = true;
+	}
+}
+
+void SceneNode::NotifyChildrenToUpdate()
+{
+	// 如果需要更新所有的子节点，说明已经执行过通知了
+
+	// 不需要更新所有的子节点时才执行通知
+	if (!m_bNeedAllChildrenUpdate)
+	{
+		for (auto pChild : m_listChildren)
+		{
+			// 如果子节点需要更新世界变换，说明该子节点已经广播过通知，则不需要重复广播
+
+			// 如果子节点不知道世界变换发生了改变，才执行通知
+			if (!pChild->m_bWorldTransformChanged)
+			{
+				pChild->m_bWorldTransformChanged = true;
+
+				// 向子树广播通知
+				pChild->NotifyChildrenToUpdate();
+			}
+		}
+
+		m_bNeedAllChildrenUpdate = true;
+		m_listChildrenToUpdate.clear();		// 所有的子节点都需要更新时，清空待更新子节点列表
+	}
+}
+
+// 更新当前节点需要更新的子节点
+void SceneNode::UpdateChildren() const
+{
+	if (m_bNeedAllChildrenUpdate)
+	{
+		for (auto pChild : m_listChildren)
+		{
+			if (pChild->m_bWorldTransformChanged)
+			{
+				pChild->UpdateWorldTransform();
+			}
+		}
+
+		m_bNeedAllChildrenUpdate = false;
+	}
+	else
+	{
+		for (auto pChild : m_listChildrenToUpdate)
+		{
+			if (pChild->m_bWorldTransformChanged)
+			{
+				pChild->UpdateWorldTransform();
+			}
+		}
+
+		m_listChildrenToUpdate.clear();
+	}
+}
+
+D3DXMATRIX* SceneNode::SetTransform(D3DXMATRIX& pOut, const D3DXVECTOR3& translation, const Quaternion& rotation, const D3DXVECTOR3& scale)
+{
+	// 先平移，再旋转，最后缩放
+	Quaternion normalQuat = rotation;
+	normalQuat.Normalise();
+
+	D3DXMATRIX rotationMatrix;
+	normalQuat.ToRotationMatrix(rotationMatrix);
+	float** pM = reinterpret_cast<float**>(rotationMatrix.m);
+
+	float scaleX = scale.x;
+	float scaleY = scale.y;
+	float scaleZ = scale.z;
+
+	float translateX = translation.x;
+	float translateY = translation.y;
+	float translateZ = translation.z;
+
+	pOut._11 = scaleX * pM[0][0];	pOut._12 = scaleX * pM[0][1];	pOut._13 = scaleX * pM[0][2];	pOut._14 = 0.0f;
+	pOut._21 = scaleY * pM[1][0];	pOut._22 = scaleY * pM[1][1];	pOut._23 = scaleY * pM[1][2];	pOut._24 = 0.0f;
+	pOut._31 = scaleZ * pM[2][0];	pOut._32 = scaleZ * pM[2][1];	pOut._33 = scaleZ * pM[2][2];	pOut._34 = 0.0f;
+	pOut._41 = translateX;			pOut._42 = translateY;			pOut._43 = translateZ;			pOut._44 = 1.0f;
+
+	return &pOut;
 }

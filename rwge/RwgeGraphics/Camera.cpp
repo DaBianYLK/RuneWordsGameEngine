@@ -3,62 +3,17 @@
 #include "Graphics.h"
 #include "SceneManager.h"
 
-const D3DXVECTOR3	DefaultCameraPosition(0.0f, 0.0f, 10.0f);
-const D3DXVECTOR3	DefaultCameraLookAtOffset(0.0f, 0.0f, -10.0f);
-const D3DXVECTOR3	DefaultCameraUpAxis(0.0f, 1.0f, 0.0f);
-const bool			DefaultLockLookAt = false;
-const float			DefaultFovy = D3DX_PI * 0.5f;
-const float			DefaultAspect = 800.0f / 600.0f;
-const float			DefaultLookNear = 2.0f;
-const float			DefaultLookFar = 1000.0f;
-
 Camera::Camera() :
-	m_LookAtPosition(DefaultCameraPosition + DefaultCameraLookAtOffset),
-	m_UpAxis(DefaultCameraUpAxis),
-	m_bLockLookAt(DefaultLockLookAt),
-	m_fFovy(DefaultFovy),
-	m_fAspect(DefaultAspect),
-	m_fLookNear(DefaultLookNear),
-	m_fLookFar(DefaultLookFar)
+	m_LookAtPosition(0.0f, 0.0f, -1.0f),
+	m_FrontAxis		(0.0f, 0.0f, -1.0f),
+	m_UpAxis		(0.0f, 1.0f, 0.0f),
+	m_fFovy			(D3DX_PI * 0.5f),
+	m_fAspect		(800.0f / 600.0f),
+	m_fLookNear		(2.0f),
+	m_fLookFar		(1000.0f),
+	m_bLockLookAtPos(false)
 {
-	m_Position = DefaultCameraPosition;
-}
-
-Camera::Camera(const D3DXVECTOR3& pos) :
-	m_LookAtPosition(DefaultCameraPosition + DefaultCameraLookAtOffset),
-	m_UpAxis(DefaultCameraUpAxis),
-	m_bLockLookAt(DefaultLockLookAt),
-	m_fFovy(DefaultFovy),
-	m_fAspect(DefaultAspect),
-	m_fLookNear(DefaultLookNear),
-	m_fLookFar(DefaultLookFar)
-{
-	m_Position = pos;
-}
-
-Camera::Camera(const D3DXVECTOR3& pos, const D3DXVECTOR3& lookAtPos, const D3DXVECTOR3& upAxis, bool bLockLookAt) :
-	m_LookAtPosition(lookAtPos),
-	m_UpAxis(upAxis),
-	m_bLockLookAt(bLockLookAt),
-	m_fFovy(DefaultFovy),
-	m_fAspect(DefaultAspect),
-	m_fLookNear(DefaultLookNear),
-	m_fLookFar(DefaultLookFar)
-{
-	m_Position = pos;
-}
-
-Camera::Camera(const D3DXVECTOR3& pos, const D3DXVECTOR3& lookAtPos, const D3DXVECTOR3& upAxis, bool bLockLookAt, 
-	float fFovy, float fAspect, float fLookNear, float fLookFar) :
-	m_LookAtPosition(lookAtPos),
-	m_UpAxis(upAxis),
-	m_bLockLookAt(bLockLookAt),
-	m_fFovy(fFovy),
-	m_fAspect(fAspect),
-	m_fLookNear(fLookNear),
-	m_fLookFar(fLookFar)
-{
-	m_Position = pos;
+	
 }
 
 Camera::~Camera()
@@ -66,14 +21,29 @@ Camera::~Camera()
 
 }
 
-void Camera::SetUpAxis(const D3DXVECTOR3& upAxis)
+void Camera::LookAtPosition(const D3DXVECTOR3& lookAtPos, const D3DXVECTOR3& upAxis)
 {
+	m_LookAtPosition = lookAtPos;
 	m_UpAxis = upAxis;
 }
 
-void Camera::LookAtPosition(const D3DXVECTOR3& lookAtPos)
+void Camera::LookAtDirection(const D3DXVECTOR3& lookAtDirection, const D3DXVECTOR3& upAxis)
+{
+}
+
+void Camera::SetLookAtPosition(const D3DXVECTOR3& lookAtPos)
 {
 	m_LookAtPosition = lookAtPos;
+}
+
+void Camera::SetFrontAxis(const D3DXVECTOR3& axis)
+{
+	m_FrontAxis = axis;
+}
+
+void Camera::SetUpAxis(const D3DXVECTOR3& axis)
+{
+	m_UpAxis = axis;
 }
 
 void Camera::SetPerspective(float fFovy, float fAspect, float fLookNear, float fLookFar)

@@ -39,7 +39,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeCore;$(SolutionDir)RwgeUtils;$(SolutionDir)RwgeResources;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeCore;$(SolutionDir)RwgeUtils;$(SolutionDir)RwgeResources;$(SolutionDir)RwgeMath;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
