@@ -12,6 +12,7 @@
 3.	基于父节点坐标系的空间变换过程：ParentWorldTransform * Translation * Orientation * Scale
 4.	一个场景节点发生变化后，需要通知它的父节点（父节点需要继续向父节点的父节点传递这个通知，直到通知到树根）
 	以及它所有的子节点（子节点也需要向子节点的子节点传递这个通知，直到子树被遍历完毕）
+5.	RWGE与DirectX坐标系一致，使用左手坐标系，节点面向方向为Z轴正方向，节点上方为Y轴正方向，节点右方为X轴正方向
 */
 
 enum TransformSpace
@@ -42,6 +43,10 @@ public:
 	void Rotate			(const Quaternion& rotation,	TransformSpace space = TS_Self);
 	void SetOrientation	(const Quaternion& orientation, TransformSpace space = TS_Self);
 
+	const D3DXVECTOR3& GetDirection(TransformSpace space = TS_World) const;	// 返回当前节点正前方的方向向量
+	void SetDirection	(const D3DXVECTOR3& targetDirection,	TransformSpace space = TS_World);
+	void LookAt			(const D3DXVECTOR3& targetPosition,		TransformSpace space = TS_World);
+
 	void Scale			(const D3DXVECTOR3& scale);
 	void SetScale		(const D3DXVECTOR3& scale,		TransformSpace space = TS_Self);
 
@@ -56,7 +61,7 @@ public:
 
 	void UpdateWorldTransform() const;	// 更新WorldPosition、WorldOrientation与WorldScale
 	void UpdateCachedTransform() const;
-	void UpdateCachedWorldTransform() const;
+	virtual void UpdateCachedWorldTransform() const;
 
 	void NeedUpdate();
 	void NotifyParentToUpdate();
@@ -86,12 +91,12 @@ protected:
 			std::list<SceneNode*>	m_listChildren;
 	mutable std::list<SceneNode*>	m_listChildrenToUpdate;
 
-	mutable bool		m_bParentHasNotified;
-	mutable bool		m_bNeedAllChildrenUpdate;
+	mutable bool		m_bParentHasNotified;				// 是否已经通知父节点矩阵发生改变
+	mutable bool		m_bNeedAllChildrenUpdate;			// 是否需要更新所有的子节点
 
-	mutable bool		m_bWorldTransformChanged;
-	mutable bool		m_bCachedTransformOutOfDate;
-	mutable bool		m_bCachedWorldTransformOutOfDate;
+	mutable bool		m_bWorldTransformChanged;			// 是否需要更新当前节点的世界变换
+	mutable bool		m_bCachedTransformOutOfDate;		// 缓存的变换矩阵是否过期
+	mutable bool		m_bCachedWorldTransformOutOfDate;	// 缓存的世界变换矩阵是否过期
 
 	bool				m_bInheritTranslation;	// 继承父节点位移
 	bool				m_bInheritRotation;		// 继承父节点旋转

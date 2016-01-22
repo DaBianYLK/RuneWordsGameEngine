@@ -14,6 +14,11 @@ namespace RwgeMath
 
 	static const double		hpPI				= 3.141592653589793;		// PI的高精度浮点数, high precision
 
+	static const D3DXVECTOR3 Vector3Zero(0.0f, 0.0f, 0.0f);
+	static const D3DXVECTOR3 Vector3UnitX(1.0f, 0.0f, 0.0f);
+	static const D3DXVECTOR3 Vector3UnitY(0.0f, 1.0f, 0.0f);
+	static const D3DXVECTOR3 Vector3UnitZ(0.0f, 0.0f, 1.0f);
+
 	/*
 	裁剪函数：将value的值控制在[lowerBound, upperBound]范围内，若小于则置为lowerBound，若大于则置为upperBound
 	@Param	

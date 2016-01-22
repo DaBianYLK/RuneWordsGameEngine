@@ -6,14 +6,24 @@
 using namespace RwgeMath;
 
 SceneNode::SceneNode() :
-	m_Position				(0.0f, 0.0f, 0.0f),
-	m_Scale					(1.0f, 1.0f, 1.0f),
-	m_pParent				(nullptr),
-	m_bNeedUpdate			(false),
-	m_bIgnoreParentTransform(false)
+	m_Position						(0.0f, 0.0f, 0.0f),
+	m_Orientation					(1.0f, 0.0f, 0.0f, 0.0f),
+	m_Scale							(1.0f, 1.0f, 1.0f),
+	m_WorldPosition					(0.0f, 0.0f, 0.0f),
+	m_WorldOrientation				(1.0f, 0.0f, 0.0f, 0.0f),
+	m_WorldScale					(1.0f, 1.0f, 1.0f),
+	m_pParent						(nullptr),
+	m_bParentHasNotified			(false),
+	m_bNeedAllChildrenUpdate		(false),
+	m_bWorldTransformChanged		(false),
+	m_bCachedTransformOutOfDate		(false),
+	m_bCachedWorldTransformOutOfDate(false),
+	m_bInheritTranslation			(true),
+	m_bInheritRotation				(true),
+	m_bInheritScale					(true)
 {
-	D3DXMatrixIdentity(&m_WorldSpaceTransform);
-	D3DXMatrixIdentity(&m_ParentSpaceTransform);
+	D3DXMatrixIdentity(&m_Transform);
+	D3DXMatrixIdentity(&m_WorldTransform);
 }
 
 SceneNode::~SceneNode()
@@ -185,6 +195,59 @@ void SceneNode::SetOrientation(const Quaternion& orientation, TransformSpace spa
 	}
 
 	NeedUpdate();
+}
+
+const D3DXVECTOR3& SceneNode::GetDirection(TransformSpace space /* = TS_World */) const
+{
+	D3DXVECTOR3 originalDirection;
+
+	switch (space)
+	{
+	case TS_Parent:
+		originalDirection = m_Orientation.RotateVector(RwgeMath::Vector3UnitZ);
+		break;
+
+	case TS_Self:
+		originalDirection = RwgeMath::Vector3UnitZ;
+		break;
+
+	case TS_World:
+	default:
+		originalDirection = GetWorldOrientation().RotateVector(RwgeMath::Vector3UnitZ);
+		break;
+	}
+
+	return originalDirection;
+}
+
+void SceneNode::SetDirection(const D3DXVECTOR3& targetDirection, TransformSpace space /* = TS_World */)
+{
+	Quaternion rotation;
+	Quaternion::GetRotationBetween(&rotation, GetDirection(space), targetDirection);
+	Rotate(rotation, space);
+}
+
+void SceneNode::LookAt(const D3DXVECTOR3& targetPosition, TransformSpace space /* = TS_World */)
+{
+	D3DXVECTOR3 targetDirection;
+	
+	switch (space)
+	{
+	case TS_Parent:
+		targetDirection = targetPosition - m_Position;
+		break;
+
+	case TS_Self:
+		targetDirection = targetPosition;
+		break;
+
+	case TS_World:
+	default:
+		targetDirection = targetPosition - GetWorldPosition();
+		break;
+	}
+
+	SetDirection(targetDirection, space);
 }
 
 void SceneNode::Scale(const D3DXVECTOR3& scale)

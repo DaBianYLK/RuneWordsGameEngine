@@ -1,7 +1,5 @@
 #include "Quaternion.h"
 
-#include <math.h>
-
 Quaternion::Quaternion() :
 	x(1.0f),
 	y(0.0f),

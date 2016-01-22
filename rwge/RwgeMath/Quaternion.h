@@ -8,6 +8,7 @@
 */
 
 #include <d3dx9.h>
+#include <math.h>
 #include "AngleDefinitions.h"
 
 struct Quaternion
@@ -45,6 +46,12 @@ struct Quaternion
 
 	__forceinline static Quaternion* RotationMatrixToQuaternion(Quaternion* pOutQuaternion, const D3DXMATRIX* pInMatrix);
 	__forceinline static D3DXMATRIX* QuaternionToRotationMatrix(const Quaternion* pInQuaternion, D3DXMATRIX* pOutMatrix);
+
+	__forceinline static Quaternion* GetRotationBetween(
+		Quaternion* rotation, 
+		const D3DXVECTOR3& v1, 
+		const D3DXVECTOR3& v2, 
+		const D3DXVECTOR3& rotationAxis = RwgeMath::Vector3Zero);
 
 	float x;
 	float y;
@@ -156,4 +163,62 @@ __forceinline D3DXMATRIX* Quaternion::QuaternionToRotationMatrix(const Quaternio
 	pM[3][0] = 0.0f;					pM[3][1] = 0.0f;					pM[3][2] = 0.0f;					pM[3][3] = 1.0f;
 
 	return pOutMatrix;
+}
+
+__forceinline Quaternion* Quaternion::GetRotationBetween(Quaternion* pRotation, const D3DXVECTOR3& v1, const D3DXVECTOR3& v2, const D3DXVECTOR3& rotationAxis /* = RwgeMath::Vector3Zero */)
+{
+	D3DXVECTOR3 normalV1 = v1;
+	D3DXVECTOR3 normalV2 = v2;
+
+	D3DXVec3Normalize(&normalV1, &normalV1);
+	D3DXVec3Normalize(&normalV2, &normalV2);
+
+	float dot = D3DXVec3Dot(&normalV1, &normalV2);
+	// 如果点乘结果为1，说明两个向量相等
+	if (dot >= 0.999999f)
+	{
+		pRotation->x = 1.0f;
+		pRotation->y = 0.0f;
+		pRotation->z = 0.0f;
+		pRotation->w = 0.0f;
+	}
+	// 如果点乘结果为-1，说明两个向量恰好反向
+	else if (dot <= -0.999999f)
+	{
+		if (rotationAxis == RwgeMath::Vector3Zero)
+		{
+			// 如果没有指定旋转轴，则生成一个
+			D3DXVECTOR3 axis;
+			D3DXVec3Cross(&axis, &RwgeMath::Vector3UnitX, &normalV1);
+			if (axis == RwgeMath::Vector3Zero)
+			{
+				// 如果v1平行于X轴，则叉乘Y轴
+				D3DXVec3Cross(&axis, &RwgeMath::Vector3UnitY, &normalV1);
+			}
+
+			D3DXVec3Normalize(&axis, &axis);
+
+			pRotation->SetByAxisAngle(axis, -RwgeMath::lpPI);
+		}
+		else
+		{
+			pRotation->SetByAxisAngle(rotationAxis, -RwgeMath::lpPI);
+		}
+	}
+	else
+	{
+		float fSqrt = sqrt((1.0f + dot) * 2.0f);
+		float fInverse = 1.0f / fSqrt;
+
+		D3DXVec3Cross(&normalV1, &normalV1, &normalV2);
+
+		pRotation->x = normalV1.x * fInverse;
+		pRotation->y = normalV1.y * fInverse;
+		pRotation->z = normalV1.z * fInverse;
+		pRotation->w = fSqrt * 0.5f;
+
+		pRotation->Normalise();
+	}
+
+	return pRotation;
 }
