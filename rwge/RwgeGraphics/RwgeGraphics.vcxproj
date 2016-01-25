@@ -97,6 +97,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="D3D9Device.h" />
+    <ClInclude Include="D3DX9Extension.h" />
     <ClInclude Include="DisplayWindow.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="GraphicsDefinitions.h" />

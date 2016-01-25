@@ -31,8 +31,9 @@ dot(xaxis, eye)   dot(yaxis, eye)   dot(zaxis, eye)  1
 https://msdn.microsoft.com/en-us/library/windows/desktop/bb205342(v=vs.85).aspx
 
 关于相机
-1. 继承自SceneNode，相机的正方向与SceneNode相同，默认为Z轴正方向
-2. 视图矩阵即为相机世界变换矩阵的逆矩阵
+1.	继承自SceneNode，相机的正方向与SceneNode相同，默认为Z轴正方向
+2.	视图矩阵即为相机世界变换矩阵的逆矩阵
+3.	Camera由场景管理器创建、删除并管理
 */
 
 class Camera : public SceneNode

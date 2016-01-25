@@ -184,6 +184,9 @@
     <ClInclude Include="Viewport.h">
       <Filter>源文件\Render</Filter>
     </ClInclude>
+    <ClInclude Include="D3DX9Extension.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Default.ps">

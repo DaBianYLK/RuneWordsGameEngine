@@ -1,19 +1,17 @@
 #include "Viewport.h"
 
-#include "AppConfig.h"
-#include "Graphics.h"
 #include "Camera.h"
+#include "D3DX9Extension.h"
 
-Viewport::Viewport(Camera* pCamera)
+using namespace D3DX9Extension;
+
+Viewport::Viewport(IDirect3DDevice9* pDevice, unsigned uX, unsigned uY, unsigned uWidth, unsigned uHeight): 
+	m_pCamera			(nullptr),
+	m_BackgroundColor	(D3DColorBlack)
 {
-	m_pDevice = Graphics::GetInstance()->GetD3D9Device();
-	m_pVertexShader = Graphics::GetInstance()->GetVertexShader();
-
-	m_pCamera = pCamera;
-
-	#ifndef RWGE_SHADER_ENABLED
-		m_pDevice->SetTransform(D3DTS_PROJECTION, pCamera->GetProjectionMatrix());
-	#endif
+	m_pDevice = pDevice;
+	m_D3D9ViewportParam = {uX, uY, uWidth, uHeight, 0.0f, 1.0f};
+	m_Rect = {uX, uY, uX + uWidth, uY + uHeight};
 }
 
 Viewport::~Viewport()
@@ -21,21 +19,27 @@ Viewport::~Viewport()
 	
 }
 
-void Viewport::Update(float deltaTime)
+void Viewport::Update() const
 {
-	m_pDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_BackgroundColor, 1.0f, 0);
+	Clear();
 
-	#ifdef RWGE_SHADER_ENABLED
-		m_pViewMatrix = m_pCamera->GetViewMatrix();
-		D3DXMatrixMultiply(&m_ViewProjectionMatrix, m_pViewMatrix, m_pCamera->GetProjectionMatrix());
-	#else
-		m_pDevice->SetTransform(D3DTS_VIEW, m_pCamera->GetViewMatrix());
-	#endif
+
 }
 
-void Viewport::Clear()
+void Viewport::Enable() const
 {
-	m_pDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_BackgroundColor, 1.0f, 0);
+	m_pDevice->SetViewport(&m_D3D9ViewportParam);
+}
+
+void Viewport::Clear() const
+{
+	m_pDevice->Clear(0, &m_Rect, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_BackgroundColor, m_D3D9ViewportParam.MaxZ, 0);
+}
+
+void Viewport::SetRect(unsigned uX, unsigned uY, unsigned uWidth, unsigned uHeight)
+{
+	m_D3D9ViewportParam = { uX, uY, uWidth, uHeight, 0.0f, 1.0f };
+	m_Rect = { uX, uY, uX + uWidth, uY + uHeight };
 }
 
 void Viewport::SetBackgroundColor(const D3DCOLOR& color)
@@ -43,17 +47,12 @@ void Viewport::SetBackgroundColor(const D3DCOLOR& color)
 	m_BackgroundColor = color;
 }
 
-D3DXMATRIX* Viewport::GetViewTransform()
+void Viewport::SetCamera(Camera* pCamera)
 {
-	return m_pViewMatrix;
+	m_pCamera = pCamera;
 }
 
-D3DXMATRIX* Viewport::GetViewportTransform()
-{
-	return &m_ViewProjectionMatrix;
-}
-
-Camera* Viewport::GetCamera()
+Camera* Viewport::GetCamera() const
 {
 	return m_pCamera;
 }

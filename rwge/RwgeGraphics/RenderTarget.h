@@ -31,16 +31,18 @@ private:
 	RenderTarget(RenderTarget&& target);	// 转移构造函数
 	virtual ~RenderTarget();
 
-private:
-	bool Init();
 	bool Release() override;
 
 public:
 	Viewport* CreateViewport();
 	bool RemoveViewport(Viewport* pViewport);
 
+	void Update();
+
 private:
-	DisplayWindow* m_pWindow;
+	const DisplayWindow* m_pWindow;
+
+	Viewport* m_pDefaultViewport;	// 创建或更新Viewport，都会更改DefaultViewport
 	ViewportList m_ViewportList;
 };
 

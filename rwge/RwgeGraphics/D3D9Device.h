@@ -19,12 +19,13 @@ protected:
 	bool Init(const DisplayWindow& window);
 	virtual bool Release();
 
+protected:
+	IDirect3DDevice9*	m_pDevice;
+
 private:
 	D3DDEVTYPE m_DeviceType;
 	D3DPRESENT_PARAMETERS m_PresentParam;
 	unsigned int m_uAdapterID;
 	unsigned int m_uVertexProcessType;
-
-	IDirect3DDevice9*	m_pDevice;
 };
 
