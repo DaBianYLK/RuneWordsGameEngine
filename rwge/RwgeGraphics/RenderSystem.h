@@ -11,6 +11,8 @@ public:
 	RenderSystem();
 	virtual ~RenderSystem();
 
+	void RenderOneFrame(float fDeltaTime);
+
 private:
 	bool Init();
 	bool Release();
@@ -21,7 +23,7 @@ public:
 	RenderTarget* CreateRenderTarget(DisplayWindow& window);
 	bool RemoveRenderTarget(RenderTarget* pTarget);
 
-	RenderTarget* GetActiveRenderTarget();
+	RenderTarget* GetActiveRenderTarget() const;
 
 
 

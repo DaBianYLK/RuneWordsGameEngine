@@ -39,10 +39,10 @@ private:
 	HWND m_hWnd;
 	std::string m_strName;
 
-	int m_iX;
-	int m_iY;
-	int m_iWidth;
-	int m_iHeight;
+	int m_sX;
+	int m_sY;
+	int m_sWidth;
+	int m_sHeight;
 	bool m_bFullScreen;
 	bool m_bShow;
 };

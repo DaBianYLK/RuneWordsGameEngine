@@ -1,13 +1,12 @@
 #pragma once
 
 #include <Windows.h>
-
-#include "AppConfig.h"
 #include "Singleton.h"
+#include "FPSController.h"
 
 class AppDelegate;
-class Graphics;
 class InputManager;
+class RenderSystem;
 
 class Application : public Singleton<Application>
 {
@@ -19,29 +18,20 @@ public:
 	void Run();
 
 	HINSTANCE GetHandle() const;
+	float GetTimeSinceLastFrame() const;
 
 private:
 	static LRESULT CALLBACK AppWndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam);
 	void Initialize();
+	void Release();
 	void Update();
-	void Cleanup();
 
 private:
 	HINSTANCE m_hInstance;
+	FPSController m_FPSController;
 
 	AppDelegate* m_pDelegate;
-
-	Graphics* m_pGraphics;
+	RenderSystem* m_pRenderSystem;
 	InputManager* m_pInputManager;
-
-	LARGE_INTEGER m_Frequency;		// 系统时钟频率
-	LARGE_INTEGER m_LastCount;
-	LARGE_INTEGER m_CurrentCount;
-	float m_DeltaTime;
-
-	LARGE_INTEGER m_StartUpdateCount;
-	LARGE_INTEGER m_EndUpdateCount;
-	float m_UpdateTime;
-	float m_MinIntervalTime;
 };
 

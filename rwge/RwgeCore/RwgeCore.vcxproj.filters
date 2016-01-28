@@ -35,6 +35,12 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>源文件\Input</Filter>
     </ClCompile>
+    <ClCompile Include="Clock.cpp">
+      <Filter>源文件\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSController.cpp">
+      <Filter>源文件\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppDelegate.h">
@@ -53,6 +59,12 @@
       <Filter>源文件\Input</Filter>
     </ClInclude>
     <ClInclude Include="CoreDefinitions.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Clock.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSController.h">
       <Filter>源文件\Common</Filter>
     </ClInclude>
   </ItemGroup>

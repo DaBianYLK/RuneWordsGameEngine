@@ -31,32 +31,58 @@ SceneNode::~SceneNode()
 
 }
 
-void SceneNode::AttachChild(SceneNode* pNode)
+SceneNode* SceneNode::CreateChild()
 {
-	ASSERT(pNode);
-
-	// 将节点从旧的父节点的子节点列表中移除
-	if (pNode->m_pParent)
-	{
-		pNode->m_pParent->RemoveChild(pNode);
-	}
+	SceneNode* pNode = new SceneNode();
 
 	// 将节点加入子节点列表
 	m_listChildren.push_back(pNode);
 
 	// 设置节点的父节点为当前节点
 	pNode->m_pParent = this;
+
+	return pNode;
+}
+
+void SceneNode::ReleaseChild(SceneNode* pNode)
+{
+	if (pNode)
+	{
+		// 从子节点列表移除
+		m_listChildren.remove(pNode);
+
+		delete pNode;
+	}
+}
+
+void SceneNode::AttachChild(SceneNode* pNode)
+{
+	if (pNode)
+	{
+		// 将节点从旧的父节点的子节点列表中移除
+		if (pNode->m_pParent)
+		{
+			pNode->m_pParent->RemoveChild(pNode);
+		}
+
+		// 将节点加入子节点列表
+		m_listChildren.push_back(pNode);
+
+		// 设置节点的父节点为当前节点
+		pNode->m_pParent = this;
+	}
 }
 
 void SceneNode::RemoveChild(SceneNode* pNode)
 {
-	ASSERT(pNode);
+	if (pNode)
+	{
+		// 从子节点列表移除
+		m_listChildren.remove(pNode);
 
-	// 从子节点列表移除
-	m_listChildren.remove(pNode);
-
-	// 将节点父节点设置为空
-	pNode->m_pParent = nullptr;
+		// 将节点父节点设置为空
+		pNode->m_pParent = nullptr;
+	}
 }
 
 SceneNode* SceneNode::GetParent() const
@@ -355,7 +381,7 @@ const D3DXMATRIX& SceneNode::GetWorldTransform() const
 void SceneNode::UpdateWorldTransform() const
 {
 	/*
-	更新世界变换的过程中，会自动递归，直到更新向场景树的根部更新完毕
+	在自底向上更新世界变换的过程中，会自动递归，直到更新向场景树的根部更新完毕
 	*/
 
 	if (m_pParent)
@@ -432,7 +458,7 @@ void SceneNode::NeedUpdate()
 	m_bCachedWorldTransformOutOfDate = true;
 
 	NotifyParentToUpdate();		// 向上通知父节点需要更新
-	NotifyChildrenToUpdate();	// 向下通知子节点需要更新
+	NotifyChildrenToUpdate();	// 向下通知子节点需要更新（OGRE没有执行这一步，可能是因为需要遍历子树，考虑到效率问题所以省略了）
 }
 
 void SceneNode::NotifyParentToUpdate()
@@ -482,15 +508,23 @@ void SceneNode::NotifyChildrenToUpdate()
 }
 
 // 更新当前节点需要更新的子节点
-void SceneNode::UpdateChildren() const
+void SceneNode::UpdateSelfAndAllChildren() const
 {
+	if (m_bWorldTransformChanged)
+	{
+		UpdateWorldTransform();
+
+		m_bNeedAllChildrenUpdate = true;
+		m_listChildrenToUpdate.clear();
+	}
+
 	if (m_bNeedAllChildrenUpdate)
 	{
 		for (auto pChild : m_listChildren)
 		{
 			if (pChild->m_bWorldTransformChanged)
 			{
-				pChild->UpdateWorldTransform();
+				pChild->UpdateSelfAndAllChildren();
 			}
 		}
 
@@ -502,7 +536,7 @@ void SceneNode::UpdateChildren() const
 		{
 			if (pChild->m_bWorldTransformChanged)
 			{
-				pChild->UpdateWorldTransform();
+				pChild->UpdateSelfAndAllChildren();
 			}
 		}
 

@@ -22,7 +22,7 @@ private:
 	~Viewport();
 
 public:
-	void Update() const;
+	void Update();
 
 	void Enable() const;
 	void Clear() const;

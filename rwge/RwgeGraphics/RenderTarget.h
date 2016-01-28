@@ -42,7 +42,7 @@ public:
 private:
 	const DisplayWindow* m_pWindow;
 
-	Viewport* m_pDefaultViewport;	// 创建或更新Viewport，都会更改DefaultViewport
+	Viewport* m_pActiveViewport;	// 创建或更新Viewport，都会更改DefaultViewport
 	ViewportList m_ViewportList;
 };
 

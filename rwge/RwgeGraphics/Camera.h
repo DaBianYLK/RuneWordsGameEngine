@@ -4,6 +4,9 @@
 
 #include "SceneNode.h"
 
+class SceneManager;
+class Viewport;
+
 /*
 左手视图变换矩阵计算
 D3DXMATRIX * D3DXMatrixLookAtLH(D3DXMATRIX *pOut, CONST D3DXVECTOR3 *pEye, CONST D3DXVECTOR3 *pAt, CONST D3DXVECTOR3 *pUp);
@@ -40,25 +43,32 @@ class Camera : public SceneNode
 {
 public:
 	Camera();
+	Camera(SceneManager* pSceneManager);
 	~Camera();
+
+	void SetSceneManager(SceneManager* pSceneManager);
+	SceneManager* GetSceneManager() const;
 
 	void SetPerspective(float fFovy, float fAspect, float fLookNear, float fLookFar);
 
-	const D3DXMATRIX* GetViewMatrix() const;
-	const D3DXMATRIX* GetProjectionMatrix() const;
+	const D3DXMATRIX* GetViewTransform() const;
+	const D3DXMATRIX* GetProjectionTransform() const;
 
+	void UpdateCachedViewTransform() const;
 	void UpdateCachedWorldTransform() const override;
 
-	void UpdateViewMatrix() const;
+	void RenderScene(Viewport* pViewport);
 
 private:
-	mutable D3DXMATRIX m_ViewMatrix;
-	D3DXMATRIX m_ProjectionMatrix;
+	SceneManager* m_pSceneManager;		// 相机所属的场景管理器
+
+	mutable D3DXMATRIX m_ViewTransform;	// 视图矩阵在获取视图矩阵时缓存的视图矩阵过期才会更新
+	D3DXMATRIX m_ProjectionTransform;	// 投影矩阵在设置参数时就会被立即更新
 
 	float m_fFovy;				// 相机垂直视角的大小，单位为弧度
 	float m_fAspect;			// 相机裁剪平面宽高比
 	float m_fLookNear;			// 相机近裁剪平面距离
 	float m_fLookFar;			// 相机远裁剪平面距离
 
-	mutable bool m_bCacheViewMatrixOutOfDate;
+	mutable bool m_bCacheViewTransformOutOfDate;
 };

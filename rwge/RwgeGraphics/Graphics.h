@@ -16,7 +16,7 @@ public:
 	Graphics();
 	~Graphics();
 
-	void Initialize();
+	void Init();
 	void Update(float deltaTime);
 	void Cleanup();
 

@@ -18,7 +18,7 @@ Graphics::~Graphics()
 
 }
 
-void Graphics::Initialize()
+void Graphics::Init()
 {
 	InitWindow();
 	InitD3D9();

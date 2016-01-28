@@ -71,6 +71,8 @@
   <ItemGroup>
     <ClCompile Include="AppDelegate.cpp" />
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Clock.cpp" />
+    <ClCompile Include="FPSController.cpp" />
     <ClCompile Include="InputListener.cpp" />
     <ClCompile Include="InputManager.cpp" />
   </ItemGroup>
@@ -78,7 +80,9 @@
     <ClInclude Include="AppConfig.h" />
     <ClInclude Include="AppDelegate.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="Clock.h" />
     <ClInclude Include="CoreDefinitions.h" />
+    <ClInclude Include="FPSController.h" />
     <ClInclude Include="InputListener.h" />
     <ClInclude Include="InputManager.h" />
   </ItemGroup>

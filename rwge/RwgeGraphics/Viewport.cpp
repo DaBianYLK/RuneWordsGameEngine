@@ -19,11 +19,14 @@ Viewport::~Viewport()
 	
 }
 
-void Viewport::Update() const
+void Viewport::Update()
 {
 	Clear();
 
-
+	if (m_pCamera)
+	{
+		m_pCamera->RenderScene(this);
+	}
 }
 
 void Viewport::Enable() const

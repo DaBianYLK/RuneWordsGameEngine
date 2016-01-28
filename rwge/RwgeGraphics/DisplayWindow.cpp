@@ -30,10 +30,10 @@ DisplayWindow::DisplayWindow(HINSTANCE hAppInstance, int x, int y, int width, in
 {
 	m_hWnd = nullptr;
 	m_strName = DefaultName;
-	m_iX = x;
-	m_iY = y;
-	m_iWidth = width;
-	m_iHeight = height;
+	m_sX = x;
+	m_sY = y;
+	m_sWidth = width;
+	m_sHeight = height;
 	m_bFullScreen = false;
 
 	Init(hAppInstance);
@@ -43,10 +43,10 @@ DisplayWindow::DisplayWindow(HINSTANCE hAppInstance, const char* strName, int x,
 {
 	m_hWnd = nullptr;
 	m_strName = strName;
-	m_iX = x;
-	m_iY = y;
-	m_iWidth = width;
-	m_iHeight = height;
+	m_sX = x;
+	m_sY = y;
+	m_sWidth = width;
+	m_sHeight = height;
 	m_bFullScreen = false;
 
 	Init(hAppInstance);
@@ -65,17 +65,17 @@ void DisplayWindow::SetDefaultSize()
 
 	if (rect.right <= DefaultWidth || rect.bottom <= DefaultHeight)
 	{
-		m_iX = 0;
-		m_iY = 0;
-		m_iWidth = rect.right;
-		m_iHeight = rect.bottom;
+		m_sX = 0;
+		m_sY = 0;
+		m_sWidth = rect.right;
+		m_sHeight = rect.bottom;
 	}
 	else
 	{
-		m_iX = (rect.right - DefaultWidth) / 2;
-		m_iY = (rect.bottom - DefaultHeight) / 2;
-		m_iWidth = DefaultWidth;
-		m_iHeight = DefaultHeight;
+		m_sX = (rect.right - DefaultWidth) / 2;
+		m_sY = (rect.bottom - DefaultHeight) / 2;
+		m_sWidth = DefaultWidth;
+		m_sHeight = DefaultHeight;
 	}
 }
 
@@ -88,10 +88,10 @@ void DisplayWindow::Init(HINSTANCE hAppInstance)
 		"MainWindow",				// 窗口别名
 		m_strName.c_str(),			// 窗口标题
 		WS_OVERLAPPEDWINDOW,		// 窗口风格
-		m_iX,						// 窗口左上角X坐标（基于屏幕像素）
-		m_iY,						// 窗口左上角Y坐标（基于屏幕像素）
-		m_iWidth,					// 窗口宽度
-		m_iHeight,					// 窗口高度
+		m_sX,						// 窗口左上角X坐标（基于屏幕像素）
+		m_sY,						// 窗口左上角Y坐标（基于屏幕像素）
+		m_sWidth,					// 窗口宽度
+		m_sHeight,					// 窗口高度
 		nullptr,					// 父窗口
 		nullptr,					// 菜单
 		hAppInstance,				// 程序实例的句柄
@@ -114,13 +114,13 @@ void DisplayWindow::SetFullScreen()
 	RECT rect;
 	GetWindowRect(hDesk, &rect);
 
-	m_iX = 0;
-	m_iY = 0;
-	m_iWidth = rect.right;
-	m_iHeight = rect.bottom;
+	m_sX = 0;
+	m_sY = 0;
+	m_sWidth = rect.right;
+	m_sHeight = rect.bottom;
 
 	SetWindowLong(m_hWnd, GWL_STYLE, WS_BORDER);
-	SetWindowPos(m_hWnd, HWND_TOPMOST, m_iX, m_iY, m_iWidth, m_iHeight, SWP_SHOWWINDOW);
+	SetWindowPos(m_hWnd, HWND_TOPMOST, m_sX, m_sY, m_sWidth, m_sHeight, SWP_SHOWWINDOW);
 
 	m_bFullScreen = true;
 }
@@ -136,10 +136,10 @@ void DisplayWindow::Resize(int x, int y, int width, int height)
 		height,				// 窗口高度
 		SWP_SHOWWINDOW);	// 其他操作，如显示、隐藏、刷新窗口等
 
-	m_iX = x;
-	m_iY = y;
-	m_iWidth = width;
-	m_iHeight = height;
+	m_sX = x;
+	m_sY = y;
+	m_sWidth = width;
+	m_sHeight = height;
 
 	m_bFullScreen = false;
 }
@@ -179,30 +179,30 @@ HWND DisplayWindow::GetHandle() const
 
 void DisplayWindow::GetSize(int& x, int&y, int& width, int& height) const
 {
-	x = m_iX;
-	y = m_iY;
-	width = m_iWidth;
-	height = m_iHeight;
+	x = m_sX;
+	y = m_sY;
+	width = m_sWidth;
+	height = m_sHeight;
 }
 
 int DisplayWindow::GetX() const
 {
-	return m_iX;
+	return m_sX;
 }
 
 int DisplayWindow::GetY() const
 {
-	return m_iY;
+	return m_sY;
 }
 
 int DisplayWindow::GetWidth() const
 {
-	return m_iWidth;
+	return m_sWidth;
 }
 
 int DisplayWindow::GetHeight() const
 {
-	return m_iHeight;
+	return m_sHeight;
 }
 
 bool DisplayWindow::IsFullScreen() const

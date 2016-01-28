@@ -32,6 +32,8 @@ public:
 	SceneNode();
 	virtual ~SceneNode();
 
+	SceneNode* CreateChild();
+	void ReleaseChild(SceneNode* pNode);
 	void AttachChild(SceneNode* pNode);
 	void RemoveChild(SceneNode* pNode);
 
@@ -67,7 +69,7 @@ public:
 	void NotifyParentToUpdate();
 	void NotifyChildrenToUpdate();
 
-	void UpdateChildren() const;
+	void UpdateSelfAndAllChildren() const;		// 更新自身以及子树中的所有节点
 
 	static D3DXMATRIX* SetTransform(
 		D3DXMATRIX& pOut, 
