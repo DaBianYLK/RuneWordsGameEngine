@@ -1,26 +1,84 @@
 #pragma once
 
-#include <d3d9.h>
+#include "MaterialExpression.h"
+
+/*
+优先采用表达式输入，如果pExpression表达式指针为空，则使用常量输入
+*/
 
 template<typename InputType>
-struct MaterialInput
+class MaterialInput
 {
+public:
 	MaterialInput();
-	~MaterialInput();
+	virtual ~MaterialInput();
 
-	bool bUseConstant;
-	InputType Constant;
+	unsigned char GetExpressionID() const;
+	void GetConstantParamData(void*& pParam, unsigned char& uSize) const;
+	unsigned char AddConstantParamToBuffer(void* pBuffer) const;
+
+	Texture* GetTexture() const;
+
+	MaterialExpression* pExpression;
+	InputType constant;
 };
 
 template<typename InputType>
-MaterialInput<InputType>::MaterialInput()
+MaterialInput<InputType>::MaterialInput() : pExpression(nullptr)
 {
-	bUseConstant = true;
-	Constant = static_cast<InputType>(0);
+	constant = static_cast<InputType>(0);
 }
 
 template<typename InputType>
 MaterialInput<InputType>::~MaterialInput()
 {
 	
+}
+
+template <typename InputType>
+unsigned char MaterialInput<InputType>::GetExpressionID() const
+{
+	if (pExpression)
+	{
+		return pExpression->GetExpressionID();
+	}
+
+	return 0;
+}
+
+template <typename InputType>
+void MaterialInput<InputType>::GetConstantParamData(void*& pParam, unsigned char& uSize) const
+{
+	if (pExpression)
+	{
+		pExpression->GetConstantParamData(pParam, uSize);
+	}
+	else
+	{
+		pParam = reinterpret_cast<void*>(&constant);
+		uSize = sizeof(InputType);
+	}
+}
+
+template <typename InputType>
+unsigned char MaterialInput<InputType>::AddConstantParamToBuffer(void* pBuffer) const
+{
+	if (pExpression)
+	{
+		return pExpression->AddConstantParamToBuffer(pBuffer);
+	}
+
+	memcpy(pBuffer, &constant, sizeof(InputType));
+	return sizeof(InputType);
+}
+
+template <typename InputType>
+Texture* MaterialInput<InputType>::GetTexture() const
+{
+	if (pExpression)
+	{
+		return pExpression->GetTexture();
+	}
+
+	return nullptr;
 }

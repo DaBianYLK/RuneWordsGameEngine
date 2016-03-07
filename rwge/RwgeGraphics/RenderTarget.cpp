@@ -8,16 +8,21 @@ using namespace std;
 RenderTarget::RenderTarget(DisplayWindow& window) : 
 	D3D9Device			(window),
 	m_pWindow			(&window),
-	m_pActiveViewport	(nullptr)
+	m_pActiveViewport	(nullptr), 
+	m_IndexStreamBuffer	(*this, m_uIndexStreamBufferSize), 
+	m_ShaderManager		(this)
 {
-
+	m_listVertexStreamBuffers.push_back(VertexStreamBuffer(*this, m_uVertexStreamBufferSize));
 }
 
 RenderTarget::RenderTarget(RenderTarget&& target) : 
-	D3D9Device			(target),
-	m_pWindow			(target.m_pWindow), 
-	m_pActiveViewport	(target.m_pActiveViewport),
-	m_ViewportList		(move(target.m_ViewportList))
+	D3D9Device					(target),
+	m_pWindow					(target.m_pWindow), 
+	m_pActiveViewport			(target.m_pActiveViewport),
+	m_ViewportList				(move(target.m_ViewportList)),
+	m_listVertexStreamBuffers	(move(target.m_listVertexStreamBuffers)),
+	m_IndexStreamBuffer			(target.m_IndexStreamBuffer),
+	m_ShaderManager				(target.m_ShaderManager)
 {
 	target.m_pActiveViewport = nullptr;
 }

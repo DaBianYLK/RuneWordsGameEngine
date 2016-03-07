@@ -9,10 +9,10 @@ struct D3D9Material
 
 struct D3D9Light
 {
-	int		type;            /* Type of light source */
-	vector	diffuse;         /* Diffuse color of light */
-	vector	specular;        /* Specular color of light */
-	vector	ambient;         /* Ambient color of light */
+	int		type;             /* Type of light source */
+	vector	diffuse;          /* Diffuse color of light */
+	vector	specular;         /* Specular color of light */
+	vector	ambient;          /* Ambient color of light */
 	float3	position;         /* Position in world space */
 	float3	direction;        /* Direction in world space */	// 此处的方向与用户定义的光线方向相反
 	float	range;            /* Cutoff range */

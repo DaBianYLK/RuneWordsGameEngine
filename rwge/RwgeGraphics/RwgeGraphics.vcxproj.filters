@@ -9,52 +9,52 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="源文件\Animation">
-      <UniqueIdentifier>{4b58a56f-c7e9-4b8e-8ee9-890e25d59a27}</UniqueIdentifier>
-    </Filter>
     <Filter Include="源文件\Scene">
       <UniqueIdentifier>{38be9e6e-d39b-4933-b5a6-34a5de44a8df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\Material">
-      <UniqueIdentifier>{946d1a21-029a-4430-be4e-851c1af5d94e}</UniqueIdentifier>
     </Filter>
     <Filter Include="源文件\Common">
       <UniqueIdentifier>{cf5bde1c-99ac-401d-b16f-e7733b9f36cc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Shader">
-      <UniqueIdentifier>{88ea9101-b02a-4d97-8995-be556e721de6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\HLSL">
-      <UniqueIdentifier>{ff665be3-6c9e-4ba4-b4fe-4be9703bf2b4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="源文件\Render">
       <UniqueIdentifier>{9589cd4f-ad28-46bb-9f7f-109fe0337cec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Shaders">
+      <UniqueIdentifier>{ff665be3-6c9e-4ba4-b4fe-4be9703bf2b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Render\Material">
+      <UniqueIdentifier>{946d1a21-029a-4430-be4e-851c1af5d94e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Render\Material\Expression">
+      <UniqueIdentifier>{dabef0de-57ba-4f78-b7c1-eb94d5e3d8c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Render\Shader">
+      <UniqueIdentifier>{88ea9101-b02a-4d97-8995-be556e721de6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Render\Shader\Deprecated">
+      <UniqueIdentifier>{ca53a904-17fa-4e08-a1c3-1ccc7b40e17e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Render\Primitive">
+      <UniqueIdentifier>{da058d48-a4d4-4cde-824f-5c054507e894}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Scene\Deprecated">
+      <UniqueIdentifier>{5b92e3cd-11c1-42fa-be01-ddf55dfadae8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Scene\Model">
+      <UniqueIdentifier>{9cb2258a-23d4-40bc-ba0c-5cf5239d461f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Scene\Model\Animation">
+      <UniqueIdentifier>{4b58a56f-c7e9-4b8e-8ee9-890e25d59a27}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp">
-      <Filter>源文件\Animation</Filter>
+      <Filter>源文件\Scene\Model\Animation</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>源文件\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics.cpp">
-      <Filter>源文件\Common</Filter>
-    </ClCompile>
     <ClCompile Include="Light.cpp">
       <Filter>源文件\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>源文件\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="PixelShader.cpp">
-      <Filter>源文件\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="RwgePixelShader.cpp">
-      <Filter>源文件\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="RwgeVertexShader.cpp">
-      <Filter>源文件\Shader</Filter>
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>源文件\Scene</Filter>
@@ -65,34 +65,13 @@
     <ClCompile Include="Sprite.cpp">
       <Filter>源文件\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="VertexShader.cpp">
-      <Filter>源文件\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialTemplate.cpp">
-      <Filter>源文件\Material</Filter>
-    </ClCompile>
     <ClCompile Include="Color.cpp">
       <Filter>源文件\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="UniformList.cpp">
-      <Filter>源文件\Material</Filter>
     </ClCompile>
     <ClCompile Include="RenderSystem.cpp">
       <Filter>源文件\Render</Filter>
     </ClCompile>
     <ClCompile Include="RenderTarget.cpp">
-      <Filter>源文件\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderPrimitive.cpp">
-      <Filter>源文件\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexStream.cpp">
-      <Filter>源文件\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="IndexStream.cpp">
-      <Filter>源文件\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexDeclaration.cpp">
       <Filter>源文件\Render</Filter>
     </ClCompile>
     <ClCompile Include="D3D9Device.cpp">
@@ -104,31 +83,79 @@
     <ClCompile Include="Viewport.cpp">
       <Filter>源文件\Render</Filter>
     </ClCompile>
+    <ClCompile Include="RenderQueue.cpp">
+      <Filter>源文件\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialExpression.cpp">
+      <Filter>源文件\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="ME_Texture2DSample.cpp">
+      <Filter>源文件\Render\Material\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>源文件\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PixelShader.cpp">
+      <Filter>源文件\Render\Shader\Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="RwgePixelShader.cpp">
+      <Filter>源文件\Render\Shader\Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="RwgeVertexShader.cpp">
+      <Filter>源文件\Render\Shader\Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexShader.cpp">
+      <Filter>源文件\Render\Shader\Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>源文件\Render\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>源文件\Render\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPrimitive.cpp">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexStream.cpp">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexDeclaration.cpp">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexStreamBuffer.cpp">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>源文件\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexStream.cpp">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexStreamBuffer.cpp">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="_Mesh.cpp">
+      <Filter>源文件\Scene\Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>源文件\Scene\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>源文件\Scene\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelFactory.cpp">
+      <Filter>源文件\Scene\Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
-      <Filter>源文件\Animation</Filter>
+      <Filter>源文件\Scene\Model\Animation</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>源文件\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics.h">
-      <Filter>源文件\Common</Filter>
-    </ClInclude>
     <ClInclude Include="Light.h">
       <Filter>源文件\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>源文件\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="PixelShader.h">
-      <Filter>源文件\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="RwgePixelShader.h">
-      <Filter>源文件\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="RwgeVertexShader.h">
-      <Filter>源文件\Shader</Filter>
     </ClInclude>
     <ClInclude Include="SceneManager.h">
       <Filter>源文件\Scene</Filter>
@@ -139,40 +166,19 @@
     <ClInclude Include="Sprite.h">
       <Filter>源文件\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="VertexShader.h">
-      <Filter>源文件\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="MaterialTemplate.h">
-      <Filter>源文件\Material</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicsDefinitions.h">
       <Filter>源文件\Common</Filter>
     </ClInclude>
     <ClInclude Include="MaterialInput.h">
-      <Filter>源文件\Material</Filter>
+      <Filter>源文件\Render\Material</Filter>
     </ClInclude>
     <ClInclude Include="Color.h">
       <Filter>源文件\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="UniformList.h">
-      <Filter>源文件\Material</Filter>
     </ClInclude>
     <ClInclude Include="RenderSystem.h">
       <Filter>源文件\Render</Filter>
     </ClInclude>
     <ClInclude Include="RenderTarget.h">
-      <Filter>源文件\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderPrimitive.h">
-      <Filter>源文件\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexStream.h">
-      <Filter>源文件\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="IndexStream.h">
-      <Filter>源文件\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexDeclaration.h">
       <Filter>源文件\Render</Filter>
     </ClInclude>
     <ClInclude Include="D3D9Device.h">
@@ -187,16 +193,90 @@
     <ClInclude Include="D3DX9Extension.h">
       <Filter>源文件\Common</Filter>
     </ClInclude>
+    <ClInclude Include="RenderQueue.h">
+      <Filter>源文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialExpression.h">
+      <Filter>源文件\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="ME_Texture2DSample.h">
+      <Filter>源文件\Render\Material\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>源文件\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="PixelShader.h">
+      <Filter>源文件\Render\Shader\Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="RwgePixelShader.h">
+      <Filter>源文件\Render\Shader\Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="RwgeVertexShader.h">
+      <Filter>源文件\Render\Shader\Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexShader.h">
+      <Filter>源文件\Render\Shader\Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>源文件\Render\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>源文件\Render\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPrimitive.h">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexStream.h">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexDeclaration.h">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexStreamBuffer.h">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>源文件\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexStream.h">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexStreamBuffer.h">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="_Mesh.h">
+      <Filter>源文件\Scene\Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>源文件\Scene\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>源文件\Scene\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelFactory.h">
+      <Filter>源文件\Scene\Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Default.ps">
-      <Filter>源文件\HLSL</Filter>
+    <None Include="Shaders\Texture.hlsli">
+      <Filter>源文件\Shaders</Filter>
     </None>
-    <None Include="Default.vs">
-      <Filter>源文件\HLSL</Filter>
+    <None Include="Shaders\Material.hlsli">
+      <Filter>源文件\Shaders</Filter>
     </None>
-    <None Include="DefualtWithAnimationCalculation.vs">
-      <Filter>源文件\HLSL</Filter>
+    <None Include="Shaders\BRDF.hlsli">
+      <Filter>源文件\Shaders</Filter>
     </None>
+    <None Include="Shaders\Light.hlsli">
+      <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="Shaders\SH.hlsli">
+      <Filter>源文件\Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\BaseForwardShading.hlsl">
+      <Filter>源文件\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

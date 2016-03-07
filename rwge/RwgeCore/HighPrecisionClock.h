@@ -12,11 +12,11 @@
 */
 
 
-class Clock
+class HighPrecisionClock
 {
 public:
-	Clock();
-	~Clock();
+	HighPrecisionClock();
+	~HighPrecisionClock();
 
 	float Tick();						// 记录当前时间点为Tick时间点，并返回当前Tick距离上一次Tick所逝去的时间
 	float GetTimeSinceLastTick() const;	// 返回距离上一次Tick所逝去的时间（不记录当前的时间点为Tick时间点）

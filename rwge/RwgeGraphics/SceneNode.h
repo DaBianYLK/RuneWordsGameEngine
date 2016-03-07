@@ -15,7 +15,7 @@
 5.	RWGE与DirectX坐标系一致，使用左手坐标系，节点面向方向为Z轴正方向，节点上方为Y轴正方向，节点右方为X轴正方向
 */
 
-enum TransformSpace
+enum ETransformSpace
 {
 	TS_World,
 	TS_Parent,
@@ -28,29 +28,39 @@ class SceneNode
 {
 	friend class SceneManager;
 
+protected:
+	// 表示节点的类型，用于判断当前节点是否为模型
+	enum ENodeType
+	{
+		NT_Node,
+		NT_Model,
+
+		NodeType_MAX
+	};
+
 public:
 	SceneNode();
 	virtual ~SceneNode();
 
 	SceneNode* CreateChild();
-	void ReleaseChild(SceneNode* pNode);
-	void AttachChild(SceneNode* pNode);
-	void RemoveChild(SceneNode* pNode);
+	void ReleaseChild(SceneNode* pNode);		// 移除并delete pNode，【注意】子节点不会被释放
+	void AttachChild(SceneNode* pNode);			// 将pNode绑定到当前节点
+	void RemoveChild(SceneNode* pNode);			// 移除pNode，当是不执行delete
 
 	SceneNode* GetParent() const;
 
-	void Translate		(const D3DXVECTOR3& vector,		TransformSpace space = TS_Parent);
-	void SetPosition	(const D3DXVECTOR3& position,	TransformSpace space = TS_Parent);
+	void Translate		(const D3DXVECTOR3& vector,		ETransformSpace space = TS_Parent);
+	void SetPosition	(const D3DXVECTOR3& position,	ETransformSpace space = TS_Parent);
 
-	void Rotate			(const Quaternion& rotation,	TransformSpace space = TS_Self);
-	void SetOrientation	(const Quaternion& orientation, TransformSpace space = TS_Self);
+	void Rotate			(const Quaternion& rotation,	ETransformSpace space = TS_Self);
+	void SetOrientation	(const Quaternion& orientation, ETransformSpace space = TS_Self);
 
-	const D3DXVECTOR3& GetDirection(TransformSpace space = TS_World) const;	// 返回当前节点正前方的方向向量
-	void SetDirection	(const D3DXVECTOR3& targetDirection,	TransformSpace space = TS_World);
-	void LookAt			(const D3DXVECTOR3& targetPosition,		TransformSpace space = TS_World);
+	const D3DXVECTOR3& GetDirection(ETransformSpace space = TS_World) const;	// 返回当前节点正前方的方向向量
+	void SetDirection	(const D3DXVECTOR3& targetDirection,	ETransformSpace space = TS_World);
+	void LookAt			(const D3DXVECTOR3& targetPosition,		ETransformSpace space = TS_World);
 
 	void Scale			(const D3DXVECTOR3& scale);
-	void SetScale		(const D3DXVECTOR3& scale,		TransformSpace space = TS_Self);
+	void SetScale		(const D3DXVECTOR3& scale,		ETransformSpace space = TS_Self);
 
 	const D3DXVECTOR3&		GetPosition			() const;		// 返回当前节点相对父节点的位置
 	const D3DXVECTOR3&		GetWorldPosition	() const;		// 返回当前节点在世界坐标系中的位置
@@ -69,7 +79,7 @@ public:
 	void NotifyParentToUpdate();
 	void NotifyChildrenToUpdate();
 
-	void UpdateSelfAndAllChildren() const;		// 更新自身以及子树中的所有节点
+	void UpdateSelfAndAllChildren() const;		// 更新当前节点以及所有需要更新的子节点
 
 	static D3DXMATRIX* SetTransform(
 		D3DXMATRIX& pOut, 
@@ -79,29 +89,32 @@ public:
 
 
 protected:
-			D3DXVECTOR3 m_Position;				// 基于父节点的位移
-			Quaternion	m_Orientation;			// 基于父节点的旋转，旋转基点为节点的当前位置
-			D3DXVECTOR3 m_Scale;				// 基于父节点的缩放，缩放基点为节点的当前位置
-	mutable D3DXMATRIX	m_Transform;			// 基于父节点坐标系的变换矩阵
+			SceneManager*			m_pSceneManager;
+			ENodeType				m_NodeType;
 
-	mutable D3DXVECTOR3 m_WorldPosition;		// 基于世界坐标系的位移
-	mutable Quaternion	m_WorldOrientation;		// 基于世界坐标系的旋转
-	mutable D3DXVECTOR3 m_WorldScale;			// 基于世界坐标系的缩放
-	mutable D3DXMATRIX	m_WorldTransform;		// 基于世界坐标系的变换矩阵
+			D3DXVECTOR3				m_Position;				// 基于父节点的位移
+			Quaternion				m_Orientation;			// 基于父节点的旋转，旋转基点为节点的当前位置
+			D3DXVECTOR3				m_Scale;				// 基于父节点的缩放，缩放基点为节点的当前位置
+	mutable D3DXMATRIX				m_Transform;			// 基于父节点坐标系的变换矩阵
+
+	mutable D3DXVECTOR3				m_WorldPosition;		// 基于世界坐标系的位移
+	mutable Quaternion				m_WorldOrientation;		// 基于世界坐标系的旋转
+	mutable D3DXVECTOR3				m_WorldScale;			// 基于世界坐标系的缩放
+	mutable D3DXMATRIX				m_WorldTransform;		// 基于世界坐标系的变换矩阵
 
 			SceneNode*				m_pParent;
 			std::list<SceneNode*>	m_listChildren;
 	mutable std::list<SceneNode*>	m_listChildrenToUpdate;
 
-	mutable bool		m_bParentHasNotified;				// 是否已经通知父节点矩阵发生改变
-	mutable bool		m_bNeedAllChildrenUpdate;			// 是否需要更新所有的子节点
+	mutable bool					m_bParentHasNotified;				// 是否已经通知父节点矩阵发生改变
+	mutable bool					m_bNeedAllChildrenUpdate;			// 是否需要更新所有的子节点
 
-	mutable bool		m_bWorldTransformChanged;			// 是否需要更新当前节点的世界变换
-	mutable bool		m_bCachedTransformOutOfDate;		// 缓存的变换矩阵是否过期
-	mutable bool		m_bCachedWorldTransformOutOfDate;	// 缓存的世界变换矩阵是否过期
+	mutable bool					m_bWorldTransformChanged;			// 是否需要更新当前节点的世界变换
+	mutable bool					m_bCachedTransformOutOfDate;		// 缓存的变换矩阵是否过期
+	mutable bool					m_bCachedWorldTransformOutOfDate;	// 缓存的世界变换矩阵是否过期
 
-	bool				m_bInheritTranslation;	// 继承父节点位移
-	bool				m_bInheritRotation;		// 继承父节点旋转
-	bool				m_bInheritScale;		// 继承父节点缩放
+	bool							m_bInheritTranslation;	// 继承父节点位移
+	bool							m_bInheritRotation;		// 继承父节点旋转
+	bool							m_bInheritScale;		// 继承父节点缩放
 };
 

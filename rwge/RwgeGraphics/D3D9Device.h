@@ -19,6 +19,9 @@ protected:
 	bool Init(const DisplayWindow& window);
 	virtual bool Release();
 
+public:
+	IDirect3DDevice9* GetDevicePtr() const { return m_pDevice; }
+
 protected:
 	IDirect3DDevice9*	m_pDevice;
 

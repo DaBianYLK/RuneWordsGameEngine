@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Clock.h"
+#include "HighPrecisionClock.h"
 
-class FPSController : public Clock
+class FPSController : public HighPrecisionClock
 {
 public:
 	FPSController();

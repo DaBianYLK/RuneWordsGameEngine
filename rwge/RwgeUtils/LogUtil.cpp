@@ -1,6 +1,6 @@
 #include "LogUtil.h"
 
-#include <time.h>
+#include "TimeUtil.h"
 
 using namespace std;
 
@@ -34,38 +34,20 @@ bool LogUtil::Release()
 
 void LogUtil::Log(const char* format, ...)
 {
-	char*	logMessage = new char[m_MaxLogLength];
-	time_t	logTimeValue = time(nullptr);
-	tm		logTime;
+	string strLogMessage = GetCurrentDateTime(TF_Standard);
 
-	localtime_s(&logTime, &logTimeValue);
-	unsigned int length = strftime(logMessage, m_MaxLogLength, "%Y-%m-%d %X\t", &logTime);
-
-	char* message = new char[m_MaxLogLength - length];
+	char* message = new char[m_MaxLogLength];
 	va_list valueList;
 	_crt_va_start(valueList, format);
-	vsprintf_s(message, m_MaxLogLength - length, format, valueList);
+	vsprintf_s(message, m_MaxLogLength, format, valueList);
 	_crt_va_end(valueList);
 
-	strcat_s(logMessage, m_MaxLogLength, message);
+	//strcat_s(message, m_MaxLogLength, "\n");
 
-	int charIndex = 0;
-	while (message[charIndex])
-	{
-		++length;
-		++charIndex;
-	}
+	strLogMessage.append(message);
 
-	strcat_s(logMessage, m_MaxLogLength, "\n");
-	length += 1;
-
-	if (length > m_MaxLogLength)
-	{
-		length = m_MaxLogLength;
-	}
-
-	m_LogStream.write(logMessage, length);
+	//m_LogStream.write(strLogMessage.c_str(), strLogMessage.size());
+	m_LogStream << strLogMessage << endl;
 
 	delete message;
-	delete logMessage;
 }

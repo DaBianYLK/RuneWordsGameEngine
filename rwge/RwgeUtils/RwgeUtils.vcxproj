@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssertUtil.h" />
+    <ClInclude Include="TimeUtil.h" />
     <ClInclude Include="LogUtil.h" />
     <ClInclude Include="Singleton.h" />
   </ItemGroup>

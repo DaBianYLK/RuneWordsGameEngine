@@ -61,4 +61,14 @@ namespace RwgeMath
 
 		return v1;
 	}
+
+	__forceinline float Distance2(const D3DXVECTOR3& v1, const D3DXVECTOR3& v2)
+	{
+		return (v1.x - v2.x) * (v1.x - v2.x) + (v1.y - v2.y) * (v1.y - v2.y) + (v1.z - v2.z) * (v1.z - v2.z);
+	}
+
+	__forceinline float Distance(const D3DXVECTOR3& v1, const D3DXVECTOR3& v2)
+	{
+		return sqrtf(Distance2(v1, v2));
+	}
 }

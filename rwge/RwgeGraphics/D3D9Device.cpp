@@ -112,9 +112,9 @@ bool D3D9Device::Init(const DisplayWindow& window)
 	//m_pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, true);
 	//m_pDevice->SetRenderState(D3DRS_SPECULARENABLE, true);
 
-	m_pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+	/*m_pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 	m_pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-	m_pDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
+	m_pDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);*/
 
 	return true;
 }

@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-#include "Graphics.h"
+#include "AssertUtil.h"
 #include "SceneManager.h"
 
 Camera::Camera() :

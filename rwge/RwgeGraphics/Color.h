@@ -2,6 +2,7 @@
 
 struct FColorRGBA;
 
+// float类型的RGB
 struct FColorRGB
 {
 	FColorRGB();
@@ -28,6 +29,7 @@ struct FColorRGB
 	static const FColorRGB Blue;
 };
 
+// float类型的RGBA
 struct FColorRGBA
 {
 	FColorRGBA();

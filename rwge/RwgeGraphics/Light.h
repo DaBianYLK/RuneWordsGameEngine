@@ -1,41 +1,69 @@
 #pragma once
 
+#include "Color.h"
+#include "SceneNode.h"
 #include <d3dx9.h>
+
+enum ELightType
+{
+	LT_Directional,
+	LT_Point,
+
+	LightType_MAX
+};
 
 class Light
 {
-public:
-	enum Type
-{
-		Point,
-		Directional,
-		Spot
-	};
+	friend class ShaderManager;
 
-public:
-	~Light();
-
-	static Light* CreatePointLight(const D3DCOLORVALUE& diffuse, const D3DCOLORVALUE& specular, const D3DCOLORVALUE& ambient, const D3DXVECTOR3& position,
-		float range, float attenuation0, float attenuation1, float attenuation2);
-
-	static Light* CreateDirectionalLight(const D3DCOLORVALUE& diffuse, const D3DCOLORVALUE& specular, const D3DCOLORVALUE& ambient, const D3DXVECTOR3& direction);
-
-	static Light* CreateSpotLight(const D3DCOLORVALUE& diffuse, const D3DCOLORVALUE& specular, const D3DCOLORVALUE& ambient,
-		const D3DXVECTOR3& position, const D3DXVECTOR3& direction,
-		float range, float falloff, float attenuation0, float attenuation1, float attenuation2, float theta, float phi);
-
-	void Enable();
-	void Disable();
-
-private:
+protected:
 	Light();
-	void Register();
+	virtual ~Light();
 
+	virtual ELightType GetLightType() const = 0;
+	virtual void UpdateConstantBuffer() const = 0;
 
-private:
-	D3DLIGHT9 m_Light;
-	unsigned short m_Index;
+	void SetAmbietnColor(const FColorRGB& color);
+	void SetDiffuseColor(const FColorRGB& color);
+	const FColorRGB& GetAmbientColor() const;
+	const FColorRGB& GetDiffuseColor() const;
 
-	static unsigned short m_LightNum;
+protected:
+	FColorRGB	m_AmbientColor;
+	FColorRGB	m_DiffuseColor;
+
+	mutable bool m_bConstantBufferOutOfDate;
 };
 
+// 方向光不具备场景节点的属性
+class DirectionalLight : public Light
+{
+public:
+	DirectionalLight();
+	~DirectionalLight();
+
+	ELightType GetLightType() const override { return LT_Directional; }
+	void UpdateConstantBuffer() const override;
+
+	void SetWorldDirection(const D3DXVECTOR3& direction);
+	const D3DXVECTOR3& GetWorldDirection() const;
+
+private:
+	D3DXVECTOR3 m_WorldDirection;
+
+	mutable unsigned char m_ConstantBuffer[36];
+};
+
+// 点光源具备场景节点的属性
+class PointLight : public Light, public SceneNode
+{
+public:
+	PointLight();
+	~PointLight();
+
+	ELightType GetLightType() const override { return LT_Point; }
+	void UpdateConstantBuffer() const override;
+
+private:
+	mutable unsigned char m_ConstantBuffer[36];
+};

@@ -1,12 +1,15 @@
 #include "SceneNode.h"
 
+#include "SceneManager.h"
 #include <AssertUtil.h>
 #include <MathDefinitions.h>
 
 using namespace RwgeMath;
 
-SceneNode::SceneNode() :
-	m_Position						(0.0f, 0.0f, 0.0f),
+SceneNode::SceneNode() : 
+	m_pSceneManager					(nullptr),
+	m_NodeType						(NT_Node),
+    m_Position						(0.0f, 0.0f, 0.0f),
 	m_Orientation					(1.0f, 0.0f, 0.0f, 0.0f),
 	m_Scale							(1.0f, 1.0f, 1.0f),
 	m_WorldPosition					(0.0f, 0.0f, 0.0f),
@@ -40,6 +43,7 @@ SceneNode* SceneNode::CreateChild()
 
 	// 设置节点的父节点为当前节点
 	pNode->m_pParent = this;
+	pNode->m_pSceneManager = this->m_pSceneManager;
 
 	return pNode;
 }
@@ -50,6 +54,9 @@ void SceneNode::ReleaseChild(SceneNode* pNode)
 	{
 		// 从子节点列表移除
 		m_listChildren.remove(pNode);
+
+		// 将节点子树中包含的模型从场景管理器中移除
+		pNode->m_pSceneManager->RemoveModelBySceneNode(pNode);
 
 		delete pNode;
 	}
@@ -70,6 +77,10 @@ void SceneNode::AttachChild(SceneNode* pNode)
 
 		// 设置节点的父节点为当前节点
 		pNode->m_pParent = this;
+		pNode->m_pSceneManager = this->m_pSceneManager;
+
+		// 将节点子树中包含的模型加入场景管理器
+		pNode->m_pSceneManager->AddModelBySceneNode(pNode);
 	}
 }
 
@@ -80,8 +91,12 @@ void SceneNode::RemoveChild(SceneNode* pNode)
 		// 从子节点列表移除
 		m_listChildren.remove(pNode);
 
+		// 将节点子树中包含的模型从场景管理器中移除
+		pNode->m_pSceneManager->RemoveModelBySceneNode(pNode);
+
 		// 将节点父节点设置为空
 		pNode->m_pParent = nullptr;
+		pNode->m_pSceneManager = nullptr;
 	}
 }
 
@@ -90,7 +105,7 @@ SceneNode* SceneNode::GetParent() const
 	return m_pParent;
 }
 
-void SceneNode::Translate(const D3DXVECTOR3& vector, TransformSpace space /* = TB_Parent */)
+void SceneNode::Translate(const D3DXVECTOR3& vector, ETransformSpace space /* = TB_Parent */)
 {
 	switch (space)
 	{
@@ -120,7 +135,7 @@ void SceneNode::Translate(const D3DXVECTOR3& vector, TransformSpace space /* = T
 }
 
 // SetPosition等价于在m_Position = (0, 0, 0)时执行Translate
-void SceneNode::SetPosition(const D3DXVECTOR3& position, TransformSpace space /* = TB_Parent */)
+void SceneNode::SetPosition(const D3DXVECTOR3& position, ETransformSpace space /* = TB_Parent */)
 {
 	switch (space)
 	{
@@ -159,7 +174,7 @@ void SceneNode::SetPosition(const D3DXVECTOR3& position, TransformSpace space /*
 假设有定义在B旋转坐标系的向量V，旋转坐标系B相对于旋转坐标系A的旋转可以用四元数Q表示，
 则Q作用于V相当于把V从旋转坐标系B转换到了旋转坐标系A
 */
-void SceneNode::Rotate(const Quaternion& rotation, TransformSpace space /* = TS_Self */)
+void SceneNode::Rotate(const Quaternion& rotation, ETransformSpace space /* = TS_Self */)
 {
 	Quaternion qNormal = rotation;
 	qNormal.Normalise();
@@ -193,7 +208,7 @@ void SceneNode::Rotate(const Quaternion& rotation, TransformSpace space /* = TS_
 }
 
 // SetOrientation等价于在m_Orientation = (1, 0, 0, 0)时执行Rotate
-void SceneNode::SetOrientation(const Quaternion& orientation, TransformSpace space /* = TS_Self */)
+void SceneNode::SetOrientation(const Quaternion& orientation, ETransformSpace space /* = TS_Self */)
 {
 	Quaternion qNormal = orientation;
 	qNormal.Normalise();
@@ -223,7 +238,7 @@ void SceneNode::SetOrientation(const Quaternion& orientation, TransformSpace spa
 	NeedUpdate();
 }
 
-const D3DXVECTOR3& SceneNode::GetDirection(TransformSpace space /* = TS_World */) const
+const D3DXVECTOR3& SceneNode::GetDirection(ETransformSpace space /* = TS_World */) const
 {
 	D3DXVECTOR3 originalDirection;
 
@@ -246,14 +261,14 @@ const D3DXVECTOR3& SceneNode::GetDirection(TransformSpace space /* = TS_World */
 	return originalDirection;
 }
 
-void SceneNode::SetDirection(const D3DXVECTOR3& targetDirection, TransformSpace space /* = TS_World */)
+void SceneNode::SetDirection(const D3DXVECTOR3& targetDirection, ETransformSpace space /* = TS_World */)
 {
 	Quaternion rotation;
 	Quaternion::GetRotationBetween(&rotation, GetDirection(space), targetDirection);
 	Rotate(rotation, space);
 }
 
-void SceneNode::LookAt(const D3DXVECTOR3& targetPosition, TransformSpace space /* = TS_World */)
+void SceneNode::LookAt(const D3DXVECTOR3& targetPosition, ETransformSpace space /* = TS_World */)
 {
 	D3DXVECTOR3 targetDirection;
 	
@@ -284,7 +299,7 @@ void SceneNode::Scale(const D3DXVECTOR3& scale)
 }
 
 // SetScale等价于在m_Scale = (1, 1, 1)时执行Scale
-void SceneNode::SetScale(const D3DXVECTOR3& scale, TransformSpace space /* = TS_Self */)
+void SceneNode::SetScale(const D3DXVECTOR3& scale, ETransformSpace space /* = TS_Self */)
 {
 	switch (space)
 	{
@@ -507,9 +522,9 @@ void SceneNode::NotifyChildrenToUpdate()
 	}
 }
 
-// 更新当前节点需要更新的子节点
 void SceneNode::UpdateSelfAndAllChildren() const
 {
+	// 更新当前节点
 	if (m_bWorldTransformChanged)
 	{
 		UpdateWorldTransform();
@@ -518,6 +533,7 @@ void SceneNode::UpdateSelfAndAllChildren() const
 		m_listChildrenToUpdate.clear();
 	}
 
+	// 更新子节点
 	if (m_bNeedAllChildrenUpdate)
 	{
 		for (auto pChild : m_listChildren)

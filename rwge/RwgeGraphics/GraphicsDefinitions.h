@@ -4,7 +4,7 @@
 
 enum EBlendMode
 {
-	BM_Opacity,
+	BM_Opaque,
 	BM_Translucent,
 	BM_Additive,
 	BM_Modulative,
@@ -13,12 +13,12 @@ enum EBlendMode
 	BlendMode_MAX
 };
 
-enum EShadingModel
+enum EShadingMode
 {
 	SM_Unlit,
-	SM_DefaultLit,
+	SM_Default,
 
-	ShadingModel_MAX
+	ShadingMode_MAX
 };
 
 #define D3D9SafeRelease(ptr) \

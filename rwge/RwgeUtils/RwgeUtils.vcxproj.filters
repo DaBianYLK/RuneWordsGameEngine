@@ -23,6 +23,9 @@
     <ClInclude Include="AssertUtil.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="TimeUtil.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LogUtil.cpp">

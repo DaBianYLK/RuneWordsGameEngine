@@ -2,7 +2,7 @@
 
 #include "MathDefinitions.h"
 
-struct AngleDegree;
+class AngleDegree;
 
 /*
 弧度，圆周取值范围[0.0f, 2 * PI)

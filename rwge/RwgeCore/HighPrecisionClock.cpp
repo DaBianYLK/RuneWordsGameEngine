@@ -1,19 +1,19 @@
-#include "Clock.h"
+#include "HighPrecisionClock.h"
 
 #include <profileapi.h>
 
-Clock::Clock()
+HighPrecisionClock::HighPrecisionClock()
 {
 	QueryPerformanceFrequency(&m_Frequency);	// 获取系统时钟频率（每秒运行次数）
 	QueryPerformanceCounter(&m_LastCount);		// 获取当前系统时钟计数
 }
 
 
-Clock::~Clock()
+HighPrecisionClock::~HighPrecisionClock()
 {
 }
 
-float Clock::Tick()
+float HighPrecisionClock::Tick()
 {
 	LARGE_INTEGER currentCount;
 	QueryPerformanceCounter(&currentCount);		// 获取当前系统时钟计数
@@ -23,7 +23,7 @@ float Clock::Tick()
 	return fDeltaTime;
 }
 
-float Clock::GetTimeSinceLastTick() const
+float HighPrecisionClock::GetTimeSinceLastTick() const
 {
 	LARGE_INTEGER currentCount;
 	QueryPerformanceCounter(&currentCount);		// 获取当前系统时钟计数

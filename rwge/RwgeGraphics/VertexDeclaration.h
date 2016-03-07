@@ -2,7 +2,11 @@
 
 
 #include <list>
-#include <map>
+#include <vector>
+
+struct IDirect3DVertexDeclaration9;
+struct IDirect3DDevice9;
+class D3D9Device;
 
 /*
 typedef enum D3DDECLTYPE
@@ -52,12 +56,12 @@ typedef enum D3DDECLUSAGE
 {
 D3DDECLUSAGE_POSITION      = 0,		// 顶点坐标
 D3DDECLUSAGE_BLENDWEIGHT   = 1,		// 顶点混合权重
-D3DDECLUSAGE_BLENDINDICES  = 2,		// 顶点混合索引
-D3DDECLUSAGE_NORMAL        = 3,		// 顶点法线
+D3DDECLUSAGE_BLENDINDICES  = 2,		// 顶点混合索引	
+D3DDECLUSAGE_NORMAL        = 3,		// 顶点法线		需要使用D3DDECLMETHOD_CROSSUV进行插值
 D3DDECLUSAGE_PSIZE         = 4,		// 顶点大小，用于支持顶点精灵（四边形）
 D3DDECLUSAGE_TEXCOORD      = 5,		// 纹理坐标
-D3DDECLUSAGE_TANGENT       = 6,		// 正切值
-D3DDECLUSAGE_BINORMAL      = 7,		// 副法线
+D3DDECLUSAGE_TANGENT       = 6,		// 正切值		需要使用D3DDECLMETHOD_CROSSUV进行插值
+D3DDECLUSAGE_BINORMAL      = 7,		// 副法线		需要使用D3DDECLMETHOD_CROSSUV进行插值
 D3DDECLUSAGE_TESSFACTOR    = 8,		// Tessellation因子，用于控制顶点镶嵌的比率
 D3DDECLUSAGE_POSITIONT     = 9,		// 变换后的顶点坐标，当设置此值后，默认渲染管线中的顶点着色器计算会被跳过
 D3DDECLUSAGE_COLOR         = 10,	// 顶点颜色
@@ -97,51 +101,45 @@ struct VertexElement
 	unsigned char	uUsageIndex;	// 顶点元素用途索引
 };
 
+/*
+关于单流和多流：
+1.	单流只会被绑定到0号流
+2.	多流相当于将单流进行拆分，
+例：有一个单流[顶点位置、纹理坐标、顶点法向]，可以拆分为三个流[顶点位置]、[纹理坐标]和[顶点法向]，组成多流
+3.	多流从0号流开始，依次绑定流编号
+4.	【注意】多流并不能同时绘制多个模型，不同的流之间不能包含相同的顶点声明
+5.	多流相对于单流的优势是可以拆分出顶点流中的动态数据与静态数据，lock时只需要修改动态数据，降低内存压力
+
+D3D顶点声明与Device是绑定的。
+*/
+
+typedef std::list<VertexElement>		VertexElementList;
+typedef std::vector<VertexElementList>	VertexElementTable;
+
 class VertexDeclaration
 {
 public:
 	VertexDeclaration();
-	virtual ~VertexDeclaration();
+	~VertexDeclaration();
 
-protected:
-	bool m_bDirty;
-};
+	// 正常情况下，顶点元素声明只会增加元素，不会删除元素，所以暂时不实现RemoveVertexElement
+	bool AddVertexElement(const VertexElement& element, unsigned short uStreamID = 0);
 
-typedef std::list<VertexElement>					VertexElementList;
-typedef std::map<unsigned short, VertexElementList> VertexElementMap;		// <StreamID, VertexElementList>键值对
+	unsigned short Enable(const D3D9Device& device) const;		// 返回顶点流的数目
 
-class SingleStreamVertexDeclaration : public VertexDeclaration
-{
-public:
-	SingleStreamVertexDeclaration();
-	~SingleStreamVertexDeclaration();
-
-	void AddVertexElement(const VertexElement& element);
-	void RemoveVertexElement(const VertexElement& element);
-
-	void GenerateD3DVertexDeclaration();
-	void Enable();
+	unsigned short GetVertexStreamCount() const;
+	unsigned short GetStreamVertexSize(unsigned short uStreamID = 0) const;
+	unsigned short GetVertexSize() const;
 
 private:
-	unsigned short m_uStreamID;
-
-	VertexElementList m_listVertexElement;
-};
-
-// 如果你想向一个shader同时传递多个顶点流，请使用这个类对顶点流进行声明
-class MultiStreamVertexDeclaration : public VertexDeclaration
-{
-public:
-	MultiStreamVertexDeclaration();
-	~MultiStreamVertexDeclaration();
-
-	void AddVertexElement(const unsigned short uStreamID, const VertexElement& element);
-	void RemoveVertexElement(const unsigned short uStreamID, const VertexElement& element);
-
-	void GenerateD3DVertexDeclaration();
-	void Enable();
+	void UpdateD3DVertexDeclaration() const;
 
 private:
-	VertexElementMap m_mapVertexDeclaration;
-};
+	VertexElementTable m_tableVertexDeclaration;
 
+	mutable IDirect3DDevice9* m_pDevice;
+	mutable unsigned short m_uStreamCount;						// uStreamCount为0时，说明顶点流的定义发生改变，此时需要更新D3D顶点流声明
+	mutable std::vector<unsigned short> m_vecStreamVertexSize;	// 每个流中的顶点大小
+	mutable unsigned short m_uVertexSize;						// 一个顶点的大小（所有流中顶点大小的和）
+	mutable IDirect3DVertexDeclaration9* m_pDeclarations;		// D3D顶点流声明
+};

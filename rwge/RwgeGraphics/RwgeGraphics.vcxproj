@@ -72,24 +72,33 @@
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="D3D9Device.cpp" />
     <ClCompile Include="DisplayWindow.cpp" />
-    <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="IndexStream.cpp" />
+    <ClCompile Include="IndexStreamBuffer.cpp" />
     <ClCompile Include="Light.cpp" />
-    <ClCompile Include="MaterialTemplate.cpp" />
+    <ClCompile Include="MaterialExpression.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ModelFactory.cpp" />
+    <ClCompile Include="_Mesh.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="RenderPrimitive.cpp" />
+    <ClCompile Include="RenderQueue.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="RwgePixelShader.cpp" />
     <ClCompile Include="RwgeVertexShader.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SceneNode.cpp" />
+    <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="UniformList.cpp" />
+    <ClCompile Include="ME_Texture2DSample.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VertexDeclaration.cpp" />
     <ClCompile Include="VertexShader.cpp" />
     <ClCompile Include="VertexStream.cpp" />
+    <ClCompile Include="VertexStreamBuffer.cpp" />
     <ClCompile Include="Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -99,32 +108,49 @@
     <ClInclude Include="D3D9Device.h" />
     <ClInclude Include="D3DX9Extension.h" />
     <ClInclude Include="DisplayWindow.h" />
-    <ClInclude Include="Graphics.h" />
     <ClInclude Include="GraphicsDefinitions.h" />
     <ClInclude Include="IndexStream.h" />
+    <ClInclude Include="IndexStreamBuffer.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="MaterialExpression.h" />
     <ClInclude Include="MaterialInput.h" />
-    <ClInclude Include="MaterialTemplate.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelFactory.h" />
+    <ClInclude Include="_Mesh.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="RenderPrimitive.h" />
+    <ClInclude Include="RenderQueue.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="RwgePixelShader.h" />
     <ClInclude Include="RwgeVertexShader.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SceneNode.h" />
+    <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Sprite.h" />
-    <ClInclude Include="UniformList.h" />
+    <ClInclude Include="ME_Texture2DSample.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="VertexDeclaration.h" />
     <ClInclude Include="VertexShader.h" />
     <ClInclude Include="VertexStream.h" />
+    <ClInclude Include="VertexStreamBuffer.h" />
     <ClInclude Include="Viewport.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Default.ps" />
-    <None Include="Default.vs" />
-    <None Include="DefualtWithAnimationCalculation.vs" />
+    <None Include="Shaders\BRDF.hlsli" />
+    <None Include="Shaders\Light.hlsli" />
+    <None Include="Shaders\Material.hlsli" />
+    <None Include="Shaders\SH.hlsli" />
+    <None Include="Shaders\Texture.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\BaseForwardShading.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

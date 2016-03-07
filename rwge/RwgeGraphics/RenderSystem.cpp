@@ -74,3 +74,7 @@ RenderTarget* RenderSystem::GetActiveRenderTarget() const
 	return m_pActiveRenderTarget;
 }
 
+RenderQueue* RenderSystem::GetRenderQueuePtr()
+{
+	return &m_RenderQueue;
+}
