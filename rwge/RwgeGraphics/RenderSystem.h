@@ -22,9 +22,12 @@ public:
 	virtual ~RenderSystem();
 
 	void RenderOneFrame(float fDeltaTime);
+	void RenderScene(SceneManager* pSceneManager);
+	void VisitRenderQueue();
+	void ApplyRenderState(const RenderState& renderState);
 
 private:
-	bool Init();
+	bool InitD3DD9();
 	bool Release();
 
 public:
@@ -44,6 +47,8 @@ private:
 	RenderTargetList m_RenderTargetList;		// 渲染目标列表
 
 	RenderQueue m_RenderQueue;
+
+	RenderState m_CurrentRenderState;
 };
 
 #define g_RenderSystem RenderSystem::GetInstance()

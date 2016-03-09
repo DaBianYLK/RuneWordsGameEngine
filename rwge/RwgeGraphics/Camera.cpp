@@ -91,6 +91,6 @@ void Camera::RenderScene(Viewport* pViewport)
 {
 	if (m_pSceneManager)
 	{
-		m_pSceneManager->RenderScene(this, pViewport);
+		m_pSceneManager->VisitScene(pViewport);
 	}
 }

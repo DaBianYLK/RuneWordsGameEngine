@@ -263,3 +263,13 @@ ShaderProgram* ShaderManager::GetShaderProgramByKey(unsigned long long u64Key)
 
 	return pShader;
 }
+
+ShaderProgram* ShaderManager::GetFirstShaderProgram()
+{
+	if (m_hashShaders.empty())
+	{
+		return nullptr;
+	}
+
+	return m_hashShaders.begin()->second;
+}

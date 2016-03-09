@@ -32,7 +32,7 @@ public:
 	void End() const;
 
 	void SetTransform(const void* pTransform);
-	void SetViewDirection(const void* pDirection);
+	void SetViewOppositeDirection(const void* pDirection);
 	void SetMaterial(const void* pMaterialConstant, unsigned int uSize);
 	void SetBaseColorTexture(const Texture* pTexture);
 	void SetEmissiveColorTexture(const Texture* pTexture);
@@ -42,8 +42,7 @@ public:
 	void SetRoughnessTexture(const Texture* pTexture);
 	void SetOpacityTexture(const Texture* pTexture);
 	void SetOpacityMaskTexture(const Texture* pTexture);
-	void SetDirecnalLight(const void* pLight);
-	void SetPointLight(const void* pLight);
+	void SetLight(const void* pLight, unsigned int uSize);
 
 private:
 	std::string m_strFilePath;
@@ -51,7 +50,7 @@ private:
 	LPD3DXEFFECT m_pEffect;
 
 	D3DXHANDLE m_hTransform;
-	D3DXHANDLE m_hViewDirection;
+	D3DXHANDLE m_hViewOppositeDirection;
 	D3DXHANDLE m_hMaterial;
 	D3DXHANDLE m_hBaseColorTexture;
 	D3DXHANDLE m_hEmissiveColorTexture;

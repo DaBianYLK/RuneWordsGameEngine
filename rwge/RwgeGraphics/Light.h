@@ -16,12 +16,13 @@ class Light
 {
 	friend class ShaderManager;
 
-protected:
+public:
 	Light();
 	virtual ~Light();
 
 	virtual ELightType GetLightType() const = 0;
 	virtual void UpdateConstantBuffer() const = 0;
+	virtual void GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) const = 0;
 
 	void SetAmbietnColor(const FColorRGB& color);
 	void SetDiffuseColor(const FColorRGB& color);
@@ -44,6 +45,7 @@ public:
 
 	ELightType GetLightType() const override { return LT_Directional; }
 	void UpdateConstantBuffer() const override;
+	void GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) const override;
 
 	void SetWorldDirection(const D3DXVECTOR3& direction);
 	const D3DXVECTOR3& GetWorldDirection() const;
@@ -63,6 +65,7 @@ public:
 
 	ELightType GetLightType() const override { return LT_Point; }
 	void UpdateConstantBuffer() const override;
+	void GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) const override;
 
 private:
 	mutable unsigned char m_ConstantBuffer[36];

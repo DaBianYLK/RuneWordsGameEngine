@@ -1,10 +1,13 @@
 #include "RenderSystem.h"
 
 #include "GraphicsDefinitions.h"
+#include "SceneManager.h"
+#include "Light.h"
+#include "Camera.h"
 
 RenderSystem::RenderSystem()
 {
-	Init();
+	InitD3DD9();
 }
 
 RenderSystem::~RenderSystem()
@@ -23,7 +26,49 @@ void RenderSystem::RenderOneFrame(float fDeltaTime)
 	}
 }
 
-bool RenderSystem::Init()
+void RenderSystem::RenderScene(SceneManager* pSceneManager)
+{
+	// 设置着色器共享常量
+	ShaderProgram* pShader = m_pActiveRenderTarget->m_ShaderManager.GetFirstShaderProgram();
+
+	unsigned char* pLight;
+	unsigned char uSize;
+	pSceneManager->GetLight()->GetConstantBuffer(pLight, uSize);
+	pShader->SetLight(pLight, uSize);
+
+	D3DXVECTOR3 viewOppoisteDirection = -pSceneManager->GetActiveCamera()->GetDirection();
+	pShader->SetViewOppositeDirection(&viewOppoisteDirection);
+
+	// 遍历渲染队列，并执行绘制函数
+	VisitRenderQueue();
+}
+
+void RenderSystem::VisitRenderQueue()
+{
+	// 先画不透明组中的图元
+	//auto = pair <RenderStateKey, std::list<RenderPrimitive*>>
+	for (auto& renderOperation : m_RenderQueue.m_OpaqueGroup)
+	{
+		ApplyRenderState(renderOperation.first);
+	}
+
+	// 再画半透明组中的图元
+	//auto = pair <RenderStateKey, std::list<RenderPrimitive*>>
+	for (auto& renderOperation : m_RenderQueue.m_TranslucentGroup)
+	{
+
+	}
+}
+
+void RenderSystem::ApplyRenderState(const RenderState& renderState)
+{
+	if (m_CurrentRenderState.u64ShaderKey != renderState.u64ShaderKey)
+	{
+
+	}
+}
+
+bool RenderSystem::InitD3DD9()
 {
 	m_pD3D9 = Direct3DCreate9(D3D_SDK_VERSION);
 	if (!m_pD3D9)

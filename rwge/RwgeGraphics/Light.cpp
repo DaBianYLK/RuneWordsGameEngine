@@ -57,6 +57,14 @@ void DirectionalLight::UpdateConstantBuffer() const
 	}
 }
 
+void DirectionalLight::GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) const
+{
+	UpdateConstantBuffer();
+
+	pBuffer = m_ConstantBuffer;
+	uSize = 36;
+}
+
 void DirectionalLight::SetWorldDirection(const D3DXVECTOR3& direction)
 {
 	m_WorldDirection = direction;
@@ -94,4 +102,12 @@ void PointLight::UpdateConstantBuffer() const
 
 		m_bConstantBufferOutOfDate = false;
 	}
+}
+
+void PointLight::GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) const
+{
+	UpdateConstantBuffer();
+
+	pBuffer = m_ConstantBuffer;
+	uSize = 36;
 }

@@ -7,6 +7,7 @@ class Camera;
 class Viewport;
 class Model;
 class RenderQueue;
+class Light;
 
 /*
 场景管理器不直接参与渲染，它负责：
@@ -23,7 +24,7 @@ public:
 	~SceneManager();
 
 	SceneNode* GetSceneRoot() const;
-	void RenderScene(Viewport* pViewport, RenderQueue* pRenderQueue);
+	void VisitScene(Viewport* pViewport);
 
 	/*
 	ToDo:
@@ -38,12 +39,20 @@ public:
 	void AddModelBySceneNode(SceneNode* pNode);		// 将节点子树中所有的模型加入模型哈希表
 	void RemoveModelBySceneNode(SceneNode* pNode);	// 将节点子树中所有的模型从模型哈希表中移除
 
+	void SetLight(Light* pLight);
+	Light* GetLight();
+
+	Camera* GetActiveCamera();
+
 private:
-	void PutPrimitiveIntoRenderQueue(Camera* pCamera, RenderQueue* pRenderQueue);
+	void UpdateRenderQueue(Camera* pCamera, RenderQueue* pRenderQueue);
 
 private:
 	SceneNode* m_pRoot;
 
 	std::hash_map<Model*, Model*> m_mapModels;		// 保存场景中所有的模型
+
+	Light*	m_pLight;
+	Camera* m_pActiveCamera;
 };
 

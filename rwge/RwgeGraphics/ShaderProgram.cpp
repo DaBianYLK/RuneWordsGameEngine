@@ -57,12 +57,12 @@ void ShaderProgram::End() const
 
 void ShaderProgram::SetTransform(const void* pTransform)
 {
-	m_pEffect->SetValue(m_hTransform, pTransform, sizeof(float) * 16 * 3);
+	m_pEffect->SetValue(m_hTransform, pTransform, sizeof(float) * 16);
 }
 
-void ShaderProgram::SetViewDirection(const void* pDirection)
+void ShaderProgram::SetViewOppositeDirection(const void* pDirection)
 {
-	m_pEffect->SetValue(m_hViewDirection, pDirection, sizeof(float) * 3);
+	m_pEffect->SetValue(m_hViewOppositeDirection, pDirection, sizeof(float) * 3);
 }
 
 void ShaderProgram::SetMaterial(const void* pMaterialConstant, unsigned uSize)
@@ -110,12 +110,7 @@ void ShaderProgram::SetOpacityMaskTexture(const Texture* pTexture)
 	m_pEffect->SetTexture(m_hOpacityMaskTexture, pTexture->GetTexturePtr());
 }
 
-void ShaderProgram::SetDirecnalLight(const void* pLight)
+void ShaderProgram::SetLight(const void* pLight, unsigned int uSize)
 {
-	m_pEffect->SetValue(m_hDirectionalLight, pLight, sizeof(float) * 3 * 3);
-}
-
-void ShaderProgram::SetPointLight(const void* pLight)
-{
-	m_pEffect->SetValue(m_hPointLight, pLight, sizeof(float)* 3 * 3);
+	m_pEffect->SetValue(m_hPointLight, pLight, uSize);
 }

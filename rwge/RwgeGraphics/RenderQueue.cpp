@@ -11,15 +11,15 @@ RenderQueue::~RenderQueue()
 {
 }
 
-void RenderQueue::AddRenderPrimitive(RenderPrimitive* pPrimitive, Material* pMaterial, float fDepth)
+void RenderQueue::AddRenderPrimitive(RenderPrimitive* pPrimitive, const RenderState& renderState)
 {
-	if (pMaterial->GetBlendMode() == BM_Opaque)
+	if (renderState.pMaterial->GetBlendMode() == BM_Opaque)
 	{
-		m_OpaqueGroup[make_pair(pMaterial, fDepth)].push_back(pPrimitive);
+		m_OpaqueGroup[renderState].push_back(pPrimitive);
 	}
 	else
 	{
-		m_TranslucentGroup[make_pair(pMaterial, fDepth)].push_back(pPrimitive);
+		m_TranslucentGroup[renderState].push_back(pPrimitive);
 	}
 }
 

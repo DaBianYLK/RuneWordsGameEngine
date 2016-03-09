@@ -13,17 +13,24 @@
 3.	新增材质时，需要更新所有材质的预排序结果，这就需要所有材质统一管理，材质编辑器需要能够同时控制所有的材质
 */
 
-struct RenderStateKey
+// 渲染对象按渲染状态进行排序
+struct RenderState
 {
 	unsigned long long	u64ShaderKey;
-	Material*			pMaterial;
-	float				fDepth;
+	Material*			pMaterial;	
+	float				fDepth;				// 图元的深度值
+	D3DXMATRIX			transform;			// 图元的WVP变换矩阵，暂时不参与渲染状态排序
+
+	RenderState() : u64ShaderKey(0), pMaterial(nullptr), fDepth(0.0f)
+	{
+		
+	}
 };
 
 class OpaqueGroupPolicy
 {
 	// 定义不透明渲染对象的升序排序规则，返回MaterialA < MaterialB的值
-	bool operator() (const RenderStateKey& keyA, const RenderStateKey& keyB) const
+	bool operator() (const RenderState& keyA, const RenderState& keyB) const
 	{
 		// 排序优先级：Shader > Material(Texture > MaterialConstant) > Depth
 		if (keyA.u64ShaderKey != keyB.u64ShaderKey)
@@ -88,7 +95,7 @@ class OpaqueGroupPolicy
 class TranslucentGroupPolicy
 {
 	// 定义半透明渲染对象的升序排序规则，返回MaterialA < MaterialB的值
-	bool operator() (const RenderStateKey& keyA, const RenderStateKey& keyB) const
+	bool operator() (const RenderState& keyA, const RenderState& keyB) const
 	{
 		// 排序优先级：Depth > Shader > Material(Texture > MaterialConstant)
 		if (keyA.fDepth != keyB.fDepth)
@@ -156,9 +163,9 @@ class TranslucentGroupPolicy
 	}
 };
 
-// <Material*, float>中的float为渲染图元的深度值
-typedef std::map<RenderStateKey, std::list<RenderPrimitive*>, OpaqueGroupPolicy>		OpaqueGroup;
-typedef std::map<RenderStateKey, std::list<RenderPrimitive*>, TranslucentGroupPolicy>	TranslucentGroup;
+
+typedef std::map<RenderState, std::list<RenderPrimitive*>, OpaqueGroupPolicy>		OpaqueGroup;
+typedef std::map<RenderState, std::list<RenderPrimitive*>, TranslucentGroupPolicy>	TranslucentGroup;
 
 /*
 RenderQueue仅能由RenderSystem创建和释放
@@ -173,7 +180,7 @@ private:
 	~RenderQueue();
 
 public:
-	void AddRenderPrimitive(RenderPrimitive* pPrimitive, Material* pMaterial, float fDepth);
+	void AddRenderPrimitive(RenderPrimitive* pPrimitive, const RenderState& renderStateKey);
 	void Clear();
 
 private:

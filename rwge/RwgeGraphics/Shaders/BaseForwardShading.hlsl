@@ -7,7 +7,7 @@
 
 // shared关键字用于通过Effect Pool在不同的shader间共享常量
 shared matrix	g_WVP;
-shared float3	g_ViewDirection;				// 指向视线向量（从视点发射出的向量）的反方向
+shared float3	g_ViewOppositeDirection;				// 指向视线向量（从视点发射出的向量）的反方向
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -88,7 +88,7 @@ half4 BasePS(	float3 inPosition	: POSITION,
 	diffuseColor += specular * 0.45;
 	specularColor = 0;
 #else
-	half normalDotView = max(dot(normal, g_ViewDirection), 0);
+	half normalDotView = max(dot(normal, g_ViewOppositeDirection), 0);
 
 #	if MATERIAL_NONMETAL
 	specularColor = EnvBRDFApproxNonmetal(roughness, normalDotView);
@@ -107,7 +107,7 @@ half4 BasePS(	float3 inPosition	: POSITION,
 
 	// ============================= 计算方向光的作用 =============================
 #if MATERIAL_SHADING_MODE != SHADING_UNLIT
-	half3 reflectionVector = -g_ViewDirection + normal * dot(normal, g_ViewDirection) * 2.0;
+	half3 reflectionVector = -g_ViewOppositeDirection + normal * dot(normal, g_ViewOppositeDirection) * 2.0;
 	half3 lightDirection = GetLightWorldDirection(inPosition);
 	half  normalDotLight = max(0, dot(normal, lightDirection));
 	half reflectionDotLight = max(0, dot(reflectionVector, lightDirection));

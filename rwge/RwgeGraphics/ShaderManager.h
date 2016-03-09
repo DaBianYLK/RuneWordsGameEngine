@@ -66,6 +66,7 @@ public:
 	static ShaderProgram* LoadShaderByKey(const unsigned long long u64Key, const D3D9Device* pDevice, LPD3DXEFFECTPOOL pEffectPool);
 
 	ShaderProgram* GetShaderProgramByKey(const unsigned long long u64Key);
+	ShaderProgram* GetFirstShaderProgram();		// 返回shader哈希表中的第一个shader
 
 private:
 	static std::string m_strFXCPath;
