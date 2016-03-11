@@ -230,19 +230,19 @@ bool ShaderManager::CompileShader(unsigned long long u64Key)
 	return true;
 }
 
-ShaderProgram* ShaderManager::LoadShaderByKey(unsigned long long u64Key, const D3D9Device* pDevice, LPD3DXEFFECTPOOL pEffectPool)
+ShaderProgram* ShaderManager::LoadShader(unsigned long long u64Key)
 {
 	const unsigned int uBufferSize = 256;
 	char cBuffer[uBufferSize];
 	sprintf_s(cBuffer, "%s%ulld%s", m_strShaderBinaryPrefix.c_str(), u64Key, m_strShaderBinaryExtension.c_str());
 
 	ShaderProgram* pShader = new ShaderProgram(cBuffer);
-	pShader->Load(pDevice, pEffectPool);
+	pShader->Load(m_pDevice, m_pEffectPool);
 
 	return pShader;
 }
 
-ShaderProgram* ShaderManager::GetShaderProgramByKey(unsigned long long u64Key)
+ShaderProgram* ShaderManager::GetShaderProgram(unsigned long long u64Key)
 {
 	hash_map<unsigned long long, ShaderProgram*>::iterator it = m_hashShaders.find(u64Key);
 
@@ -256,7 +256,7 @@ ShaderProgram* ShaderManager::GetShaderProgramByKey(unsigned long long u64Key)
 	CompileShader(u64Key);
 
 	// 编译完后加载
-	ShaderProgram* pShader = LoadShaderByKey(u64Key, m_pDevice, m_pEffectPool);
+	ShaderProgram* pShader = LoadShader(u64Key);
 
 	// 将加载好的着色器加入哈希表
 	m_hashShaders.insert(make_pair(u64Key, pShader));

@@ -80,6 +80,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelFactory.cpp" />
+    <ClCompile Include="VertexDeclarationManager.cpp" />
     <ClCompile Include="_Mesh.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="RenderPrimitive.cpp" />
@@ -118,6 +119,8 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelFactory.h" />
+    <ClInclude Include="RenderState.h" />
+    <ClInclude Include="VertexDeclarationManager.h" />
     <ClInclude Include="_Mesh.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="RenderPrimitive.h" />

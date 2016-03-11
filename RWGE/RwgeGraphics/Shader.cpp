@@ -26,7 +26,7 @@ bool ShaderProgram::Load(const D3D9Device* pDevice, LPD3DXEFFECTPOOL pEffectPool
 											  &pErrorBuffer);					// ±àÒëErrorÐÅÏ¢Ö¸Õë
 
 	m_hTransform			= m_pEffect->GetParameterByName(nullptr, "g_Transform");
-	m_hViewDirection		= m_pEffect->GetParameterByName(nullptr, "g_ViewDirection");
+	m_hViewOppositeDirection= m_pEffect->GetParameterByName(nullptr, "g_ViewOppositeDirection");
 	m_hMaterial				= m_pEffect->GetParameterByName(nullptr, "g_Material");
 	m_hBaseColorTexture		= m_pEffect->GetParameterByName(nullptr, "g_BaseColorTexture");
 	m_hEmissiveColorTexture = m_pEffect->GetParameterByName(nullptr, "g_EmissiveColorTexture");

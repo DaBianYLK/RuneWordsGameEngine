@@ -4,41 +4,21 @@
 #include "SceneManager.h"
 
 Camera::Camera() :
-	m_pSceneManager					(nullptr),
 	m_fFovy							(D3DX_PI * 0.5f),
 	m_fAspect						(800.0f / 600.0f),
 	m_fLookNear						(2.0f),
 	m_fLookFar						(1000.0f),
 	m_bCacheViewTransformOutOfDate	(false)
 {
+	m_NodeType = NT_Camera;
+
 	D3DXMatrixIdentity(&m_ViewTransform);
 	D3DXMatrixPerspectiveFovLH(&m_ProjectionTransform, m_fFovy, m_fAspect, m_fLookNear, m_fLookFar);
-}
-
-Camera::Camera(SceneManager* pSceneManager) :
-	m_pSceneManager					(pSceneManager),
-	m_fFovy							(D3DX_PI * 0.5f),
-	m_fAspect						(800.0f / 600.0f),
-	m_fLookNear						(2.0f),
-	m_fLookFar						(1000.0f),
-	m_bCacheViewTransformOutOfDate	(false)
-{
-
 }
 
 Camera::~Camera()
 {
 
-}
-
-void Camera::SetSceneManager(SceneManager* pSceneManager)
-{
-	m_pSceneManager = pSceneManager;
-}
-
-SceneManager* Camera::GetSceneManager() const
-{
-	return m_pSceneManager;
 }
 
 void Camera::SetPerspective(float fFovy, float fAspect, float fLookNear, float fLookFar)
@@ -91,6 +71,6 @@ void Camera::RenderScene(Viewport* pViewport)
 {
 	if (m_pSceneManager)
 	{
-		m_pSceneManager->VisitScene(pViewport);
+		m_pSceneManager->RenderScene(pViewport);
 	}
 }

@@ -585,3 +585,8 @@ D3DXMATRIX* SceneNode::SetTransform(D3DXMATRIX& pOut, const D3DXVECTOR3& transla
 
 	return &pOut;
 }
+
+SceneManager* SceneNode::GetAttachedSceneManager() const
+{
+	return m_pSceneManager;
+}

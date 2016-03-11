@@ -63,9 +63,9 @@ public:
 	static bool CompileShader(const Material* pMaterial, const Light* pLight);
 	static bool CompileShader(const unsigned long long u64Key);
 
-	static ShaderProgram* LoadShaderByKey(const unsigned long long u64Key, const D3D9Device* pDevice, LPD3DXEFFECTPOOL pEffectPool);
+	ShaderProgram* LoadShader(const unsigned long long u64Key);
 
-	ShaderProgram* GetShaderProgramByKey(const unsigned long long u64Key);
+	ShaderProgram* GetShaderProgram(const unsigned long long u64Key);
 	ShaderProgram* GetFirstShaderProgram();		// 返回shader哈希表中的第一个shader
 
 private:

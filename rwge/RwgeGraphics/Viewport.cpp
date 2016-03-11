@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "D3DX9Extension.h"
+#include "RenderTarget.h"
 
 using namespace D3DX9Extension;
 
@@ -58,4 +59,9 @@ void Viewport::SetCamera(Camera* pCamera)
 Camera* Viewport::GetCamera() const
 {
 	return m_pCamera;
+}
+
+RenderTarget* Viewport::GetRenderTarget() const
+{
+	return m_pRenderTarget;
 }

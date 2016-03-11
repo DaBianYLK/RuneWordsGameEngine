@@ -8,6 +8,7 @@ class Viewport;
 class Model;
 class RenderQueue;
 class Light;
+class RenderTarget;
 
 /*
 场景管理器不直接参与渲染，它负责：
@@ -24,7 +25,7 @@ public:
 	~SceneManager();
 
 	SceneNode* GetSceneRoot() const;
-	void VisitScene(Viewport* pViewport);
+	void RenderScene(Viewport* pViewport);
 
 	/*
 	ToDo:
@@ -45,7 +46,7 @@ public:
 	Camera* GetActiveCamera();
 
 private:
-	void UpdateRenderQueue(Camera* pCamera, RenderQueue* pRenderQueue);
+	void SetupRenderQueue(Camera* pCamera, RenderQueue* pRenderQueue, bool bNeedUpdateShader);	// bNeedUpdateShader强制更新所有材质绑定的Shader
 
 private:
 	SceneNode* m_pRoot;
@@ -54,5 +55,7 @@ private:
 
 	Light*	m_pLight;
 	Camera* m_pActiveCamera;
+
+	bool m_bEnvironmentChanged;	// 场景中影响shader的环境因素是否发生改变（改变时置为true，帧结束时置为fasle，要求场景变化只能在渲染之前发生）
 };
 

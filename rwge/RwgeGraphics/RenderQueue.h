@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Material.h"
+#include "RenderState.h"
 #include "RenderPrimitive.h"
 #include <map>
 #include <list>
@@ -14,41 +14,28 @@
 */
 
 // 渲染对象按渲染状态进行排序
-struct RenderState
-{
-	unsigned long long	u64ShaderKey;
-	Material*			pMaterial;	
-	float				fDepth;				// 图元的深度值
-	D3DXMATRIX			transform;			// 图元的WVP变换矩阵，暂时不参与渲染状态排序
-
-	RenderState() : u64ShaderKey(0), pMaterial(nullptr), fDepth(0.0f)
-	{
-		
-	}
-};
-
 class OpaqueGroupPolicy
 {
 	// 定义不透明渲染对象的升序排序规则，返回MaterialA < MaterialB的值
 	bool operator() (const RenderState& keyA, const RenderState& keyB) const
 	{
-		// 排序优先级：Shader > Material(Texture > MaterialConstant) > Depth
-		if (keyA.u64ShaderKey != keyB.u64ShaderKey)
-		{
-			return keyA.u64ShaderKey < keyB.u64ShaderKey;
-		}
-
-		// Shader相同时，比较材质
+		// 排序优先级：Material(Shader > Texture > MaterialConstant) > Depth
 		const Material* materialA = keyA.pMaterial;
 		const Material* materialB = keyB.pMaterial;
 
-		// 如果材质地址相同，说明两个材质完全一样，返回深度值的比较结果
+		// 如果材质地址相同，说明是同一个材质，返回深度值的比较结果
 		if (materialA == materialB)
 		{
 			return keyA.fDepth < keyB.fDepth;
 		}
 
-		// 材质地址不同时，比较纹理（shader相同说明纹理列表中的纹理个数相同）
+		// 如果不是同一个材质，比较它们的shader
+		if (materialA->m_pShader != materialB->m_pShader)
+		{
+			return materialA->m_pShader < materialB->m_pShader;
+		}
+
+		// Shader相同时，比较纹理（shader相同说明纹理列表中的纹理个数相同）
 		const std::list<Texture*>& listTextureA = materialA->GetTextureList();
 		unsigned int uTexCount = listTextureA.size();
 		if (uTexCount != 0)
@@ -97,29 +84,29 @@ class TranslucentGroupPolicy
 	// 定义半透明渲染对象的升序排序规则，返回MaterialA < MaterialB的值
 	bool operator() (const RenderState& keyA, const RenderState& keyB) const
 	{
-		// 排序优先级：Depth > Shader > Material(Texture > MaterialConstant)
+		// 排序优先级：Depth > Material(Shader > Texture > MaterialConstant)
 		if (keyA.fDepth != keyB.fDepth)
 		{
 			return keyA.fDepth < keyB.fDepth;
 		}
 
-		// 如果深度值相同，则比较Shader
-		if (keyA.u64ShaderKey != keyB.u64ShaderKey)
-		{
-			return keyA.u64ShaderKey < keyB.u64ShaderKey;
-		}
-
-		// 如果Shader相同，则比较材质
+		// 如果深度值相同，则比较材质地址
 		const Material* materialA = keyA.pMaterial;
 		const Material* materialB = keyB.pMaterial;
 
-		// 如果材质地址相同，说明两个材质完全一样，直接返回false
+		// 如果材质地址相同，说明是同一个材质，直接返回false
 		if (materialA == materialB)
 		{
 			return false;
 		}
 
-		// 材质地址不同时，比较纹理（shader相同说明纹理列表中的纹理个数相同）
+		// 如果不是同一个材质，比较它们的shader
+		if (materialA->m_pShader != materialB->m_pShader)
+		{
+			return materialA->m_pShader < materialB->m_pShader;
+		}
+
+		// 如果shader相同，比较纹理（shader相同说明纹理列表中的纹理个数相同）
 		const std::list<Texture*>& listTextureA = materialA->GetTextureList();
 		unsigned int uTexCount = listTextureA.size();
 		if (uTexCount != 0)
@@ -162,7 +149,6 @@ class TranslucentGroupPolicy
 		return false;
 	}
 };
-
 
 typedef std::map<RenderState, std::list<RenderPrimitive*>, OpaqueGroupPolicy>		OpaqueGroup;
 typedef std::map<RenderState, std::list<RenderPrimitive*>, TranslucentGroupPolicy>	TranslucentGroup;

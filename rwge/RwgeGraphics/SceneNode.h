@@ -34,6 +34,8 @@ protected:
 	{
 		NT_Node,
 		NT_Model,
+		NT_Camera,
+		NT_Light,
 
 		NodeType_MAX
 	};
@@ -43,9 +45,9 @@ public:
 	virtual ~SceneNode();
 
 	SceneNode* CreateChild();
-	void ReleaseChild(SceneNode* pNode);		// 移除并delete pNode，【注意】子节点不会被释放
+	void ReleaseChild(SceneNode* pNode);		// 移除并delete pNode，【注意】pNode的子节点不会被释放
 	void AttachChild(SceneNode* pNode);			// 将pNode绑定到当前节点
-	void RemoveChild(SceneNode* pNode);			// 移除pNode，当是不执行delete
+	void RemoveChild(SceneNode* pNode);			// 移除pNode，但是不执行delete
 
 	SceneNode* GetParent() const;
 
@@ -87,6 +89,7 @@ public:
 		const Quaternion& rotation, 
 		const D3DXVECTOR3& scale);
 
+	SceneManager* GetAttachedSceneManager() const;
 
 protected:
 			SceneManager*			m_pSceneManager;

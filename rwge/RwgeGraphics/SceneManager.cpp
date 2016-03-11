@@ -11,7 +11,9 @@ using namespace std;
 
 SceneManager::SceneManager() :
 	m_pRoot(new SceneNode()), 
-	m_pLight(nullptr)
+	m_pLight(nullptr), 
+	m_pActiveCamera(nullptr), 
+	m_bEnvironmentChanged(false)
 {
 
 }
@@ -26,9 +28,17 @@ SceneNode* SceneManager::GetSceneRoot() const
 	return m_pRoot;
 }
 
-void SceneManager::VisitScene(Viewport* pViewport)
+void SceneManager::RenderScene(Viewport* pViewport)
 {
 	m_pActiveCamera = pViewport->GetCamera();
+
+	RenderTarget* pRenderTarget = pViewport->GetRenderTarget();
+
+	bool bSceneChanged = pRenderTarget->GetActiveSceneManager() != this;
+	if (bSceneChanged)
+	{
+		pRenderTarget->SetActiveSceneManager(this);
+	}
 
 	// 遍历场景树，更新所有的场景节点
 	m_pRoot->UpdateSelfAndAllChildren();
@@ -36,7 +46,7 @@ void SceneManager::VisitScene(Viewport* pViewport)
 	// ToDo：视锥体裁剪
 
 	// 将渲染图元加入渲染队列
-	UpdateRenderQueue(m_pActiveCamera, RenderSystem::GetInstance().GetRenderQueuePtr());
+	SetupRenderQueue(m_pActiveCamera, RenderSystem::GetInstance().GetRenderQueuePtr(), m_bEnvironmentChanged || bSceneChanged);
 }
 
 void SceneManager::AddModel(Model* pModel)
@@ -90,9 +100,11 @@ Camera* SceneManager::GetActiveCamera()
 	return m_pActiveCamera;
 }
 
-void SceneManager::UpdateRenderQueue(Camera* pCamera, RenderQueue* pRenderQueue)
+void SceneManager::SetupRenderQueue(Camera* pCamera, RenderQueue* pRenderQueue, bool bNeedUpdateShader)
 {
 	pRenderQueue->Clear();
+
+	ShaderManager* pShaderManager = RenderSystem::GetInstance().GetActiveRenderTarget()->GetShaderManager();
 
 	RenderState renderState;
 
@@ -117,11 +129,13 @@ void SceneManager::UpdateRenderQueue(Camera* pCamera, RenderQueue* pRenderQueue)
 			Material* pMaterial = pMesh->GetMaterialPtr();
 			const list<RenderPrimitive*> listPrimitives = pMesh->GetRenderPrimitives();
 
-			// 只要材质与上一个材质不同时才计算ShaderKey
-			if (pMaterial != renderState.pMaterial)
+			renderState.pMaterial = pMaterial;
+
+			// 如果要更新shader
+			if (pMaterial->GetShaderProgram() == nullptr || bNeedUpdateShader)
 			{
-				renderState.u64ShaderKey = ShaderManager::GetShaderProgramKey(pMaterial, m_pLight);
-				renderState.pMaterial = pMaterial;
+				unsigned long long u64ShaderKey = ShaderManager::GetShaderProgramKey(pMaterial->GetMaterialKey(), ShaderManager::GetEnvironmentKey(m_pLight));
+				pMaterial->SetShaderProgram(pShaderManager->GetShaderProgram(u64ShaderKey));
 			}
 
 			// auto = RenderPrimitive*

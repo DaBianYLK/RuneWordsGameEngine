@@ -8,7 +8,7 @@ class Camera;
 
 /*
 Viewport与Camera的关系：
-1.	Viewport与Camera的关系是一对一，或多个Viewport对一个Camera
+1.	Viewport与Camera的关系是N对1，即一个或多个Viewport绑定同一个Camera
 2.	Viewport与Camera的生命周期是独立的，互不影响
 3.	Viewport可以随时更换绑定的Camera
 */
@@ -33,6 +33,8 @@ public:
 	void SetCamera(Camera* pCamera);
 	Camera* GetCamera() const;
 
+	RenderTarget* GetRenderTarget() const;
+
 private:
 	IDirect3DDevice9* m_pDevice;
 
@@ -47,6 +49,8 @@ private:
 
 	Camera* m_pCamera;
 	D3DCOLOR m_BackgroundColor;
+
+	RenderTarget* m_pRenderTarget;			// 当前Viewport绑定的RenderTarget
 };
 
 typedef std::list<Viewport> ViewportList;

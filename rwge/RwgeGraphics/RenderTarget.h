@@ -6,6 +6,8 @@
 #include "VertexStreamBuffer.h"
 #include "IndexStreamBuffer.h"
 #include "ShaderManager.h"
+#include "RenderState.h"
+#include "VertexDeclarationManager.h"
 
 class DisplayWindow;
 
@@ -49,11 +51,22 @@ public:
 
 	void Update();
 
+	void SetActiveSceneManager(SceneManager* pSceneManager);
+	SceneManager* GetActiveSceneManager() const;
+
+	ShaderManager* GetShaderManager();
+
+	void ApplyRenderState(const RenderState& renderState);
+	void ResetRenderState();
+	void ApplyVertexDeclaration(VertexDeclaration* pVertexDeclaration);
+
 private:
 	const DisplayWindow*			m_pWindow;
 
-	Viewport*						m_pActiveViewport;	// 创建或更新Viewport，都会更改DefaultViewport
+	Viewport*						m_pActiveViewport;		// 创建或更新Viewport，都会更改变更当前被激活的Viewport
 	ViewportList					m_ViewportList;
+
+	SceneManager*					m_pActiveSceneManager;	// 当前被激活（正在被渲染）的场景管理器，用于记录当前RenderTarget渲染的场景是否发生变更，从而判断是否需要更新shader
 
 	static const unsigned int		m_uVertexStreamBufferSize = 16 * 1024 * 1024;	// 16MB，若一个顶点64bytes，一次绘制可以支持约25000个顶点
 	std::list<VertexStreamBuffer>	m_listVertexStreamBuffers;
@@ -62,6 +75,10 @@ private:
 	IndexStreamBuffer				m_IndexStreamBuffer;
 
 	ShaderManager					m_ShaderManager;
+	VertexDeclarationManager		m_VertexDeclarationManager;
+	
+	RenderState						m_CurrentRenderState;
+	VertexDeclaration*				m_pCurrentVertexDeclaration;
 };
 
 typedef std::list<RenderTarget> RenderTargetList;

@@ -43,11 +43,7 @@ class Camera : public SceneNode
 {
 public:
 	Camera();
-	Camera(SceneManager* pSceneManager);
 	~Camera();
-
-	void SetSceneManager(SceneManager* pSceneManager);
-	SceneManager* GetSceneManager() const;
 
 	void SetPerspective(float fFovy, float fAspect, float fLookNear, float fLookFar);
 
@@ -60,8 +56,6 @@ public:
 	void RenderScene(Viewport* pViewport);
 
 private:
-	SceneManager* m_pSceneManager;		// 相机所属的场景管理器
-
 	mutable D3DXMATRIX m_ViewTransform;	// 视图矩阵在获取视图矩阵时缓存的视图矩阵过期才会更新
 	D3DXMATRIX m_ProjectionTransform;	// 投影矩阵在设置参数时就会被立即更新
 

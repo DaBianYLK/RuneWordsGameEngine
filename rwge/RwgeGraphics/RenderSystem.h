@@ -5,6 +5,7 @@
 #include "Singleton.h"
 
 struct IDirect3D9;
+class RenderPrimitive;
 
 /*
 关于RenderSystem与RenderQueue：
@@ -25,6 +26,8 @@ public:
 	void RenderScene(SceneManager* pSceneManager);
 	void VisitRenderQueue();
 	void ApplyRenderState(const RenderState& renderState);
+	void ResetRenderState();
+	void DrawPrimitive(const RenderPrimitive& primitive);
 
 private:
 	bool InitD3DD9();
@@ -47,8 +50,6 @@ private:
 	RenderTargetList m_RenderTargetList;		// 渲染目标列表
 
 	RenderQueue m_RenderQueue;
-
-	RenderState m_CurrentRenderState;
 };
 
 #define g_RenderSystem RenderSystem::GetInstance()

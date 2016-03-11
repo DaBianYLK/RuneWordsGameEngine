@@ -146,6 +146,9 @@
     <ClCompile Include="ModelFactory.cpp">
       <Filter>源文件\Scene\Model</Filter>
     </ClCompile>
+    <ClCompile Include="VertexDeclarationManager.cpp">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -255,6 +258,12 @@
     </ClInclude>
     <ClInclude Include="ModelFactory.h">
       <Filter>源文件\Scene\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderState.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexDeclarationManager.h">
+      <Filter>源文件\Render\Primitive</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

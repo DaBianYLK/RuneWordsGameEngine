@@ -3,6 +3,7 @@
 #include "GraphicsDefinitions.h"
 #include "SceneManager.h"
 #include "Light.h"
+#include "RenderPrimitive.h"
 #include "Camera.h"
 
 RenderSystem::RenderSystem()
@@ -36,7 +37,7 @@ void RenderSystem::RenderScene(SceneManager* pSceneManager)
 	pSceneManager->GetLight()->GetConstantBuffer(pLight, uSize);
 	pShader->SetLight(pLight, uSize);
 
-	D3DXVECTOR3 viewOppoisteDirection = -pSceneManager->GetActiveCamera()->GetDirection();
+	D3DXVECTOR3 viewOppoisteDirection = -(pSceneManager->GetActiveCamera()->GetDirection());
 	pShader->SetViewOppositeDirection(&viewOppoisteDirection);
 
 	// 遍历渲染队列，并执行绘制函数
@@ -50,22 +51,31 @@ void RenderSystem::VisitRenderQueue()
 	for (auto& renderOperation : m_RenderQueue.m_OpaqueGroup)
 	{
 		ApplyRenderState(renderOperation.first);
+
+
 	}
 
 	// 再画半透明组中的图元
 	//auto = pair <RenderStateKey, std::list<RenderPrimitive*>>
 	for (auto& renderOperation : m_RenderQueue.m_TranslucentGroup)
 	{
-
+		ApplyRenderState(renderOperation.first);
 	}
 }
 
 void RenderSystem::ApplyRenderState(const RenderState& renderState)
 {
-	if (m_CurrentRenderState.u64ShaderKey != renderState.u64ShaderKey)
-	{
+	m_pActiveRenderTarget->ApplyRenderState(renderState);
+}
 
-	}
+void RenderSystem::ResetRenderState()
+{
+	m_pActiveRenderTarget->ResetRenderState();
+}
+
+void RenderSystem::DrawPrimitive(const RenderPrimitive& primitive)
+{
+
 }
 
 bool RenderSystem::InitD3DD9()

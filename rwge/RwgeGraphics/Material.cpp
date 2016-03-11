@@ -2,16 +2,17 @@
 
 #include "ShaderManager.h"
 
-Material::Material()
-	: m_bTwoSided(false)
-	, m_fOpacityMaskClipValue(0.0f)
-	, m_BlendMode(BM_Opaque)
-	, m_ShadingMode(SM_Default)
-	, m_bConstantBufferOutOfDate(true)
-	, m_uConstantBufferSize(0)
-	, m_bTextureListOutOfDate(true)
-	, m_bMaterialKeyOutOfDate(true)
-	, m_u64MaterialKey(0)
+Material::Material() : 
+	m_bTwoSided(false), 
+	m_fOpacityMaskClipValue(0.0f), 
+	m_BlendMode(BM_Opaque), 
+	m_ShadingMode(SM_Default), 
+	m_bConstantBufferOutOfDate(true), 
+	m_uConstantBufferSize(0), 
+	m_bTextureListOutOfDate(true), 
+	m_bMaterialKeyOutOfDate(true), 
+	m_u64MaterialKey(0), 
+	m_pShader(nullptr)
 {
 	
 }
@@ -103,4 +104,50 @@ unsigned long long Material::GetMaterialKey() const
 	}
 
 	return m_u64MaterialKey;
+}
+
+void Material::SetShaderProgram(ShaderProgram* pShader)
+{
+	m_pShader = pShader;
+}
+
+ShaderProgram* Material::GetShaderProgram() const
+{
+	return m_pShader;
+}
+
+void Material::BindTextures(ShaderProgram* pShader)
+{
+	Texture* pTexture = m_BaseColor.GetTexture();
+	if (pTexture != nullptr)	pShader->SetBaseColorTexture(pTexture);
+
+	pTexture = m_EmissiveColor.GetTexture();
+	if (pTexture != nullptr)	pShader->SetEmissiveColorTexture(pTexture);
+
+	pTexture = m_Normal.GetTexture();
+	if (pTexture != nullptr)	pShader->SetNormalTexture(pTexture);
+
+	pTexture = m_Metallic.GetTexture();
+	if (pTexture != nullptr)	pShader->SetMetallicTexture(pTexture);
+
+	pTexture = m_Specular.GetTexture();
+	if (pTexture != nullptr)	pShader->SetSpecularTexture(pTexture);
+
+	pTexture = m_Roughness.GetTexture();
+	if (pTexture != nullptr)	pShader->SetRoughnessTexture(pTexture);
+
+	pTexture = m_Opacity.GetTexture();
+	if (pTexture != nullptr)	pShader->SetOpacityTexture(pTexture);
+
+	pTexture = m_OpacityMask.GetTexture();
+	if (pTexture != nullptr)	pShader->SetOpacityMaskTexture(pTexture);
+}
+
+void Material::BindConstants(ShaderProgram* pShader)
+{
+	unsigned char* pBuffer;
+	unsigned char uSize;
+
+	GetConstantBuffer(pBuffer, uSize);
+	pShader->SetMaterial(pBuffer, uSize);
 }

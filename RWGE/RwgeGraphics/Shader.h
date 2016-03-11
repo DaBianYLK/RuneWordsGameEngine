@@ -15,6 +15,14 @@ ShaderProgram仅能由ShaderManager创建和释放。
 3.	目前的Shader拓展性还是不够高，需要动态生成material脚本和technique脚本才能解决：
 	A.	纹理不使用固定的名字，由程序生成，并绑定到相应的GetXXX()函数中（较简单）
 	B.	technique由程序动态生成，以便拆分渲染过程，支持多pass渲染（实现难度较大）
+
+2016-03-11 ToDo:
+目前的ShaderProgram是绑定于Device的，这样一来增加一个Device，所有的ShaderProgram就会冗余一次。可以借鉴UE4的方法进行优化
+UE4中的做法是：
+1.	定义一个ShaderType类，该类与Device无关，它与具体的Material对应，定义了一个shader的实现，相当于对应了一个Shader的二进制文件
+2.	定义一个Shader类，该类绑定于某一个ShaderType，它的对象是一个ShaderType的具体实例，绑定于某一个Device
+3.	维护一个ShaderTypeMap，用于生成与管理ShaderType
+4.	每个ShaderType中维护一个vector<Shader*>，为每个RenderTarget从0到1设置编号，当某一个RenderTarget激活时，从ShaderType中获取相应编号的Shader
 */
 
 class ShaderProgram

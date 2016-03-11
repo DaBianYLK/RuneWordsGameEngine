@@ -110,11 +110,18 @@ struct VertexElement
 4.	【注意】多流并不能同时绘制多个模型，不同的流之间不能包含相同的顶点声明
 5.	多流相对于单流的优势是可以拆分出顶点流中的动态数据与静态数据，lock时只需要修改动态数据，降低内存压力
 
-D3D顶点声明与Device是绑定的。
+切换顶点声明的开销与切换着色器的开销几乎一样，需要6000-12000左右的GPU时钟周期
+
+类似于shader，D3D顶点声明与Device是绑定的，所以需要由RenderTarget进行统一管理，渲染图元中维护一个指向VertexDeclaration的指针
+“顶点声明相对于渲染图元的关系”与“shader相对于材质的关系”是类似的，渲染图元中会保存一个顶点声明的指针作为缓存，但它们并不是一一对应的，
+如果渲染目标改变，图元中的顶点声明需要全部重新替换
+
+2016-03-11 ToDo：
+顶点声明可以参考Material的ToDo进行优化。
 */
 
 typedef std::list<VertexElement>		VertexElementList;
-typedef std::vector<VertexElementList>	VertexElementTable;
+typedef std::vector<VertexElementList>	VertexElementTable;		// 多顶点数据流
 
 class VertexDeclaration
 {
@@ -125,21 +132,22 @@ public:
 	// 正常情况下，顶点元素声明只会增加元素，不会删除元素，所以暂时不实现RemoveVertexElement
 	bool AddVertexElement(const VertexElement& element, unsigned short uStreamID = 0);
 
-	unsigned short Enable(const D3D9Device& device) const;		// 返回顶点流的数目
+	void UpdateD3DDeclaration(const D3D9Device* pDevice);
+	void Enable() const;
 
 	unsigned short GetVertexStreamCount() const;
 	unsigned short GetStreamVertexSize(unsigned short uStreamID = 0) const;
 	unsigned short GetVertexSize() const;
 
 private:
-	void UpdateD3DVertexDeclaration() const;
+	std::string			m_strName;
 
-private:
-	VertexElementTable m_tableVertexDeclaration;
+	IDirect3DDevice9*	m_pDevice;
 
-	mutable IDirect3DDevice9* m_pDevice;
+	VertexElementTable	m_VertexStreamElements;
+
 	mutable unsigned short m_uStreamCount;						// uStreamCount为0时，说明顶点流的定义发生改变，此时需要更新D3D顶点流声明
 	mutable std::vector<unsigned short> m_vecStreamVertexSize;	// 每个流中的顶点大小
-	mutable unsigned short m_uVertexSize;						// 一个顶点的大小（所有流中顶点大小的和）
+	mutable unsigned short	m_uVertexSize;						// 一个顶点的大小（所有流中顶点大小的和）
 	mutable IDirect3DVertexDeclaration9* m_pDeclarations;		// D3D顶点流声明
 };
