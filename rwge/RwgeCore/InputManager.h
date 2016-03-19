@@ -1,9 +1,7 @@
 #pragma once
 
-#include <Windows.h>
 #include <list>
-
-#include "Singleton.h"
+#include <Singleton.h>
 
 class InputListener;
 

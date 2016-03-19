@@ -99,8 +99,7 @@ __forceinline void Quaternion::QuaternionToAxisAngle(const Quaternion* pInQuater
 
 __forceinline Quaternion* Quaternion::RotationMatrixToQuaternion(Quaternion* pOutQuaternion, const D3DXMATRIX* pInMatrix)
 {
-	float const* const* pM = reinterpret_cast<float const* const*>(pInMatrix->m);
-	float fTrace = pM[0][0] + pM[1][1] + pM[2][2];
+	float fTrace = pInMatrix->m[0][0] + pInMatrix->m[1][1] + pInMatrix->m[2][2];
 	float fRoot;
 
 	if (fTrace > 0.0)
@@ -108,33 +107,33 @@ __forceinline Quaternion* Quaternion::RotationMatrixToQuaternion(Quaternion* pOu
 		fRoot = sqrt(fTrace + 1.0f);	// 2w
 		pOutQuaternion->w = 0.5f * fRoot;
 		fRoot = 0.5f / fRoot;			// 1/(4w)
-		pOutQuaternion->x = (pM[1][2] - pM[2][1]) * fRoot;
-		pOutQuaternion->y = (pM[2][0] - pM[0][2]) * fRoot;
-		pOutQuaternion->z = (pM[0][1] - pM[1][0]) * fRoot;
+		pOutQuaternion->x = (pInMatrix->m[1][2] - pInMatrix->m[2][1]) * fRoot;
+		pOutQuaternion->y = (pInMatrix->m[2][0] - pInMatrix->m[0][2]) * fRoot;
+		pOutQuaternion->z = (pInMatrix->m[0][1] - pInMatrix->m[1][0]) * fRoot;
 	}
 	else
 	{
 		// |w| <= 1/2
 		static size_t s_iNext[3] = { 1, 2, 0 };
 		size_t i = 0;
-		if (pM[1][1] >  pM[0][0])
+		if (pInMatrix->m[1][1] >  pInMatrix->m[0][0])
 		{
 			i = 1;
 		}
-		if (pM[2][2] >  pM[i][i])
+		if (pInMatrix->m[2][2] >  pInMatrix->m[i][i])
 		{
 			i = 2;
 		}
 		size_t j = s_iNext[i];
 		size_t k = s_iNext[j];
 
-		fRoot = sqrt(pM[i][i] - pM[j][j] - pM[k][k] + 1.0f);
+		fRoot = sqrt(pInMatrix->m[i][i] - pInMatrix->m[j][j] - pInMatrix->m[k][k] + 1.0f);
 		float* pQ[3] = { &pOutQuaternion->x, &pOutQuaternion->y, &pOutQuaternion->z };
 		*pQ[i] = 0.5f * fRoot;
 		fRoot = 0.5f / fRoot;
-		pOutQuaternion->w = (pM[j][k] - pM[k][j]) * fRoot;
-		*pQ[j] = (pM[i][j] + pM[j][i]) * fRoot;
-		*pQ[k] = (pM[i][k] + pM[k][i]) * fRoot;
+		pOutQuaternion->w = (pInMatrix->m[j][k] - pInMatrix->m[k][j]) * fRoot;
+		*pQ[j] = (pInMatrix->m[i][j] + pInMatrix->m[j][i]) * fRoot;
+		*pQ[k] = (pInMatrix->m[i][k] + pInMatrix->m[k][i]) * fRoot;
 	}
 
 	return pOutQuaternion;
@@ -155,12 +154,10 @@ __forceinline D3DXMATRIX* Quaternion::QuaternionToRotationMatrix(const Quaternio
 	float f2yz = f2z * pInQuaternion->y;
 	float f2zz = f2z * pInQuaternion->z;
 
-	float** pM = reinterpret_cast<float**>(pOutMatrix->m);
-
-	pM[0][0] = 1.0f - (f2yy + f2zz);	pM[0][1] = f2xy + f2zw;				pM[0][2] = f2xz - f2yw;				pM[0][3] = 0.0f;
-	pM[1][0] = f2xy - f2zw;				pM[1][1] = 1.0f - (f2xx + f2zz);	pM[1][2] = f2yz + f2xw;				pM[1][3] = 0.0f;
-	pM[2][0] = f2xz + f2yw;				pM[2][1] = f2yz - f2xw;				pM[2][2] = 1.0f - (f2xx + f2yy);	pM[2][3] = 0.0f;
-	pM[3][0] = 0.0f;					pM[3][1] = 0.0f;					pM[3][2] = 0.0f;					pM[3][3] = 1.0f;
+	pOutMatrix->m[0][0] = 1.0f - (f2yy + f2zz);	pOutMatrix->m[0][1] = f2xy + f2zw;				pOutMatrix->m[0][2] = f2xz - f2yw;				pOutMatrix->m[0][3] = 0.0f;
+	pOutMatrix->m[1][0] = f2xy - f2zw;			pOutMatrix->m[1][1] = 1.0f - (f2xx + f2zz);		pOutMatrix->m[1][2] = f2yz + f2xw;				pOutMatrix->m[1][3] = 0.0f;
+	pOutMatrix->m[2][0] = f2xz + f2yw;			pOutMatrix->m[2][1] = f2yz - f2xw;				pOutMatrix->m[2][2] = 1.0f - (f2xx + f2yy);		pOutMatrix->m[2][3] = 0.0f;
+	pOutMatrix->m[3][0] = 0.0f;					pOutMatrix->m[3][1] = 0.0f;						pOutMatrix->m[3][2] = 0.0f;						pOutMatrix->m[3][3] = 1.0f;
 
 	return pOutMatrix;
 }
@@ -177,10 +174,10 @@ __forceinline Quaternion* Quaternion::GetRotationBetween(Quaternion* pRotation, 
 	// 如果点乘结果为1，说明两个向量相等
 	if (dot >= 0.999999f)
 	{
-		pRotation->x = 1.0f;
+		pRotation->x = 0.0f;
 		pRotation->y = 0.0f;
 		pRotation->z = 0.0f;
-		pRotation->w = 0.0f;
+		pRotation->w = 1.0f;
 	}
 	// 如果点乘结果为-1，说明两个向量恰好反向
 	else if (dot <= -0.999999f)

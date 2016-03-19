@@ -35,7 +35,7 @@ void FPSController::FrameEnd() const
 		if (temp.QuadPart < m_MinIntervalCount.QuadPart)
 		{
 			// Sleep的精度为ms（毫秒）级
-			Sleep((m_MinIntervalCount.QuadPart - temp.QuadPart) * 1000 / m_Frequency.QuadPart);
+			Sleep(static_cast<unsigned int>((m_MinIntervalCount.QuadPart - temp.QuadPart) * 1000 / m_Frequency.QuadPart));
 		}
 	}
 }

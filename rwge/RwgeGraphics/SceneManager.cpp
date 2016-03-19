@@ -6,6 +6,8 @@
 #include "Model.h"
 #include "Mesh.h"
 #include "MathDefinitions.h"
+#include "ShaderManager.h"
+#include <LogUtil.h>
 
 using namespace std;
 
@@ -15,7 +17,7 @@ SceneManager::SceneManager() :
 	m_pActiveCamera(nullptr), 
 	m_bEnvironmentChanged(false)
 {
-
+	m_pRoot->m_pSceneManager = this;
 }
 
 SceneManager::~SceneManager()
@@ -47,6 +49,8 @@ void SceneManager::RenderScene(Viewport* pViewport)
 
 	// 将渲染图元加入渲染队列
 	SetupRenderQueue(m_pActiveCamera, RenderSystem::GetInstance().GetRenderQueuePtr(), m_bEnvironmentChanged || bSceneChanged);
+
+	RenderSystem::GetInstance().RenderScene(this);
 }
 
 void SceneManager::AddModel(Model* pModel)
@@ -104,8 +108,6 @@ void SceneManager::SetupRenderQueue(Camera* pCamera, RenderQueue* pRenderQueue, 
 {
 	pRenderQueue->Clear();
 
-	ShaderManager* pShaderManager = RenderSystem::GetInstance().GetActiveRenderTarget()->GetShaderManager();
-
 	RenderState renderState;
 
 	D3DXMATRIX viewProjMatrix;
@@ -117,8 +119,10 @@ void SceneManager::SetupRenderQueue(Camera* pCamera, RenderQueue* pRenderQueue, 
 		// m_mapModels中的Key和Value的值相同，它们指向同一个Model
 		Model* pModel = pair.first;
 
+		renderState.transformWorld = pModel->GetWorldTransform();
+
 		// 计算WVP变换矩阵
-		D3DXMatrixMultiply(&renderState.transform, &pModel->GetWorldTransform(), &viewProjMatrix);
+		D3DXMatrixMultiply(&renderState.transformWVP, &renderState.transformWorld, &viewProjMatrix);
 
 		// 使用模型距离摄像机距离的平方代替深度（经过视锥体裁剪后，模型与摄像机的距离可以近似看为深度）
 		renderState.fDepth = RwgeMath::Distance2(pCamera->GetWorldPosition(), pModel->GetWorldPosition());
@@ -132,10 +136,10 @@ void SceneManager::SetupRenderQueue(Camera* pCamera, RenderQueue* pRenderQueue, 
 			renderState.pMaterial = pMaterial;
 
 			// 如果要更新shader
-			if (pMaterial->GetShaderProgram() == nullptr || bNeedUpdateShader)
+			if (pMaterial->GetShaderType() == nullptr || bNeedUpdateShader)
 			{
-				unsigned long long u64ShaderKey = ShaderManager::GetShaderProgramKey(pMaterial->GetMaterialKey(), ShaderManager::GetEnvironmentKey(m_pLight));
-				pMaterial->SetShaderProgram(pShaderManager->GetShaderProgram(u64ShaderKey));
+				unsigned long long u64ShaderKey = ShaderManager::GetShaderKey(pMaterial->GetMaterialKey(), ShaderManager::GetEnvironmentKey(m_pLight));
+				pMaterial->SetShaderType(ShaderManager::GetInstance().GetShaderType(u64ShaderKey));
 			}
 
 			// auto = RenderPrimitive*

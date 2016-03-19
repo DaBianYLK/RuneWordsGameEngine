@@ -1,14 +1,14 @@
 #include <Application.h>
 
-#include "MyApp.h"
+#include "MaterialTestApp.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
-	MyApp myApp;
+	MaterialTestApp myApp;
 
-	Application* app = Application::GetInstance();
-	app->SetDelegate(&myApp);
-	app->Run();
+	Application application;
+	application.SetDelegate(&myApp);
+	application.Run();
 
 	return 0;
 }

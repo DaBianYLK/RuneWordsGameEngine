@@ -180,7 +180,7 @@ inline bool AngleRadian::operator!=(const AngleDegree& angle) const
 
 inline AngleRadian& AngleRadian::Clamp()
 {
-	int iMultiple = m_fValue * RwgeMath::lpDivideTwoPI;
+	int iMultiple = static_cast<int>(m_fValue * RwgeMath::lpDivideTwoPI);
 	m_fValue = m_fValue - static_cast<float>(iMultiple)* RwgeMath::lpTwoPI;
 
 	return *this;
@@ -188,7 +188,7 @@ inline AngleRadian& AngleRadian::Clamp()
 
 inline float AngleRadian::Clamp(float radian)
 {
-	int iMultiple = radian * RwgeMath::lpDivideTwoPI;
+	int iMultiple = static_cast<int>(radian * RwgeMath::lpDivideTwoPI);
 	radian = radian - static_cast<float>(iMultiple)* RwgeMath::lpTwoPI;
 
 	return radian;
@@ -294,7 +294,7 @@ inline bool AngleDegree::operator!=(const AngleRadian& angle) const
 
 inline AngleDegree& AngleDegree::Clamp()
 {
-	int iMultiple = m_fValue * RwgeMath::lpDivide360;
+	int iMultiple = static_cast<int>(m_fValue * RwgeMath::lpDivide360);
 	m_fValue = m_fValue - static_cast<float>(iMultiple) * 360.0f;
 
 	return *this;
@@ -302,7 +302,7 @@ inline AngleDegree& AngleDegree::Clamp()
 
 inline float AngleDegree::Clamp(float degree)
 {
-	int iMultiple = degree * RwgeMath::lpDivide360;
+	int iMultiple = static_cast<int>(degree * RwgeMath::lpDivide360);
 	degree = degree - static_cast<float>(iMultiple)* 360.0f;
 
 	return degree;

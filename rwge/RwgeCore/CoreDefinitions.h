@@ -1,3 +1,5 @@
+#pragma once
+
 #define SafeDelete(ptr)\
 	if (ptr)\
 	{\

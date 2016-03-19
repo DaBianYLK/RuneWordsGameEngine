@@ -4,13 +4,16 @@
 #include "InputManager.h"
 #include "RenderSystem.h"
 #include "LogUtil.h"
+#include "DisplayWindow.h"
+
+using namespace std;
 
 Application::Application(): 
 	m_pDelegate		(nullptr),
 	m_pRenderSystem	(nullptr),
 	m_pInputManager	(nullptr)
 {
-	m_hInstance = GetModuleHandle(0);
+	m_hInstance = GetModuleHandle(nullptr);
 }
 
 
@@ -57,6 +60,43 @@ float Application::GetTimeSinceLastFrame() const
 	return m_FPSController.GetTimeSinceLastFrame();
 }
 
+DisplayWindow* Application::CreateDisplayWindow()
+{
+	DisplayWindow* pWindow = new DisplayWindow(m_hInstance);
+
+	m_mapDisplayWindows.insert(make_pair(pWindow->GetName(), pWindow));
+
+	return pWindow;
+}
+
+DisplayWindow* Application::CreateDisplayWindow(const char* strName, bool bFullScreen /* = false */)
+{
+	DisplayWindow* pWindow = new DisplayWindow(m_hInstance, strName, bFullScreen);
+
+	m_mapDisplayWindows.insert(make_pair(pWindow->GetName(), pWindow));
+
+	return pWindow;
+}
+
+DisplayWindow* Application::CreateDisplayWindow(const char* strName, int x, int y, int width, int height)
+{
+	DisplayWindow* pWindow = new DisplayWindow(m_hInstance, strName, x, y, width, height);
+
+	m_mapDisplayWindows.insert(make_pair(pWindow->GetName(), pWindow));
+
+	return pWindow;
+}
+
+DisplayWindow* Application::GetDisplayWindow(const char* strName)
+{
+	return m_mapDisplayWindows.find(strName)->second;
+}
+
+float Application::GetCurrentFPS() const
+{
+	return m_FPSController.GetCurrentFPS();
+}
+
 LRESULT CALLBACK Application::AppWndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
 {
 	return InputManager::GetInstance().MessageHandler(hwnd, umessage, wparam, lparam);
@@ -80,8 +120,9 @@ void Application::Initialize()
 	wcex.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
 	RegisterClassEx(&wcex);
 
-	m_pRenderSystem = RenderSystem::GetInstancePtr();
-	m_pInputManager = InputManager::GetInstancePtr();
+	// 初始化各个单例模块
+	m_pRenderSystem = new RenderSystem();
+	m_pInputManager = new InputManager();
 	
 	m_pDelegate->Initialize();
 }

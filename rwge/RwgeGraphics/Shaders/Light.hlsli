@@ -2,8 +2,9 @@
 #define __LIGHT__
 
 // 方向光（会造成漫反射以及阴影的光）的类型，对应LIGHT_TYPE
-#define DIRECTIONAL_LIGHT	0
-#define POINT_LIGHT			1
+#define NO_LIGHT			0
+#define DIRECTIONAL_LIGHT	1
+#define POINT_LIGHT			2
 
 #if LIGHT_TYPE == DIRECTIONAL_LIGHT
 
@@ -31,7 +32,9 @@ shared PointLight g_PointLight;
 
 half3 GetLightAmbientColor()
 {
-#if LIGHT_TYPE == DIRECTIONAL_LIGHT
+#if LIGHT_TYPE == NO_LIGHT
+	return 0;
+#elif LIGHT_TYPE == DIRECTIONAL_LIGHT
 	return g_DirectionalLight.ambientColor;
 #elif LIGHT_TYPE == POINT_LIGHT
 	return g_PointLight.ambientColor;
@@ -40,7 +43,9 @@ half3 GetLightAmbientColor()
 
 half3 GetLightDiffuseColor()
 {
-#if LIGHT_TYPE == DIRECTIONAL_LIGHT
+#if LIGHT_TYPE == NO_LIGHT
+	return 0;
+#elif LIGHT_TYPE == DIRECTIONAL_LIGHT
 	return g_DirectionalLight.diffuseColor;
 #elif LIGHT_TYPE == POINT_LIGHT
 	return g_PointLight.diffuseColor;
@@ -49,7 +54,9 @@ half3 GetLightDiffuseColor()
 
 float3 GetLightWorldDirection(float3 position)
 {
-#if LIGHT_TYPE == DIRECTIONAL_LIGHT
+#if LIGHT_TYPE == NO_LIGHT
+	return float3(1.0f, 1.0f, 1.0f);
+#elif LIGHT_TYPE == DIRECTIONAL_LIGHT
 	return g_DirectionalLight.worldDirection;
 #elif LIGHT_TYPE == POINT_LIGHT
 	return g_PointLight.worldPosition - position;

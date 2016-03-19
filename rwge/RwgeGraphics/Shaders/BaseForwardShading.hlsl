@@ -30,6 +30,7 @@ half PhongApprox(half roughness, half reflectionDotLight)
 struct VSOutput
 {
 	float4 position	: POSITION;
+	float3 PsUsedPos: TEXCOORD1;
 	float2 texCoord : TEXCOORD0;
 	float3 tangent  : TANGENT;
 	float3 binormal : BINORMAL;
@@ -45,6 +46,7 @@ VSOutput BaseVS(float4 inPosition	: POSITION,
 	VSOutput output = (VSOutput)0;
 
 	output.position = inPosition;
+	output.PsUsedPos = inPosition;
 	output.texCoord = inTexCoord;
 	output.normal = inNormal;
 	output.binormal = inBinormal;
@@ -55,7 +57,7 @@ VSOutput BaseVS(float4 inPosition	: POSITION,
 
 //////////////////////////////////////////////////////////////////////////////
 
-half4 BasePS(	float3 inPosition	: POSITION,
+half4 BasePS(	float3 inPosition	: TEXCOORD1,
 				float2 inTexCoord	: TEXCOORD0,
 				float3 inNormal		: NORMAL,
 				float3 inBinormal	: BINORMAL,

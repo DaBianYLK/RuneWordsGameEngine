@@ -2,6 +2,7 @@
 
 #include "RenderState.h"
 #include "RenderPrimitive.h"
+#include "Material.h"
 #include <map>
 #include <list>
 
@@ -16,6 +17,7 @@
 // 渲染对象按渲染状态进行排序
 class OpaqueGroupPolicy
 {
+public:
 	// 定义不透明渲染对象的升序排序规则，返回MaterialA < MaterialB的值
 	bool operator() (const RenderState& keyA, const RenderState& keyB) const
 	{
@@ -30,20 +32,20 @@ class OpaqueGroupPolicy
 		}
 
 		// 如果不是同一个材质，比较它们的shader
-		if (materialA->m_pShader != materialB->m_pShader)
+		if (materialA->m_pShaderType != materialB->m_pShaderType)
 		{
-			return materialA->m_pShader < materialB->m_pShader;
+			return materialA->m_pShaderType < materialB->m_pShaderType;
 		}
 
 		// Shader相同时，比较纹理（shader相同说明纹理列表中的纹理个数相同）
-		const std::list<Texture*>& listTextureA = materialA->GetTextureList();
-		unsigned int uTexCount = listTextureA.size();
+		const std::list<TextureInfo*>& listTextureInfoA = materialA->GetTextureInfoList();
+		unsigned int uTexCount = listTextureInfoA.size();
 		if (uTexCount != 0)
 		{
-			std::list<Texture*>::const_iterator itA = listTextureA.begin();
-			std::list<Texture*>::const_iterator itB = materialB->GetTextureList().begin();
+			std::list<TextureInfo*>::const_iterator itA = listTextureInfoA.begin();
+			std::list<TextureInfo*>::const_iterator itB = materialB->GetTextureInfoList().begin();
 
-			while (itA != listTextureA.end())
+			while (itA != listTextureInfoA.end())
 			{
 				if (*itA == *itB)
 				{
@@ -81,6 +83,7 @@ class OpaqueGroupPolicy
 
 class TranslucentGroupPolicy
 {
+public:
 	// 定义半透明渲染对象的升序排序规则，返回MaterialA < MaterialB的值
 	bool operator() (const RenderState& keyA, const RenderState& keyB) const
 	{
@@ -101,20 +104,20 @@ class TranslucentGroupPolicy
 		}
 
 		// 如果不是同一个材质，比较它们的shader
-		if (materialA->m_pShader != materialB->m_pShader)
+		if (materialA->m_pShaderType != materialB->m_pShaderType)
 		{
-			return materialA->m_pShader < materialB->m_pShader;
+			return materialA->m_pShaderType < materialB->m_pShaderType;
 		}
 
 		// 如果shader相同，比较纹理（shader相同说明纹理列表中的纹理个数相同）
-		const std::list<Texture*>& listTextureA = materialA->GetTextureList();
-		unsigned int uTexCount = listTextureA.size();
+		const std::list<TextureInfo*>& listTextureInfoA = materialA->GetTextureInfoList();
+		unsigned int uTexCount = listTextureInfoA.size();
 		if (uTexCount != 0)
 		{
-			std::list<Texture*>::const_iterator itA = listTextureA.begin();
-			std::list<Texture*>::const_iterator itB = materialB->GetTextureList().begin();
+			std::list<TextureInfo*>::const_iterator itA = listTextureInfoA.begin();
+			std::list<TextureInfo*>::const_iterator itB = materialB->GetTextureInfoList().begin();
 
-			while (itA != listTextureA.end())
+			while (itA != listTextureInfoA.end())
 			{
 				if (*itA == *itB)
 				{

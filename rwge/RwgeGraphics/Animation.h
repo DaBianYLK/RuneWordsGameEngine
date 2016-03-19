@@ -1,30 +1,34 @@
 #pragma once
 
+/*
+这个类用于控制动画帧数
+*/
+
 class Animation
 {
 public:
 	Animation();
-	Animation(int startFrame, int frameNum);
+	Animation(int nStartFrame, int nFrameNum);
 	~Animation();
 
-	void Set(int startFrame, int frameNum);
-	void Play(bool loop = false);
-	void SetPlaySpeed(float playSpeed);
+	void Set(int nStartFrame, int nFrameNum);
+	void Play(bool bLoop = false);
+	void SetPlaySpeed(float fPlaySpeed);
 
-	void Update(float deltaTime);
+	void Update(float fDeltaTime);
 
 	int GetFrameIndex();
 	bool IsPlaying();
 
 private:
-	int m_StartFrame;
-	int m_FrameNum;
+	int m_nStartFrame;
+	int m_nFrameNum;
 
-	float m_PlaySpeed;
-	bool m_Loop;
-	bool m_IsPlaying;
+	float m_fPlaySpeed;
+	bool m_bLoop;
+	bool m_bIsPlaying;
 
-	float m_CurrentTime;
-	int m_CurrentFrame;
+	float m_fCurrentTime;
+	int m_nCurrentFrame;
 };
 

@@ -11,8 +11,8 @@ Viewport::Viewport(IDirect3DDevice9* pDevice, unsigned uX, unsigned uY, unsigned
 	m_BackgroundColor	(D3DColorBlack)
 {
 	m_pDevice = pDevice;
-	m_D3D9ViewportParam = {uX, uY, uWidth, uHeight, 0.0f, 1.0f};
-	m_Rect = {uX, uY, uX + uWidth, uY + uHeight};
+	m_D3D9ViewportParam = { uX, uY, uWidth, uHeight, 0.0f, 1.0f };
+	m_Rect = { uX, uY, uX + uWidth, uY + uHeight };			// Rect定义了Viewport在屏幕中所占矩形区域的的左上角顶点和右下角顶点
 }
 
 Viewport::~Viewport()
@@ -22,6 +22,7 @@ Viewport::~Viewport()
 
 void Viewport::Update()
 {
+	Enable();
 	Clear();
 
 	if (m_pCamera)
@@ -37,7 +38,8 @@ void Viewport::Enable() const
 
 void Viewport::Clear() const
 {
-	m_pDevice->Clear(0, &m_Rect, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_BackgroundColor, m_D3D9ViewportParam.MaxZ, 0);
+	// Clear函数参数说明：清除区域数量、区域数组指针、缓冲区标志、重置后颜色、重置后深度值、重置后模板值
+	m_pDevice->Clear(1, &m_Rect, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_BackgroundColor, m_D3D9ViewportParam.MaxZ, 0);
 }
 
 void Viewport::SetRect(unsigned uX, unsigned uY, unsigned uWidth, unsigned uHeight)
@@ -64,4 +66,9 @@ Camera* Viewport::GetCamera() const
 RenderTarget* Viewport::GetRenderTarget() const
 {
 	return m_pRenderTarget;
+}
+
+bool Viewport::operator==(const Viewport& viewport) const
+{
+	return this == &viewport;
 }

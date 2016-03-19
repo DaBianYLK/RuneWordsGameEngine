@@ -21,6 +21,9 @@
     <Filter Include="源文件\Common">
       <UniqueIdentifier>{5c997a6b-69f0-45ae-82db-18edb7afdea7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\_Deprecated">
+      <UniqueIdentifier>{662dbf96-bb5e-4012-bf49-7a344d972736}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AppDelegate.cpp">
@@ -41,15 +44,15 @@
     <ClCompile Include="HighPrecisionClock.cpp">
       <Filter>源文件\Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\RwgeGraphics\DisplayWindow.cpp">
+      <Filter>源文件\Application</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppDelegate.h">
       <Filter>源文件\Application</Filter>
     </ClInclude>
     <ClInclude Include="Application.h">
-      <Filter>源文件\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="AppConfig.h">
       <Filter>源文件\Application</Filter>
     </ClInclude>
     <ClInclude Include="InputListener.h">
@@ -66,6 +69,12 @@
     </ClInclude>
     <ClInclude Include="HighPrecisionClock.h">
       <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="AppConfig.h">
+      <Filter>源文件\_Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RwgeGraphics\DisplayWindow.h">
+      <Filter>源文件\Application</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

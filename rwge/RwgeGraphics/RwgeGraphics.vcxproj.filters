@@ -62,9 +62,6 @@
     <ClCompile Include="SceneNode.cpp">
       <Filter>源文件\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>源文件\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Color.cpp">
       <Filter>源文件\Common</Filter>
     </ClCompile>
@@ -77,9 +74,6 @@
     <ClCompile Include="D3D9Device.cpp">
       <Filter>源文件\Render</Filter>
     </ClCompile>
-    <ClCompile Include="DisplayWindow.cpp">
-      <Filter>源文件\Render</Filter>
-    </ClCompile>
     <ClCompile Include="Viewport.cpp">
       <Filter>源文件\Render</Filter>
     </ClCompile>
@@ -88,9 +82,6 @@
     </ClCompile>
     <ClCompile Include="MaterialExpression.cpp">
       <Filter>源文件\Render\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="ME_Texture2DSample.cpp">
-      <Filter>源文件\Render\Material\Expression</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>源文件\Render\Material</Filter>
@@ -110,29 +101,11 @@
     <ClCompile Include="ShaderManager.cpp">
       <Filter>源文件\Render\Shader</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderProgram.cpp">
-      <Filter>源文件\Render\Shader</Filter>
-    </ClCompile>
     <ClCompile Include="RenderPrimitive.cpp">
-      <Filter>源文件\Render\Primitive</Filter>
-    </ClCompile>
-    <ClCompile Include="IndexStream.cpp">
-      <Filter>源文件\Render\Primitive</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexDeclaration.cpp">
-      <Filter>源文件\Render\Primitive</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexStreamBuffer.cpp">
       <Filter>源文件\Render\Primitive</Filter>
     </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>源文件\Render\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexStream.cpp">
-      <Filter>源文件\Render\Primitive</Filter>
-    </ClCompile>
-    <ClCompile Include="IndexStreamBuffer.cpp">
-      <Filter>源文件\Render\Primitive</Filter>
     </ClCompile>
     <ClCompile Include="_Mesh.cpp">
       <Filter>源文件\Scene\Deprecated</Filter>
@@ -149,6 +122,39 @@
     <ClCompile Include="VertexDeclarationManager.cpp">
       <Filter>源文件\Render\Primitive</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderType.cpp">
+      <Filter>源文件\Render\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>源文件\Render\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="_Sprite.cpp">
+      <Filter>源文件\Scene\Deprecated</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialFactory.cpp">
+      <Filter>源文件\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexBuffer.cpp">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexBuffer.cpp">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexDeclarationType.cpp">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexDeclaration.cpp">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="MExpTextrue2DSample.cpp">
+      <Filter>源文件\Render\Material\Expression</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>源文件\Render\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureInfo.cpp">
+      <Filter>源文件\Render\Material</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h">
@@ -164,9 +170,6 @@
       <Filter>源文件\Scene</Filter>
     </ClInclude>
     <ClInclude Include="SceneNode.h">
-      <Filter>源文件\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Sprite.h">
       <Filter>源文件\Scene</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsDefinitions.h">
@@ -187,9 +190,6 @@
     <ClInclude Include="D3D9Device.h">
       <Filter>源文件\Render</Filter>
     </ClInclude>
-    <ClInclude Include="DisplayWindow.h">
-      <Filter>源文件\Render</Filter>
-    </ClInclude>
     <ClInclude Include="Viewport.h">
       <Filter>源文件\Render</Filter>
     </ClInclude>
@@ -201,9 +201,6 @@
     </ClInclude>
     <ClInclude Include="MaterialExpression.h">
       <Filter>源文件\Render\Material</Filter>
-    </ClInclude>
-    <ClInclude Include="ME_Texture2DSample.h">
-      <Filter>源文件\Render\Material\Expression</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>源文件\Render\Material</Filter>
@@ -223,28 +220,16 @@
     <ClInclude Include="ShaderManager.h">
       <Filter>源文件\Render\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderProgram.h">
-      <Filter>源文件\Render\Shader</Filter>
-    </ClInclude>
     <ClInclude Include="RenderPrimitive.h">
       <Filter>源文件\Render\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="IndexStream.h">
       <Filter>源文件\Render\Primitive</Filter>
     </ClInclude>
-    <ClInclude Include="VertexDeclaration.h">
-      <Filter>源文件\Render\Primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexStreamBuffer.h">
-      <Filter>源文件\Render\Primitive</Filter>
-    </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>源文件\Render\Material</Filter>
     </ClInclude>
     <ClInclude Include="VertexStream.h">
-      <Filter>源文件\Render\Primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="IndexStreamBuffer.h">
       <Filter>源文件\Render\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="_Mesh.h">
@@ -259,32 +244,65 @@
     <ClInclude Include="ModelFactory.h">
       <Filter>源文件\Scene\Model</Filter>
     </ClInclude>
-    <ClInclude Include="RenderState.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
     <ClInclude Include="VertexDeclarationManager.h">
       <Filter>源文件\Render\Primitive</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderType.h">
+      <Filter>源文件\Render\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>源文件\Render\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="_Sprite.h">
+      <Filter>源文件\Scene\Deprecated</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialFactory.h">
+      <Filter>源文件\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderState.h">
+      <Filter>源文件\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexBuffer.h">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexBuffer.h">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexDeclarationType.h">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexDeclaration.h">
+      <Filter>源文件\Render\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="MExpTexture2DSample.h">
+      <Filter>源文件\Render\Material\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>源文件\Render\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureInfo.h">
+      <Filter>源文件\Render\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Texture.hlsli">
+    <None Include="..\Bin\shaders\src\BRDF.hlsli">
       <Filter>源文件\Shaders</Filter>
     </None>
-    <None Include="Shaders\Material.hlsli">
+    <None Include="..\Bin\shaders\src\Light.hlsli">
       <Filter>源文件\Shaders</Filter>
     </None>
-    <None Include="Shaders\BRDF.hlsli">
+    <None Include="..\Bin\shaders\src\Material.hlsli">
       <Filter>源文件\Shaders</Filter>
     </None>
-    <None Include="Shaders\Light.hlsli">
+    <None Include="..\Bin\shaders\src\SH.hlsli">
       <Filter>源文件\Shaders</Filter>
     </None>
-    <None Include="Shaders\SH.hlsli">
+    <None Include="..\Bin\shaders\src\Texture.hlsli">
       <Filter>源文件\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\BaseForwardShading.hlsl">
+    <FxCompile Include="..\Bin\shaders\src\BaseForwardShading.hlsl">
       <Filter>源文件\Shaders</Filter>
     </FxCompile>
   </ItemGroup>

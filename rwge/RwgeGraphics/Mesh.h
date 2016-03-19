@@ -10,9 +10,12 @@ class Mesh
 public:
 	Mesh();
 	~Mesh();
-
+	
+	void SetMaterial(Material* pMaterial);
 	Material* GetMaterialPtr() const;
-	const std::list<RenderPrimitive*> GetRenderPrimitives() const;
+
+	void AddRenderPrimitive(RenderPrimitive* pPrimitive);
+	std::list<RenderPrimitive*> GetRenderPrimitives();
 
 private:
 	Material* m_pMaterial;

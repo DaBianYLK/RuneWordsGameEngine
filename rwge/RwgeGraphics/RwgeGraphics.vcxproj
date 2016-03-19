@@ -22,7 +22,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -39,6 +39,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeCore;$(SolutionDir)RwgeUtils;$(SolutionDir)RwgeResources;$(SolutionDir)RwgeMath;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeCore;$(SolutionDir)RwgeUtils;$(SolutionDir)RwgeResources;$(SolutionDir)RwgeMath;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -71,16 +76,19 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="D3D9Device.cpp" />
-    <ClCompile Include="DisplayWindow.cpp" />
-    <ClCompile Include="IndexStream.cpp" />
-    <ClCompile Include="IndexStreamBuffer.cpp" />
+    <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="MaterialExpression.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MaterialFactory.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelFactory.cpp" />
+    <ClCompile Include="ShaderType.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="TextureInfo.cpp" />
     <ClCompile Include="VertexDeclarationManager.cpp" />
+    <ClCompile Include="VertexDeclaration.cpp" />
     <ClCompile Include="_Mesh.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="RenderPrimitive.cpp" />
@@ -92,14 +100,13 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SceneNode.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
-    <ClCompile Include="ShaderProgram.cpp" />
-    <ClCompile Include="Sprite.cpp" />
-    <ClCompile Include="ME_Texture2DSample.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="_Sprite.cpp" />
+    <ClCompile Include="MExpTextrue2DSample.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="VertexDeclaration.cpp" />
+    <ClCompile Include="VertexDeclarationType.cpp" />
     <ClCompile Include="VertexShader.cpp" />
-    <ClCompile Include="VertexStream.cpp" />
-    <ClCompile Include="VertexStreamBuffer.cpp" />
+    <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="Viewport.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -108,19 +115,23 @@
     <ClInclude Include="Color.h" />
     <ClInclude Include="D3D9Device.h" />
     <ClInclude Include="D3DX9Extension.h" />
-    <ClInclude Include="DisplayWindow.h" />
     <ClInclude Include="GraphicsDefinitions.h" />
     <ClInclude Include="IndexStream.h" />
-    <ClInclude Include="IndexStreamBuffer.h" />
+    <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="MaterialExpression.h" />
+    <ClInclude Include="MaterialFactory.h" />
     <ClInclude Include="MaterialInput.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelFactory.h" />
     <ClInclude Include="RenderState.h" />
+    <ClInclude Include="ShaderType.h" />
+    <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="TextureInfo.h" />
     <ClInclude Include="VertexDeclarationManager.h" />
+    <ClInclude Include="VertexDeclaration.h" />
     <ClInclude Include="_Mesh.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="RenderPrimitive.h" />
@@ -132,27 +143,27 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SceneNode.h" />
     <ClInclude Include="ShaderManager.h" />
-    <ClInclude Include="ShaderProgram.h" />
-    <ClInclude Include="Sprite.h" />
-    <ClInclude Include="ME_Texture2DSample.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="_Sprite.h" />
+    <ClInclude Include="MExpTexture2DSample.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="VertexDeclaration.h" />
+    <ClInclude Include="VertexDeclarationType.h" />
     <ClInclude Include="VertexShader.h" />
     <ClInclude Include="VertexStream.h" />
-    <ClInclude Include="VertexStreamBuffer.h" />
+    <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Viewport.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\BRDF.hlsli" />
-    <None Include="Shaders\Light.hlsli" />
-    <None Include="Shaders\Material.hlsli" />
-    <None Include="Shaders\SH.hlsli" />
-    <None Include="Shaders\Texture.hlsli" />
+    <None Include="..\Bin\shaders\src\BRDF.hlsli" />
+    <None Include="..\Bin\shaders\src\Light.hlsli" />
+    <None Include="..\Bin\shaders\src\Material.hlsli" />
+    <None Include="..\Bin\shaders\src\SH.hlsli" />
+    <None Include="..\Bin\shaders\src\Texture.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\BaseForwardShading.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+    <FxCompile Include="..\Bin\shaders\src\BaseForwardShading.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -2,4 +2,11 @@
 
 #include "Model.h"
 
-static Model* CreateModel(std::string strPath);
+class ModelFactory
+{
+public:
+	static Model* CreateTriangle();
+	static Model* CreateBox();
+
+	static Model* LoadModel(std::string strPath);
+};

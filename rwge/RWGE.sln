@@ -21,6 +21,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RwgeCore", "RwgeCore\RwgeCo
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RwgeGraphics", "RwgeGraphics\RwgeGraphics.vcxproj", "{F1C2D02A-4281-474B-B88C-7218320A37FF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1723D939-F091-4023-9816-75AD0332270B} = {1723D939-F091-4023-9816-75AD0332270B}
+		{6277FE95-0800-45B8-B3AD-CE1CA0CDD61A} = {6277FE95-0800-45B8-B3AD-CE1CA0CDD61A}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RwgeMath", "RwgeMath\RwgeMath.vcxproj", "{6277FE95-0800-45B8-B3AD-CE1CA0CDD61A}"
 EndProject

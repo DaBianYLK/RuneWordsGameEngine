@@ -2,6 +2,7 @@
 
 #include "Windows.h"
 #include <stdio.h>
+#include <csignal>
 
 // Show Assert Box when expression is FALSE
 #define ASSERT(expression) \
@@ -13,7 +14,7 @@
 				  #expression,\
 				  __FILE__, \
 				  __LINE__); \
-		MessageBoxA(nullptr, AssertMessage, "Rune Words Game Engine", 0); \
+		InterruptWindow(AssertMessage); \
 	}
 
 // Show Error Box
@@ -21,11 +22,31 @@
 	{\
 		char ErrorTitle[256]; \
 		sprintf_s(ErrorTitle, \
-				  "Error:\n"); \
+				  "[ERROR]\n"); \
 		char ErrorMessage[256]; \
 		sprintf_s(ErrorMessage, \
 				  message, \
 				  __VA_ARGS__); \
 		strcat_s(ErrorTitle, ErrorMessage); \
-		MessageBoxA(nullptr, ErrorTitle, "Rune Words Game Engine", 0); \
+		InterruptWindow(ErrorTitle); \
 	}
+
+inline void InterruptWindow(const char* message)
+{
+	switch (MessageBoxA(GetActiveWindow(), message, "Rune Words Game Engine", MB_ABORTRETRYIGNORE))
+	{
+	case IDABORT:
+		raise(SIGABRT); 
+		exit(3); 
+		break;
+
+	case IDRETRY:
+		_asm int 3
+		break;
+
+	case IDIGNORE:
+		ShowWindow(GetActiveWindow(), SW_SHOW); 
+		break; 
+	};
+}
+	

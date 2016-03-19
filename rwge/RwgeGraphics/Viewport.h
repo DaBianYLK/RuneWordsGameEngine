@@ -19,9 +19,10 @@ class Viewport
 
 private:
 	Viewport(IDirect3DDevice9* pDevice, unsigned int uX, unsigned int uY, unsigned int uWidth, unsigned int uHeight);
-	~Viewport();
 
 public:
+	~Viewport();
+
 	void Update();
 
 	void Enable() const;
@@ -34,6 +35,8 @@ public:
 	Camera* GetCamera() const;
 
 	RenderTarget* GetRenderTarget() const;
+
+	bool operator==(const Viewport& viewport) const;
 
 private:
 	IDirect3DDevice9* m_pDevice;

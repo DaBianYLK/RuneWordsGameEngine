@@ -2,7 +2,7 @@
 
 #include <list>
 #include <d3dx9.h>
-#include "Quaternion.h"
+#include <Quaternion.h>
 
 /*
 场景节点——组织场景树的基本单元，用于定义场景对象的空间变换
@@ -13,6 +13,9 @@
 4.	一个场景节点发生变化后，需要通知它的父节点（父节点需要继续向父节点的父节点传递这个通知，直到通知到树根）
 	以及它所有的子节点（子节点也需要向子节点的子节点传递这个通知，直到子树被遍历完毕）
 5.	RWGE与DirectX坐标系一致，使用左手坐标系，节点面向方向为Z轴正方向，节点上方为Y轴正方向，节点右方为X轴正方向
+6.	左手坐标系下，“物体绕轴A旋转alpha度”等价于“面朝轴A的方向，将物体逆时针旋转alpha度”（右手坐标系时，逆时针变为顺时针）
+	记忆方法：在左手坐标系中，使左手大拇指指向旋转轴，其余四指握拳，四指所指向的方向即为旋转的正方向（右手坐标系中，则换成右手）
+7.	默认情况下，定义场景节点的正前方为Z轴正方向，正上方为Y轴正方向，正右方为X轴正方向。
 */
 
 enum ETransformSpace
@@ -56,8 +59,11 @@ public:
 
 	void Rotate			(const Quaternion& rotation,	ETransformSpace space = TS_Self);
 	void SetOrientation	(const Quaternion& orientation, ETransformSpace space = TS_Self);
+	void Pitch			(const AngleRadian& radianAngle, ETransformSpace space = TS_Self);		// 绕X轴（面向X轴正方向）逆时针旋转
+	void Yaw			(const AngleRadian& radianAngle, ETransformSpace space = TS_Self);		// 绕Y轴（面向Y轴正方向）逆时针旋转
+	void Roll			(const AngleRadian& radianAngle, ETransformSpace space = TS_Self);		// 绕Z轴（面向Z轴正方向）逆时针旋转
 
-	const D3DXVECTOR3& GetDirection(ETransformSpace space = TS_World) const;	// 返回当前节点正前方的方向向量
+	D3DXVECTOR3 GetDirection(ETransformSpace space = TS_World) const;	// 返回当前节点正前方的方向向量
 	void SetDirection	(const D3DXVECTOR3& targetDirection,	ETransformSpace space = TS_World);
 	void LookAt			(const D3DXVECTOR3& targetPosition,		ETransformSpace space = TS_World);
 
@@ -73,7 +79,7 @@ public:
 	const D3DXMATRIX&		GetTransform		() const;		// 返回当前节点的自身变换矩阵
 	const D3DXMATRIX&		GetWorldTransform	() const;		// 返回当前节点的世界变换矩阵
 
-	void UpdateWorldTransform() const;	// 更新WorldPosition、WorldOrientation与WorldScale
+	virtual void UpdateWorldTransform() const;	// 更新WorldPosition、WorldOrientation与WorldScale
 	void UpdateCachedTransform() const;
 	virtual void UpdateCachedWorldTransform() const;
 

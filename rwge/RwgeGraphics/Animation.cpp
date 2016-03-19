@@ -1,23 +1,29 @@
 #include "Animation.h"
 
-#include "AppConfig.h"
+static const float fAnimationFrameInterval = 2.0f / 60.0f;
 
-Animation::Animation()
+Animation::Animation() : 
+	m_nStartFrame(0), 
+	m_nFrameNum(0),
+	m_fPlaySpeed(1.0f),
+	m_fCurrentTime(0.0f), 
+	m_nCurrentFrame(0),
+	m_bIsPlaying(false),
+	m_bLoop(false)
 {
-	m_PlaySpeed = 1.0f;
-	m_CurrentTime = 0.0f;
-	m_IsPlaying = false;
-	m_Loop = false;
+
 }
 
-Animation::Animation(int startFrame, int frameNum)
+Animation::Animation(int nStartFrame, int nFrameNum) :
+	m_nStartFrame(nStartFrame),
+	m_nFrameNum(nFrameNum),
+	m_fPlaySpeed(1.0f),
+	m_fCurrentTime(0.0f),
+	m_nCurrentFrame(0),
+	m_bIsPlaying(false),
+	m_bLoop(false)
 {
-	m_StartFrame = startFrame;
-	m_FrameNum = frameNum;
-	m_PlaySpeed = 1.0f;
-	m_CurrentTime = 0.0f;
-	m_IsPlaying = false;
-	m_Loop = false;
+
 }
 
 Animation::~Animation()
@@ -27,49 +33,49 @@ Animation::~Animation()
 
 void Animation::Set(int startFrame, int frameNum)
 {
-	m_StartFrame = startFrame;
-	m_FrameNum = frameNum;
+	m_nStartFrame = startFrame;
+	m_nFrameNum = frameNum;
 }
 
 void Animation::Play(bool loop)
 {
-	m_Loop = loop;
-	m_CurrentTime = 0.0f;
-	m_IsPlaying = true;
+	m_bLoop = loop;
+	m_fCurrentTime = 0.0f;
+	m_bIsPlaying = true;
 }
 
 void Animation::SetPlaySpeed(float playSpeed)
 {
-	m_PlaySpeed = playSpeed;
+	m_fPlaySpeed = playSpeed;
 }
 
 void Animation::Update(float deltaTime)
 {
-	m_CurrentTime += deltaTime * m_PlaySpeed;
-	int deltaFrame = (int)(m_CurrentTime / AppConfig::animationFrameInterval);
-	if (deltaFrame >= m_FrameNum)
-{
-		if (m_Loop)
-{
+	m_fCurrentTime += deltaTime * m_fPlaySpeed;
+	int deltaFrame = static_cast<int>(m_fCurrentTime / fAnimationFrameInterval);
+	if (deltaFrame >= m_nFrameNum)
+	{
+		if (m_bLoop)
+		{
 			deltaFrame = 0;
-			m_CurrentTime = 0.0f;
+			m_fCurrentTime = 0.0f;
 		}
 		else
-{
-			deltaFrame = m_FrameNum - 1;
-			m_IsPlaying = false;
+		{
+			deltaFrame = m_nFrameNum - 1;
+			m_bIsPlaying = false;
 		}
 	}
 
-	m_CurrentFrame = m_StartFrame + deltaFrame;
+	m_nCurrentFrame = m_nStartFrame + deltaFrame;
 }
 
 int Animation::GetFrameIndex()
 {
-	return m_CurrentFrame;
+	return m_nCurrentFrame;
 }
 
 bool Animation::IsPlaying()
 {
-	return m_IsPlaying;
+	return m_bIsPlaying;
 }

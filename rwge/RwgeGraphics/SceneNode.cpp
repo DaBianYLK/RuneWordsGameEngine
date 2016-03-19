@@ -3,6 +3,7 @@
 #include "SceneManager.h"
 #include <AssertUtil.h>
 #include <MathDefinitions.h>
+#include <LogUtil.h>
 
 using namespace RwgeMath;
 
@@ -10,10 +11,10 @@ SceneNode::SceneNode() :
 	m_pSceneManager					(nullptr),
 	m_NodeType						(NT_Node),
     m_Position						(0.0f, 0.0f, 0.0f),
-	m_Orientation					(1.0f, 0.0f, 0.0f, 0.0f),
+	m_Orientation					(0.0f, 0.0f, 0.0f, 1.0f),
 	m_Scale							(1.0f, 1.0f, 1.0f),
 	m_WorldPosition					(0.0f, 0.0f, 0.0f),
-	m_WorldOrientation				(1.0f, 0.0f, 0.0f, 0.0f),
+	m_WorldOrientation				(0.0f, 0.0f, 0.0f, 1.0f),
 	m_WorldScale					(1.0f, 1.0f, 1.0f),
 	m_pParent						(nullptr),
 	m_bParentHasNotified			(false),
@@ -78,6 +79,9 @@ void SceneNode::AttachChild(SceneNode* pNode)
 		// 设置节点的父节点为当前节点
 		pNode->m_pParent = this;
 		pNode->m_pSceneManager = this->m_pSceneManager;
+
+		// 因为pNode的父节点发生了改变，所以需要更新pNode的世界变换
+		pNode->m_bWorldTransformChanged = true;
 
 		// 将节点子树中包含的模型加入场景管理器
 		pNode->m_pSceneManager->AddModelBySceneNode(pNode);
@@ -238,7 +242,22 @@ void SceneNode::SetOrientation(const Quaternion& orientation, ETransformSpace sp
 	NeedUpdate();
 }
 
-const D3DXVECTOR3& SceneNode::GetDirection(ETransformSpace space /* = TS_World */) const
+void SceneNode::Pitch(const AngleRadian& radianAngle, ETransformSpace space /* = TS_Self */)
+{
+	Rotate(Quaternion(Vector3UnitX, radianAngle), space);
+}
+
+void SceneNode::Yaw(const AngleRadian& radianAngle, ETransformSpace space /* = TS_Self */)
+{
+	Rotate(Quaternion(Vector3UnitY, radianAngle), space);
+}
+
+void SceneNode::Roll(const AngleRadian& radianAngle, ETransformSpace space /* = TS_Self */)
+{
+	Rotate(Quaternion(Vector3UnitZ, radianAngle), space);
+}
+
+D3DXVECTOR3 SceneNode::GetDirection(ETransformSpace space /* = TS_World */) const
 {
 	D3DXVECTOR3 originalDirection;
 
@@ -474,6 +493,12 @@ void SceneNode::NeedUpdate()
 
 	NotifyParentToUpdate();		// 向上通知父节点需要更新
 	NotifyChildrenToUpdate();	// 向下通知子节点需要更新（OGRE没有执行这一步，可能是因为需要遍历子树，考虑到效率问题所以省略了）
+
+	/*
+	不通知子节点更新的优缺点分析：
+	优点：可以节约遍历子树的大量开销，不需要统一更新场景树（在用到某个节点时才更新该节点的世界变换）
+	缺点：子节点的世界变换更新会延迟一帧（若A节点的父节点在第1帧发生改变，第1帧时获取A节点的世界变换会得到父节点改变之前的值），且需要每一帧统一更新场景树
+	*/
 }
 
 void SceneNode::NotifyParentToUpdate()
@@ -538,10 +563,7 @@ void SceneNode::UpdateSelfAndAllChildren() const
 	{
 		for (auto pChild : m_listChildren)
 		{
-			if (pChild->m_bWorldTransformChanged)
-			{
-				pChild->UpdateSelfAndAllChildren();
-			}
+			pChild->UpdateSelfAndAllChildren();
 		}
 
 		m_bNeedAllChildrenUpdate = false;
@@ -568,7 +590,6 @@ D3DXMATRIX* SceneNode::SetTransform(D3DXMATRIX& pOut, const D3DXVECTOR3& transla
 
 	D3DXMATRIX rotationMatrix;
 	normalQuat.ToRotationMatrix(rotationMatrix);
-	float** pM = reinterpret_cast<float**>(rotationMatrix.m);
 
 	float scaleX = scale.x;
 	float scaleY = scale.y;
@@ -578,10 +599,10 @@ D3DXMATRIX* SceneNode::SetTransform(D3DXMATRIX& pOut, const D3DXVECTOR3& transla
 	float translateY = translation.y;
 	float translateZ = translation.z;
 
-	pOut._11 = scaleX * pM[0][0];	pOut._12 = scaleX * pM[0][1];	pOut._13 = scaleX * pM[0][2];	pOut._14 = 0.0f;
-	pOut._21 = scaleY * pM[1][0];	pOut._22 = scaleY * pM[1][1];	pOut._23 = scaleY * pM[1][2];	pOut._24 = 0.0f;
-	pOut._31 = scaleZ * pM[2][0];	pOut._32 = scaleZ * pM[2][1];	pOut._33 = scaleZ * pM[2][2];	pOut._34 = 0.0f;
-	pOut._41 = translateX;			pOut._42 = translateY;			pOut._43 = translateZ;			pOut._44 = 1.0f;
+	pOut._11 = scaleX * rotationMatrix.m[0][0];	pOut._12 = scaleX * rotationMatrix.m[0][1];	pOut._13 = scaleX * rotationMatrix.m[0][2];	pOut._14 = 0.0f;
+	pOut._21 = scaleY * rotationMatrix.m[1][0];	pOut._22 = scaleY * rotationMatrix.m[1][1];	pOut._23 = scaleY * rotationMatrix.m[1][2];	pOut._24 = 0.0f;
+	pOut._31 = scaleZ * rotationMatrix.m[2][0];	pOut._32 = scaleZ * rotationMatrix.m[2][1];	pOut._33 = scaleZ * rotationMatrix.m[2][2];	pOut._34 = 0.0f;
+	pOut._41 = translateX;						pOut._42 = translateY;						pOut._43 = translateZ;						pOut._44 = 1.0f;
 
 	return &pOut;
 }

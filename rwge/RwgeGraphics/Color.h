@@ -7,19 +7,19 @@ struct FColorRGB
 {
 	FColorRGB();
 	FColorRGB(float fGray);
-	FColorRGB(float fR, float fG, float fB);
+	FColorRGB(float r, float g, float b);
 	FColorRGB(const FColorRGB& color);
 	FColorRGB(const FColorRGBA& color);
 	~FColorRGB();
 
 	void Set(float fGray);
-	void Set(float fR, float fG, float fB);
+	void Set(float r, float g, float b);
 	void Set(const FColorRGB& color);
 	void Set(const FColorRGBA& color);
 
-	float R;
-	float G;
-	float B;
+	float fR;
+	float fG;
+	float fB;
 
 	static const FColorRGB Black;
 	static const FColorRGB White;
@@ -34,22 +34,22 @@ struct FColorRGBA
 {
 	FColorRGBA();
 	FColorRGBA(float fGray);
-	FColorRGBA(float fR, float fG, float fB);
-	FColorRGBA(float fR, float fG, float fB, float fA);
+	FColorRGBA(float r, float g, float b);
+	FColorRGBA(float r, float g, float b, float a);
 	FColorRGBA(const FColorRGB& color);
 	FColorRGBA(const FColorRGBA& color);
 	~FColorRGBA();
 
 	void Set(float fGray);
-	void Set(float fR, float fG, float fB);
-	void Set(float fR, float fG, float fB, float fA);
+	void Set(float r, float g, float b);
+	void Set(float r, float g, float b, float a);
 	void Set(const FColorRGB& color);
 	void Set(const FColorRGBA& color);
 
-	float R;
-	float G;
-	float B;
-	float A;
+	float fR;
+	float fG;
+	float fB;
+	float fA;
 };
 
 

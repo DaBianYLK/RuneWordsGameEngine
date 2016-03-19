@@ -1,19 +1,22 @@
 #pragma once
 
-#include "VertexDeclaration.h"
+#include "VertexDeclarationType.h"
 #include <string>
 #include <map>
+#include <Singleton.h>
 
-class VertexDeclarationManager
+class VertexDeclarationManager : public Singleton<VertexDeclarationManager>
 {
 public:
-	VertexDeclarationManager(D3D9Device* pDevice);
+	VertexDeclarationManager();
 	~VertexDeclarationManager();
 
-	VertexDeclaration* GetVertexDeclaration(const std::string& strDeclarationName);
+	void GenerateDefaultVertexDeclaration();
+	VertexDeclarationType* GetDefaultVertexDeclaration();
+	VertexDeclarationType* GetVertexDeclaration(const std::string& strDeclarationName);
 
 private:
-	D3D9Device* m_pDevice;
+	static char* m_DefaultVertexDeclarationName;
 
-	std::map<std::string, VertexDeclaration*>	m_mapVertexDeclarations;	// <顶点声明名称，顶点声明>
+	std::map<std::string, VertexDeclarationType*>	m_mapVertexDeclarations;	// <顶点声明名称，顶点声明>
 };

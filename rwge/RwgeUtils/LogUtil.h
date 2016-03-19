@@ -2,16 +2,10 @@
 
 #include <fstream>
 
-#include "Singleton.h"
-
-class LogUtil : public Singleton<LogUtil>
+class LogUtil
 {
-	friend class Singleton<LogUtil>;
-
-private:
-	LogUtil();
-
 public:
+	LogUtil();
 	virtual ~LogUtil();
 
 private:
@@ -22,12 +16,15 @@ public:
 	void Log(const char* format, ...);
 
 private:
-	char* m_OutputPath;
+	std::string m_strOutputPath;
 	unsigned int m_MaxLogLength;
+	char* m_pBuffer;
+	unsigned int m_MaxMessageLength;
+	char* m_pLogMessage;
 
 	std::ofstream m_LogStream;
 };
 
-extern LogUtil g_LogUtil;
+extern LogUtil g_RwgeLog;
 
-#define LOG(...) g_LogUtil.Log(__VA_ARGS__)
+#define LOG(...) g_RwgeLog.Log(__VA_ARGS__)

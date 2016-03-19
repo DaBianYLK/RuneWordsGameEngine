@@ -1,15 +1,19 @@
 #pragma once
 
 #include <list>
+#include <hash_map>
 #include "D3D9Device.h"
 #include "Viewport.h"
-#include "VertexStreamBuffer.h"
-#include "IndexStreamBuffer.h"
-#include "ShaderManager.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 #include "RenderState.h"
-#include "VertexDeclarationManager.h"
+#include "Shader.h"
+#include "VertexDeclaration.h"
 
+class RenderPrimitive;
+class ShaderType;
 class DisplayWindow;
+class SceneManager;
 
 /*
 RenderTarget与DisplayWindow的关系说明：
@@ -28,10 +32,11 @@ RenderTarget与RenderSystem的关系说明：
 
 与RenderTarget（D3D9Device）绑定的类有：
 1.	VertexDeclaration
-2.	VertexStreamBuffer
-3.	IndexStreamBuffer
+2.	VertexBuffer
+3.	IndexBuffer
 4.	ShaderManager
-5.	ShaderProgram
+5.	Shader
+6.	Texture
 */
 
 class RenderTarget : public D3D9Device
@@ -39,13 +44,13 @@ class RenderTarget : public D3D9Device
 	friend class RenderSystem;
 
 private:
-	RenderTarget(DisplayWindow& window);
-	RenderTarget(RenderTarget&& target);	// 转移构造函数
+	RenderTarget(const DisplayWindow* pWindow);
+
+public:
 	virtual ~RenderTarget();
 
 	bool Release() override;
 
-public:
 	Viewport* CreateViewport();
 	bool RemoveViewport(Viewport* pViewport);
 
@@ -54,11 +59,19 @@ public:
 	void SetActiveSceneManager(SceneManager* pSceneManager);
 	SceneManager* GetActiveSceneManager() const;
 
-	ShaderManager* GetShaderManager();
+	// 当ShaderType指针为空时，返回hash表中的第一个shader，如果hash表为空返回空指针
+	Shader* GetShader(ShaderType* pShaderType = nullptr);
+
+	VertexDeclaration* GetVertexDeclarationInstance(VertexDeclarationType* pVertexDeclaration);
+
+	Texture* GetTexture(TextureInfo* pInfo);
 
 	void ApplyRenderState(const RenderState& renderState);
 	void ResetRenderState();
-	void ApplyVertexDeclaration(VertexDeclaration* pVertexDeclaration);
+	void ApplyVertexStreamAndIndexStream(VertexDeclaration* pVertexDeclarationInstance);		// 设置顶点声明，并绑定相应的顶点流
+	void DrawPrimitive(const RenderPrimitive& primitive);
+
+	bool operator==(const RenderTarget& renderTarget) const;
 
 private:
 	const DisplayWindow*			m_pWindow;
@@ -68,17 +81,20 @@ private:
 
 	SceneManager*					m_pActiveSceneManager;	// 当前被激活（正在被渲染）的场景管理器，用于记录当前RenderTarget渲染的场景是否发生变更，从而判断是否需要更新shader
 
-	static const unsigned int		m_uVertexStreamBufferSize = 16 * 1024 * 1024;	// 16MB，若一个顶点64bytes，一次绘制可以支持约25000个顶点
-	std::list<VertexStreamBuffer>	m_listVertexStreamBuffers;
+	static const unsigned int		m_uVertexBufferSize = 16 * 1024 * 1024;	// 16MB，若一个顶点64bytes，一次绘制可以支持约25000个顶点
+	std::list<VertexBuffer*>		m_listVertexStreamBuffers;
 
-	static const unsigned int		m_uIndexStreamBufferSize = 4 * 1024 * 1024;		// 4MB，一个索引2bytes，一次绘制可以支持约70万个三角形
-	IndexStreamBuffer				m_IndexStreamBuffer;
+	static const unsigned int		m_uIndexBufferSize = 4 * 1024 * 1024;		// 4MB，一个索引2bytes，一次绘制可以支持约70万个三角形
+	IndexBuffer*					m_pIndexBuffer;
 
-	ShaderManager					m_ShaderManager;
-	VertexDeclarationManager		m_VertexDeclarationManager;
+	std::hash_map<ShaderType*, Shader*>		m_hashShaders;			// 通过着色器类型获取相应的着色器实例
+	LPD3DXEFFECTPOOL						m_pEffectPool;			// 用于在Shader之间共享常量
+
+	std::hash_map<VertexDeclarationType*, VertexDeclaration*>	m_hashVertexDeclarationInstances;	// 通过顶点声明获取相应的顶点声明实例
+
+	std::hash_map<TextureInfo*, Texture*>	m_hashTextures;			// 通过纹理信息获取纹理对象
 	
 	RenderState						m_CurrentRenderState;
 	VertexDeclaration*				m_pCurrentVertexDeclaration;
+	IndexBuffer*					m_pCurrentIndexBuffer;
 };
-
-typedef std::list<RenderTarget> RenderTargetList;

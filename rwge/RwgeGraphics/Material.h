@@ -5,8 +5,9 @@
 #include "Color.h"
 #include "d3dx9.h"
 #include "Texture.h"
-#include "ShaderProgram.h"
 #include <list>
+
+class ShaderType;
 
 /*
 定义一个渲染单元的渲染状态
@@ -40,6 +41,8 @@ class Material
 	friend class TranslucentGroupPolicy;
 
 	friend class ShaderManager;
+	friend class Shader;
+	friend class MaterialFactory;
 
 public:
 	Material();
@@ -48,19 +51,16 @@ public:
 	void UpdateConstantBuffer() const;
 	void GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) const;
 
-	void UpdateTextureList() const;
-	const std::list<Texture*>& GetTextureList() const;
+	void UpdateTextureInfoList() const;
+	const std::list<TextureInfo*>& GetTextureInfoList() const;
 
 	EBlendMode GetBlendMode() const { return m_BlendMode; }
 
 	void UpdateMaterialKey() const;
 	unsigned long long GetMaterialKey() const;
 
-	void SetShaderProgram(ShaderProgram* pShader);
-	ShaderProgram* GetShaderProgram() const;
-
-	void BindTextures(ShaderProgram* pShader);
-	void BindConstants(ShaderProgram* pShader);
+	void SetShaderType(ShaderType* pShaderType);
+	ShaderType* GetShaderType() const;
 
 protected:
 	MaterialInput<FColorRGB>	m_BaseColor;
@@ -70,7 +70,7 @@ protected:
 	MaterialInput<float>		m_Specular;
 	MaterialInput<float>		m_Roughness;
 	MaterialInput<float>		m_Opacity;			
-	MaterialInput<float>		m_OpacityMask;
+	MaterialInput<float>		m_OpacityMask;		// Masked模式下，此值小于m_fOpacityMaskClipValue的像素点将会不显示
 
 	bool						m_bTwoSided;
 	float						m_fOpacityMaskClipValue;
@@ -83,7 +83,7 @@ private:
 	mutable unsigned char		m_ConstantBuffer[128];		// 常量缓冲，设为定长是为了减少动态内存寻址的消耗
 
 	mutable bool				m_bTextureListOutOfDate;
-	mutable std::list<Texture*>	m_listTextures;
+	mutable std::list<TextureInfo*>	m_listTextureInfos;
 
 	// 缓存MaterialKey
 	mutable bool				m_bMaterialKeyOutOfDate;
@@ -96,5 +96,5 @@ private:
 	考虑到性能原因，可以将shader与高频因素（即材质）绑定，再定义一个变量来标示低频因素是否发生改变，
 	如果该标志改变，就在一帧中更新所有材质中绑定的shader，更新完后再将该标志置为false
 	*/
-	mutable ShaderProgram*		m_pShader;					// 缓存的Shader
+	mutable ShaderType*			m_pShaderType;				// 缓存的Shader
 };

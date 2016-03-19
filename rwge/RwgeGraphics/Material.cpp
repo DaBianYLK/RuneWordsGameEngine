@@ -1,5 +1,6 @@
 #include "Material.h"
 
+#include "Shader.h"
 #include "ShaderManager.h"
 
 Material::Material() : 
@@ -12,7 +13,7 @@ Material::Material() :
 	m_bTextureListOutOfDate(true), 
 	m_bMaterialKeyOutOfDate(true), 
 	m_u64MaterialKey(0), 
-	m_pShader(nullptr)
+	m_pShaderType(nullptr)
 {
 	
 }
@@ -49,45 +50,45 @@ void Material::GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) 
 	uSize = m_uConstantBufferSize;
 }
 
-void Material::UpdateTextureList() const
+void Material::UpdateTextureInfoList() const
 {
-	m_listTextures.clear();
+	m_listTextureInfos.clear();
 
-	Texture* pTexture = m_BaseColor.GetTexture();
-	if (pTexture != nullptr)	m_listTextures.push_back(pTexture);
+	TextureInfo* pTextureInfo = m_BaseColor.GetTextureInfo();
+	if (pTextureInfo != nullptr)	m_listTextureInfos.push_back(pTextureInfo);
 
-	pTexture = m_EmissiveColor.GetTexture();
-	if (pTexture != nullptr)	m_listTextures.push_back(pTexture);
+	pTextureInfo = m_EmissiveColor.GetTextureInfo();
+	if (pTextureInfo != nullptr)	m_listTextureInfos.push_back(pTextureInfo);
 
-	pTexture = m_Normal.GetTexture();
-	if (pTexture != nullptr)	m_listTextures.push_back(pTexture);
+	pTextureInfo = m_Normal.GetTextureInfo();
+	if (pTextureInfo != nullptr)	m_listTextureInfos.push_back(pTextureInfo);
 
-	pTexture = m_Metallic.GetTexture();
-	if (pTexture != nullptr)	m_listTextures.push_back(pTexture);
+	pTextureInfo = m_Metallic.GetTextureInfo();
+	if (pTextureInfo != nullptr)	m_listTextureInfos.push_back(pTextureInfo);
 
-	pTexture = m_Specular.GetTexture();
-	if (pTexture != nullptr)	m_listTextures.push_back(pTexture);
+	pTextureInfo = m_Specular.GetTextureInfo();
+	if (pTextureInfo != nullptr)	m_listTextureInfos.push_back(pTextureInfo);
 
-	pTexture = m_Roughness.GetTexture();
-	if (pTexture != nullptr)	m_listTextures.push_back(pTexture);
+	pTextureInfo = m_Roughness.GetTextureInfo();
+	if (pTextureInfo != nullptr)	m_listTextureInfos.push_back(pTextureInfo);
 
-	pTexture = m_Opacity.GetTexture();
-	if (pTexture != nullptr)	m_listTextures.push_back(pTexture);
+	pTextureInfo = m_Opacity.GetTextureInfo();
+	if (pTextureInfo != nullptr)	m_listTextureInfos.push_back(pTextureInfo);
 
-	pTexture = m_OpacityMask.GetTexture();
-	if (pTexture != nullptr)	m_listTextures.push_back(pTexture);
+	pTextureInfo = m_OpacityMask.GetTextureInfo();
+	if (pTextureInfo != nullptr)	m_listTextureInfos.push_back(pTextureInfo);
 
 	m_bTextureListOutOfDate = false;
 }
 
-const std::list<Texture*>& Material::GetTextureList() const
+const std::list<TextureInfo*>& Material::GetTextureInfoList() const
 {
 	if (m_bTextureListOutOfDate)
 	{
-		UpdateTextureList();
+		UpdateTextureInfoList();
 	}
 
-	return m_listTextures;
+	return m_listTextureInfos;
 }
 
 void Material::UpdateMaterialKey() const
@@ -106,48 +107,12 @@ unsigned long long Material::GetMaterialKey() const
 	return m_u64MaterialKey;
 }
 
-void Material::SetShaderProgram(ShaderProgram* pShader)
+void Material::SetShaderType(ShaderType* pShaderType)
 {
-	m_pShader = pShader;
+	m_pShaderType = pShaderType;
 }
 
-ShaderProgram* Material::GetShaderProgram() const
+ShaderType* Material::GetShaderType() const
 {
-	return m_pShader;
-}
-
-void Material::BindTextures(ShaderProgram* pShader)
-{
-	Texture* pTexture = m_BaseColor.GetTexture();
-	if (pTexture != nullptr)	pShader->SetBaseColorTexture(pTexture);
-
-	pTexture = m_EmissiveColor.GetTexture();
-	if (pTexture != nullptr)	pShader->SetEmissiveColorTexture(pTexture);
-
-	pTexture = m_Normal.GetTexture();
-	if (pTexture != nullptr)	pShader->SetNormalTexture(pTexture);
-
-	pTexture = m_Metallic.GetTexture();
-	if (pTexture != nullptr)	pShader->SetMetallicTexture(pTexture);
-
-	pTexture = m_Specular.GetTexture();
-	if (pTexture != nullptr)	pShader->SetSpecularTexture(pTexture);
-
-	pTexture = m_Roughness.GetTexture();
-	if (pTexture != nullptr)	pShader->SetRoughnessTexture(pTexture);
-
-	pTexture = m_Opacity.GetTexture();
-	if (pTexture != nullptr)	pShader->SetOpacityTexture(pTexture);
-
-	pTexture = m_OpacityMask.GetTexture();
-	if (pTexture != nullptr)	pShader->SetOpacityMaskTexture(pTexture);
-}
-
-void Material::BindConstants(ShaderProgram* pShader)
-{
-	unsigned char* pBuffer;
-	unsigned char uSize;
-
-	GetConstantBuffer(pBuffer, uSize);
-	pShader->SetMaterial(pBuffer, uSize);
+	return m_pShaderType;
 }

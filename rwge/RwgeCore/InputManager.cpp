@@ -31,7 +31,7 @@ void InputManager::Cleanup()
 LRESULT CALLBACK InputManager::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
 {
 	switch (umsg)
-{
+	{
 		// Check if the window is being destroyed.
 	case WM_DESTROY:
 		PostQuitMessage(0);
@@ -44,13 +44,13 @@ LRESULT CALLBACK InputManager::MessageHandler(HWND hwnd, UINT umsg, WPARAM wpara
 
 	case WM_KEYDOWN:
 		// If a key is pressed send it to the input object so it can record that state.
-		KeyDown((unsigned int)wparam);
+		KeyDown(static_cast<unsigned int>(wparam));
 		return 0;
 
 		// Check if a key has been released on the keyboard.
 	case WM_KEYUP:
 		// If a key is released then send it to the input object so it can unset the state for that key.
-		KeyUp((unsigned int)wparam);
+		KeyUp(static_cast<unsigned int>(wparam));
 		return 0;
 
 		// All other messages pass to the message handler in the system class.
@@ -65,10 +65,10 @@ void InputManager::KeyUp(unsigned int key)
 
 	std::list<InputListener*>::iterator listener = m_InputListeners.begin();
 	while (listener != m_InputListeners.end())
-{
+	{
 		(*listener)->OnKeyUp(key);
 
-		listener++;
+		++listener;
 	}
 }
 
@@ -78,10 +78,10 @@ void InputManager::KeyDown(unsigned int key)
 
 	std::list<InputListener*>::iterator listener = m_InputListeners.begin();
 	while (listener != m_InputListeners.end())
-{
+	{
 		(*listener)->OnKeyDown(key);
 
-		listener++;
+		++listener;
 	}
 }
 

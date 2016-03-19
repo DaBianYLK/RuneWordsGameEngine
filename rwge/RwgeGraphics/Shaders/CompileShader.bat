@@ -16,7 +16,7 @@ fxc.exe	^
 /D		MATERIAL_TWO_SIDED=0 ^
 /D		MATERIAL_NONMETAL=0 ^
 /D		MATERIAL_FULLY_ROUGH=0 ^
-/D		LIGHT_TYPE=0 ^
+/D		LIGHT_TYPE=2 ^
 BaseForwardShading.hlsl
 
 @pause

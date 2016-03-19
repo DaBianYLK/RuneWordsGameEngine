@@ -5,13 +5,14 @@
 
 enum ETimeFormat
 {
-	TF_DigitalOnly,			// 절：20000101112233
-	TF_Standard,			// 절：2000-01-01 11:22:33
+	TF_DigitalOnly,				// 절：20000101112233
+	TF_Standard,				// 절：2000-01-01 11:22:33
+	TF_DigitalWithUnderline,	// 절：2000_01_01_11_22_33
 
 	TimeFormat_MAX
 };
 
-static const std::string& GetCurrentDateTime(ETimeFormat format = TF_DigitalOnly)
+static std::string GetCurrentDateTime(ETimeFormat format = TF_DigitalOnly)
 {
 	const unsigned int uBufferSize = 32;
 	char buffer[uBufferSize];
@@ -30,8 +31,11 @@ static const std::string& GetCurrentDateTime(ETimeFormat format = TF_DigitalOnly
 		break;
 
 	case TF_Standard:
-		//formatString = "%Y-%m-%d %X";
-		formatString = "%F %X";
+		formatString = "%Y-%m-%d %X";
+		break;
+
+	case TF_DigitalWithUnderline:
+		formatString = "%Y_%m_%d_%H_%M_%S";
 		break;
 	}
 

@@ -17,16 +17,23 @@ public:
 	void GetConstantParamData(void*& pParam, unsigned char& uSize) const;
 	unsigned char AddConstantParamToBuffer(void* pBuffer) const;
 
-	Texture* GetTexture() const;
+	TextureInfo* GetTextureInfo() const;
 
-	MaterialExpression* pExpression;
-	InputType constant;
+	void SetConstant(const InputType& constant);
+	const InputType& GetConstant() const;
+
+	void SetExpression(MaterialExpression* pExpression);
+	MaterialExpression* GetExpression() const;
+
+private:
+	MaterialExpression* m_pExpression;
+	InputType m_Constant;
 };
 
 template<typename InputType>
-MaterialInput<InputType>::MaterialInput() : pExpression(nullptr)
+MaterialInput<InputType>::MaterialInput() : m_pExpression(nullptr)
 {
-	constant = static_cast<InputType>(0);
+	
 }
 
 template<typename InputType>
@@ -38,9 +45,9 @@ MaterialInput<InputType>::~MaterialInput()
 template <typename InputType>
 unsigned char MaterialInput<InputType>::GetExpressionID() const
 {
-	if (pExpression)
+	if (m_pExpression)
 	{
-		return pExpression->GetExpressionID();
+		return m_pExpression->GetExpressionID();
 	}
 
 	return 0;
@@ -49,13 +56,13 @@ unsigned char MaterialInput<InputType>::GetExpressionID() const
 template <typename InputType>
 void MaterialInput<InputType>::GetConstantParamData(void*& pParam, unsigned char& uSize) const
 {
-	if (pExpression)
+	if (m_pExpression)
 	{
-		pExpression->GetConstantParamData(pParam, uSize);
+		m_pExpression->GetConstantParamData(pParam, uSize);
 	}
 	else
 	{
-		pParam = reinterpret_cast<void*>(&constant);
+		pParam = reinterpret_cast<void*>(&m_Constant);
 		uSize = sizeof(InputType);
 	}
 }
@@ -63,22 +70,46 @@ void MaterialInput<InputType>::GetConstantParamData(void*& pParam, unsigned char
 template <typename InputType>
 unsigned char MaterialInput<InputType>::AddConstantParamToBuffer(void* pBuffer) const
 {
-	if (pExpression)
+	if (m_pExpression)
 	{
-		return pExpression->AddConstantParamToBuffer(pBuffer);
+		return m_pExpression->AddConstantParamToBuffer(pBuffer);
 	}
 
-	memcpy(pBuffer, &constant, sizeof(InputType));
+	memcpy(pBuffer, &m_Constant, sizeof(InputType));
 	return sizeof(InputType);
 }
 
 template <typename InputType>
-Texture* MaterialInput<InputType>::GetTexture() const
+TextureInfo* MaterialInput<InputType>::GetTextureInfo() const
 {
-	if (pExpression)
+	if (m_pExpression)
 	{
-		return pExpression->GetTexture();
+		return m_pExpression->GetTextureInfo();
 	}
 
 	return nullptr;
+}
+
+template <typename InputType>
+void MaterialInput<InputType>::SetConstant(const InputType& constant)
+{
+	m_Constant = constant;
+}
+
+template <typename InputType>
+const InputType& MaterialInput<InputType>::GetConstant() const
+{
+	return m_Constant;
+}
+
+template <typename InputType>
+void MaterialInput<InputType>::SetExpression(MaterialExpression* pExpression)
+{
+	m_pExpression = pExpression;
+}
+
+template <typename InputType>
+MaterialExpression* MaterialInput<InputType>::GetExpression() const
+{
+	return m_pExpression;
 }

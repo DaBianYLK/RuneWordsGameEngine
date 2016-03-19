@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AssertUtil.h"
+#include <typeinfo>
 
 /*
 关于本单例模板的几点说明：
@@ -9,21 +10,28 @@
 3. 本模板支持初始化与构造函数分离，所以使用时应该确保该单例存在且已经初始化
 */
 
-template<class T>
+template<typename T>
 class Singleton
 {
 protected:
 	Singleton()
 	{
-		// 构造函数执行时，单例指针一定要为空
-		ASSERT(!m_pInstance);
+		// 构造函数执行时，单例指针一定要为空，保证单例的唯一性
+		if (m_pInstance != nullptr)
+		{
+			ErrorBox("%s : Singleton instance can't be initialized twice.", typeid(T).name());
+		}
+		
 		m_pInstance = static_cast<T*>(this);
 	}
 
 	~Singleton()
 	{
-		// 析构函数执行时，单例指针一定不能为空
-		ASSERT(m_pInstance);
+		if (m_pInstance == nullptr)
+		{
+			ErrorBox("%s : Singleton instance can't be released before initialization.", typeid(T).name());
+		}
+
 		m_pInstance = nullptr;
 	}
 
@@ -39,15 +47,21 @@ private:
 public:
 	static T* GetInstancePtr()
 	{
-		// 如果使用了未初始化的单例，发送断言警告
-		ASSERT(m_pInstance);
+		if (m_pInstance == nullptr)
+		{
+			ErrorBox("%s : Singleton instance is used before initialization.", typeid(T).name());
+		}
+		
 		return m_pInstance;
 	}
 
 	static T& GetInstance()
 	{
-		// 如果使用了未初始化的单例，发送断言警告
-		ASSERT(m_pInstance);
+		if (m_pInstance == nullptr)
+		{
+			ErrorBox("%s : Singleton instance is used before initialization.", typeid(T).name());
+		}
+
 		return *m_pInstance;
 	}
 

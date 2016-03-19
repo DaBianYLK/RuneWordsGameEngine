@@ -2,6 +2,9 @@
 
 #include "RenderQueue.h"
 #include "RenderTarget.h"
+#include "VertexDeclarationManager.h"
+#include "ShaderManager.h"
+#include "TextureManager.h"
 #include "Singleton.h"
 
 struct IDirect3D9;
@@ -22,21 +25,21 @@ public:
 	RenderSystem();
 	virtual ~RenderSystem();
 
-	void RenderOneFrame(float fDeltaTime);
-	void RenderScene(SceneManager* pSceneManager);
-	void VisitRenderQueue();
-	void ApplyRenderState(const RenderState& renderState);
-	void ResetRenderState();
-	void DrawPrimitive(const RenderPrimitive& primitive);
-
 private:
 	bool InitD3DD9();
 	bool Release();
 
 public:
+	void RenderOneFrame(float fDeltaTime);
+	void RenderScene(SceneManager* pSceneManager);
+	void DrawRenderQueue();
+	void ApplyRenderState(const RenderState& renderState);
+	void ResetRenderState();
+	void DrawPrimitive(const RenderPrimitive& primitive);
+
 	IDirect3D9* GetD3D9Ptr() const;
 
-	RenderTarget* CreateRenderTarget(DisplayWindow& window);
+	RenderTarget* CreateRenderTarget(const DisplayWindow* pWindow);
 	bool RemoveRenderTarget(RenderTarget* pTarget);
 
 	RenderTarget* GetActiveRenderTarget() const;
@@ -46,10 +49,14 @@ public:
 private:
 	IDirect3D9* m_pD3D9;
 
-	RenderTarget* m_pActiveRenderTarget;		// 当前被激活的渲染目标
-	RenderTargetList m_RenderTargetList;		// 渲染目标列表
+	RenderTarget* m_pActiveRenderTarget;			// 当前被激活的渲染目标
+	std::list<RenderTarget*> m_listRenderTarget;	// 渲染目标列表
 
 	RenderQueue m_RenderQueue;
+
+	VertexDeclarationManager	m_VertexDeclarationManager;
+	ShaderManager				m_ShaderManager;
+	TextureManager				m_TextureManager;
 };
 
 #define g_RenderSystem RenderSystem::GetInstance()

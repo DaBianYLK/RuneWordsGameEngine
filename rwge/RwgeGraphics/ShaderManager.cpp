@@ -6,20 +6,16 @@
 
 using namespace std;
 
-string ShaderManager::m_strFXCPath					= "fxc.exe";
+string ShaderManager::m_strFXCPath					= "shaders/fxc.exe";
 string ShaderManager::m_strTargetVersion			= "fx_2_0";
-string ShaderManager::m_strShaderBinaryPrefix		= "Shader";
+string ShaderManager::m_strShaderBinaryPrefix		= "shaders/bin/Shader";
 string ShaderManager::m_strShaderBinaryExtension	= ".bin";
-string ShaderManager::m_strHLSLPath					= "BaseForwardShading.hlsl";
-string ShaderManager::m_strCompilationLogPrefix		= "ShaderCompilationOutput";
+string ShaderManager::m_strHLSLPath					= "shaders/src/BaseForwardShading.hlsl";
+string ShaderManager::m_strCompilationLogPrefix		= "CompilationOutput";
 
-ShaderManager::ShaderManager(D3D9Device* pDevice) : 
-	m_pDevice(pDevice),
-	m_pEffectPool(nullptr)
+ShaderManager::ShaderManager()
 {
-	HRESULT result = D3DXCreateEffectPool(&m_pEffectPool);
 
-	ASSERT(result == D3D_OK);
 }
 
 ShaderManager::~ShaderManager()
@@ -41,8 +37,8 @@ inline unsigned long long Uint64MaskAndLeftShit(unsigned long long number, unsig
 
 unsigned long long ShaderManager::GetMaterialKey(const Material* pMaterial)
 {
-	bool bMaterialNonmetal   = pMaterial->m_Metallic.pExpression  == nullptr && pMaterial->m_Metallic.constant  == 0.0f;
-	bool bMaterialFullyRough = pMaterial->m_Roughness.pExpression == nullptr && pMaterial->m_Roughness.constant == 1.0f;
+	bool bMaterialNonmetal = pMaterial->m_Metallic.GetExpression() == nullptr && pMaterial->m_Metallic.GetConstant() == 0.0f;
+	bool bMaterialFullyRough = pMaterial->m_Roughness.GetExpression() == nullptr && pMaterial->m_Roughness.GetConstant() == 1.0f;
 
 	unsigned long long u64Key 
 			= Uint64MaskAndLeftShit(pMaterial->m_BaseColor.GetExpressionID(),		MaskBit4,  0);
@@ -64,12 +60,18 @@ unsigned long long ShaderManager::GetMaterialKey(const Material* pMaterial)
 
 unsigned long long ShaderManager::GetEnvironmentKey(const Light* pLight)
 {
-	unsigned long long u64Key = Uint64MaskAndLeftShit(pLight->GetLightType(), MaskBit2, 40);
+	unsigned long long u64Key = 0;
+
+	// 无光照时，LightType = 0
+	if (pLight != nullptr)
+	{
+		u64Key = Uint64MaskAndLeftShit(pLight->GetLightType(), MaskBit2, 0);
+	}
 
 	return u64Key;
 }
 
-unsigned long long ShaderManager::GetShaderProgramKey(const Material* pMaterial, const Light* pLight)
+unsigned long long ShaderManager::GetShaderKey(const Material* pMaterial, const Light* pLight)
 {
 	unsigned long long u64MaterialKey = pMaterial->GetMaterialKey();		// 如果材质中缓存了MaterialKey，可以避免重复计算
 	unsigned long long u64EnvironmentKey = GetEnvironmentKey(pLight);		// 由于计算较简单，暂时不缓存EnvironmentKey
@@ -77,25 +79,39 @@ unsigned long long ShaderManager::GetShaderProgramKey(const Material* pMaterial,
 	return u64MaterialKey | (u64EnvironmentKey << MaterialKeyBitCount);
 }
 
-unsigned long long ShaderManager::GetShaderProgramKey(unsigned long long u64MaterialKey, unsigned long long u64EnvironmentKey)
+unsigned long long ShaderManager::GetShaderKey(unsigned long long u64MaterialKey, unsigned long long u64EnvironmentKey)
 {
 	return u64MaterialKey | (u64EnvironmentKey << MaterialKeyBitCount);
 }
 
-const string& ShaderManager::GetFXCCommandLine(const Material* pMaterial, const Light* pLight)
+const string ShaderManager::GetShaderPath(unsigned long long u64Key)
 {
-	unsigned long long u64Key = GetShaderProgramKey(pMaterial, pLight);
+	const unsigned int uBufferSize = 32;
+	char cBuffer[uBufferSize];
+	_ui64toa_s(u64Key, cBuffer, uBufferSize, 16);		// 使用16进制编码
+
+	string strOutputPath = m_strShaderBinaryPrefix;
+	strOutputPath.append(cBuffer);
+	strOutputPath.append(m_strShaderBinaryExtension.c_str());
+
+	return strOutputPath;
+}
+
+const string ShaderManager::GetFXCCommandLine(const Material* pMaterial, const Light* pLight)
+{
+	unsigned long long u64Key = GetShaderKey(pMaterial, pLight);
 
 	return GetFXCCommandLine(u64Key);
 }
 
-const std::string& ShaderManager::GetFXCCommandLine(unsigned long long u64Key)
+const std::string ShaderManager::GetFXCCommandLine(unsigned long long u64Key)
 {
 	const unsigned int uBufferSize = 256;
 	char cBuffer[uBufferSize];
 
 	// FXC可执行文件路径
-	string strCommand = m_strFXCPath;
+	sprintf_s(cBuffer, "\"%s\"", m_strFXCPath.c_str());
+	string strCommand = cBuffer;
 
 	// 编译着色器的版本
 	sprintf_s(cBuffer, " /T %s ", m_strTargetVersion.c_str());
@@ -104,13 +120,8 @@ const std::string& ShaderManager::GetFXCCommandLine(unsigned long long u64Key)
 	//strCommand.append(m_strTargetVersion.c_str());
 
 	// 输出着色器二进制文件路径
-	sprintf_s(cBuffer, " /Fo %s%ulld%s ", m_strShaderBinaryPrefix.c_str(), u64Key, m_strShaderBinaryExtension.c_str());
+	sprintf_s(cBuffer, " /Fo %s ", GetShaderPath(u64Key).c_str());
 	strCommand.append(cBuffer);
-	//_ui64toa_s(uKey, cBuffer, uBufferSize, 16);		// 使用16进制编码
-	//strCommand.append(" /Fo ");
-	//strCommand.append(m_strOutputPrefix.c_str());
-	//strCommand.append(cBuffer);
-	//strCommand.append(m_strOutputExtension.c_str());
 
 	// 开启调试信息
 	strCommand.append(" /Zi ");
@@ -149,76 +160,113 @@ const std::string& ShaderManager::GetFXCCommandLine(unsigned long long u64Key)
 	strCommand.append(cBuffer);
 
 	// HLSL文件路径
-	strCommand.append(m_strHLSLPath.c_str());
+	sprintf_s(cBuffer, "\"%s\"", m_strHLSLPath.c_str());
+	strCommand.append(cBuffer);
 
 	return strCommand;
 }
 
 bool ShaderManager::CompileShader(const Material* pMaterial, const Light* pLight)
 {
-	unsigned long long u64Key = GetShaderProgramKey(pMaterial, pLight);
-	
-	return CompileShader(u64Key);
+	return CompileShader(GetShaderKey(pMaterial, pLight));
 }
 
 bool ShaderManager::CompileShader(unsigned long long u64Key)
 {
 	string strCommandLine = GetFXCCommandLine(u64Key);
 
-	// 创建着色器编译器FXC的子进程
-	STARTUPINFO			infoStartup;
-	PROCESS_INFORMATION infoProcess;
-	ZeroMemory(&infoStartup, sizeof(infoStartup));
+	// ====================== 创建有名管道（NamedPipe），用于获取编译Log ======================
+	SECURITY_ATTRIBUTES   securityAttributes;
+	securityAttributes.nLength = sizeof(SECURITY_ATTRIBUTES);
+	securityAttributes.bInheritHandle = TRUE;
+	securityAttributes.lpSecurityDescriptor = nullptr;
+
+	// 用于设置进程初始化参数的数据结构，其中包括绑定管道的参数
+	STARTUPINFO infoStartup;
+	ZeroMemory(&infoStartup, sizeof(STARTUPINFO));
 	infoStartup.cb = sizeof(infoStartup);
-	ZeroMemory(&infoStartup, sizeof(infoStartup));
+	GetStartupInfo(&infoStartup);
+	infoStartup.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+	infoStartup.wShowWindow = SW_HIDE;
 
-	BOOL result = !CreateProcess(nullptr,									// 可执行文件路径（包含在了命令行中，此处设为空）
-								 const_cast<char*>(strCommandLine.c_str()),	// 命令行参数
-								 nullptr,									// 不继承当前进程句柄
-								 nullptr,									// 不继承当前线程句柄
-								 FALSE,										// 禁用句柄继承
-								 0,											// 不使用创建标志（Flag）
-								 nullptr,									// 使用父进程的环境块
-								 nullptr,									// 使用父进程的程序路径
-								 &infoStartup,								// 获取STARTUPINFO
-								 &infoProcess);								// 获取PROCESS_INFORMATION
+	HANDLE hReadInfoPipe;
+	HANDLE hReadErrorPipe;
+	BOOL bResult = CreatePipe(&hReadInfoPipe, &infoStartup.hStdOutput, &securityAttributes, 0);
+	if (bResult == FALSE)
+	{
+		ErrorBox("Compile shader failed! Unable to create information pipe.");
+		return false;
+	}
 
-	if (result == FALSE)
+	bResult = CreatePipe(&hReadErrorPipe, &infoStartup.hStdError, &securityAttributes, 0);
+	if (bResult == FALSE)
+	{
+		ErrorBox("Compile shader failed! Unable to create error pipe.");
+		return false;
+	}
+
+	// 创建着色器编译器FXC的子进程
+	PROCESS_INFORMATION infoProcess;
+	ZeroMemory(&infoProcess, sizeof(PROCESS_INFORMATION));
+
+	bResult = CreateProcess(nullptr,									// 可执行文件路径（包含在了命令行中，此处设为空）
+							const_cast<char*>(strCommandLine.c_str()),	// 命令行参数
+							nullptr,									// 不继承当前进程句柄
+							nullptr,									// 不继承当前线程句柄
+							TRUE,										// 是否继承句柄
+							0,											// 不使用创建标志（Flag）
+							nullptr,									// 使用父进程的环境块
+							nullptr,									// 使用父进程的程序路径
+							&infoStartup,								// 获取STARTUPINFO
+							&infoProcess);								// 获取PROCESS_INFORMATION
+
+	CloseHandle(infoStartup.hStdOutput);
+	CloseHandle(infoStartup.hStdError);
+
+	if (bResult == FALSE)
 	{
 		ErrorBox("Compile shader failed! Unable to create compilation process.");
 		return false;
 	}
 
-	// 通过有名管道（NamedPipe）获取编译Log（会阻塞当前线程）
-	HANDLE waitHandles[] = { infoProcess.hProcess, infoStartup.hStdOutput, infoStartup.hStdError };
+	HANDLE waitHandles[] = { infoProcess.hProcess, hReadInfoPipe, hReadErrorPipe };
 
 	const DWORD BUFSIZE = 4096;
 	char buffer[BUFSIZE];
 
-	sprintf_s(buffer, "%s_%ulld_%s.log", m_strCompilationLogPrefix.c_str(), u64Key, GetCurrentDateTime().c_str());
+	sprintf_s(buffer, "%s_%s_%s.log", GetShaderPath(u64Key).c_str(), m_strCompilationLogPrefix.c_str(), GetCurrentDateTime(TF_DigitalWithUnderline).c_str());
 	ofstream streamComplitationInfo(buffer, ios::out);
 
-	while (1)
+	// 编译程序运行期间会阻塞当前线程
+	while (true)
 	{
 		DWORD dwBytesRead, dwBytesAvailable;
 
 		DWORD dwWaitResult = WaitForMultipleObjects(3, waitHandles, FALSE, 60000L);
 
-		streamComplitationInfo << "Compilation Information:" << endl;
-		while (PeekNamedPipe(infoStartup.hStdOutput, nullptr, 0, nullptr, &dwBytesAvailable, nullptr) && dwBytesAvailable)
+		if (PeekNamedPipe(hReadInfoPipe, nullptr, 0, nullptr, &dwBytesAvailable, nullptr) && dwBytesAvailable)
 		{
-			ReadFile(infoStartup.hStdOutput, buffer, BUFSIZE - 1, &dwBytesRead, nullptr);
-			streamComplitationInfo << string(buffer, static_cast<size_t>(dwBytesRead));
-		}
-		streamComplitationInfo << endl;
+			streamComplitationInfo << "[INFO]===========================================================" << endl;
 
-		streamComplitationInfo << "Compilation Error:" << endl;
-		while (PeekNamedPipe(infoStartup.hStdError, nullptr, 0, nullptr, &dwBytesAvailable, nullptr) && dwBytesAvailable)
-		{
-			ReadFile(infoStartup.hStdError, buffer, BUFSIZE - 1, &dwBytesRead, nullptr);
-			streamComplitationInfo << string(buffer, static_cast<size_t>(dwBytesRead));
+			while (ReadFile(hReadInfoPipe, buffer, BUFSIZE - 1, &dwBytesRead, nullptr))
+			{
+				streamComplitationInfo << string(buffer, static_cast<size_t>(dwBytesRead));
+			}
+
+			streamComplitationInfo << "=================================================================" << endl;
 		}
-		streamComplitationInfo << endl;
+
+		if (PeekNamedPipe(hReadErrorPipe, nullptr, 0, nullptr, &dwBytesAvailable, nullptr) && dwBytesAvailable)
+		{
+			streamComplitationInfo << "[ERROR]==========================================================" << endl;
+
+			while (ReadFile(hReadErrorPipe, buffer, BUFSIZE - 1, &dwBytesRead, nullptr))
+			{
+				streamComplitationInfo << string(buffer, static_cast<size_t>(dwBytesRead));
+			}
+
+			streamComplitationInfo << "=================================================================" << endl;
+		}
 
 		// Process is done, or we timed out:
 		if (dwWaitResult == WAIT_OBJECT_0 || dwWaitResult == WAIT_TIMEOUT)
@@ -227,49 +275,28 @@ bool ShaderManager::CompileShader(unsigned long long u64Key)
 		}
 	}
 
+	CloseHandle(hReadInfoPipe);
+	CloseHandle(hReadErrorPipe);
+
 	return true;
 }
 
-ShaderProgram* ShaderManager::LoadShader(unsigned long long u64Key)
+ShaderType* ShaderManager::GetShaderType(unsigned long long u64Key)
 {
-	const unsigned int uBufferSize = 256;
-	char cBuffer[uBufferSize];
-	sprintf_s(cBuffer, "%s%ulld%s", m_strShaderBinaryPrefix.c_str(), u64Key, m_strShaderBinaryExtension.c_str());
+	hash_map<unsigned long long, ShaderType>::iterator it = m_hashShaderTypes.find(u64Key);
 
-	ShaderProgram* pShader = new ShaderProgram(cBuffer);
-	pShader->Load(m_pDevice, m_pEffectPool);
-
-	return pShader;
-}
-
-ShaderProgram* ShaderManager::GetShaderProgram(unsigned long long u64Key)
-{
-	hash_map<unsigned long long, ShaderProgram*>::iterator it = m_hashShaders.find(u64Key);
-
-	// 如果找到了就返回着色器指针
-	if (it != m_hashShaders.end())
+	// 如果找到了就返回指针
+	if (it != m_hashShaderTypes.end())
 	{
-		return it->second;
+		return &it->second;
 	}
 
 	// 如果没有找到就编译一个
 	CompileShader(u64Key);
 
-	// 编译完后加载
-	ShaderProgram* pShader = LoadShader(u64Key);
+	// 将ShaderType加入hash表
+	ShaderType shaderType(u64Key);
+	m_hashShaderTypes.insert(make_pair(u64Key, shaderType));
 
-	// 将加载好的着色器加入哈希表
-	m_hashShaders.insert(make_pair(u64Key, pShader));
-
-	return pShader;
-}
-
-ShaderProgram* ShaderManager::GetFirstShaderProgram()
-{
-	if (m_hashShaders.empty())
-	{
-		return nullptr;
-	}
-
-	return m_hashShaders.begin()->second;
+	return &m_hashShaderTypes.find(u64Key)->second;
 }

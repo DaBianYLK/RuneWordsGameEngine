@@ -2,6 +2,7 @@
 
 #include "AssertUtil.h"
 #include "SceneManager.h"
+#include <LogUtil.h>
 
 Camera::Camera() :
 	m_fFovy							(D3DX_PI * 0.5f),
@@ -60,9 +61,8 @@ void Camera::UpdateCachedViewTransform() const
 	{
 		UpdateCachedWorldTransform();
 	}
-	
-	float result = 0;
-	ASSERT(D3DXMatrixInverse(&m_ViewTransform, &result, &m_WorldTransform));
+
+	ASSERT(D3DXMatrixInverse(&m_ViewTransform, nullptr, &m_WorldTransform));
 
 	m_bCacheViewTransformOutOfDate = false;
 }

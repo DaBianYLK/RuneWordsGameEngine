@@ -1,18 +1,19 @@
 #pragma once
 
-#include "ShaderProgram.h"
+#include "ShaderType.h"
 #include "Material.h"
 #include "Light.h"
 #include "D3D9Device.h"
 #include <string>
 #include <hash_map>
+#include <Singleton.h>
 
 /*
 关于着色器的管理
 1.	为了避免每次重启游戏时都要重新编译着色器，需要使用FXC对着色器执行离线编译，并保存在一个统一的着色器管理器中。
 2.	定义一个规则，将离线编译得到的着色器文件的路径与一个64位无符号整型的Key进行对应。
-3.	将所有可能用到的Key存储到资源文件中，每次游戏启动时加载该资源文件，根据Key计算得到路径，再根据路径获取着色器二进制编码，生成一个<Key，ShaderProgram>hash表。
-4.	当程序需要用到着色器时，管理器根据材质等参数计算出64位的Key，找到对应的ShaderProgram并返回指针。
+3.	将所有可能用到的Key存储到资源文件中，每次游戏启动时加载该资源文件，根据Key计算得到路径，再根据路径获取着色器二进制编码，生成一个<Key，Shader>hash表。
+4.	当程序需要用到着色器时，管理器根据材质等参数计算出64位的Key，并从RenderTarget中找到对应的Shader并返回指针。
 
 64位Key的生成规则：
 位范围		位数	说明
@@ -38,35 +39,30 @@ EnvironmentKey
 
 
 1.	一个着色器管理器必须对应一个D3D9Device，且一旦指定后就不能变更。
-	因为所有的ShaderProgram都是与Device绑定的，更换Device意味着需要重新加载所有的Shader。
+	因为所有的Shader都是与Device绑定的，更换Device意味着需要重新加载所有的Shader。
 2.	由于D3D9Device的关系，ShaderManager与RenderTarget是绑定的，不能够独立存在，所以它只能由RenderTarget创建和释放。
 */
 
-class ShaderManager
+class ShaderManager : public Singleton<ShaderManager>
 {
-	friend class RenderManager;
-	friend class RenderTarget;
-
-private:
-	ShaderManager(D3D9Device* pDevice);
+public:
+	ShaderManager();
 	~ShaderManager();
 
-public:
 	static unsigned long long GetMaterialKey(const Material* pMaterial);
 	static unsigned long long GetEnvironmentKey(const Light* pLight);
-	static unsigned long long GetShaderProgramKey(const Material* pMaterial, const Light* pLight);
-	static unsigned long long GetShaderProgramKey(const unsigned long long u64MaterialKey, const unsigned long long u64EnvironmentKey);
+	static unsigned long long GetShaderKey(const Material* pMaterial, const Light* pLight);
+	static unsigned long long GetShaderKey(const unsigned long long u64MaterialKey, const unsigned long long u64EnvironmentKey);
 
-	static const std::string& GetFXCCommandLine(const Material* pMaterial, const Light* pLight);
-	static const std::string& GetFXCCommandLine(const unsigned long long u64Key);
+	static const std::string GetShaderPath(unsigned long long u64Key);
+
+	static const std::string GetFXCCommandLine(const Material* pMaterial, const Light* pLight);
+	static const std::string GetFXCCommandLine(const unsigned long long u64Key);
 
 	static bool CompileShader(const Material* pMaterial, const Light* pLight);
 	static bool CompileShader(const unsigned long long u64Key);
 
-	ShaderProgram* LoadShader(const unsigned long long u64Key);
-
-	ShaderProgram* GetShaderProgram(const unsigned long long u64Key);
-	ShaderProgram* GetFirstShaderProgram();		// 返回shader哈希表中的第一个shader
+	ShaderType* GetShaderType(unsigned long long u64Key);
 
 private:
 	static std::string m_strFXCPath;
@@ -76,9 +72,6 @@ private:
 	static std::string m_strHLSLPath;
 	static std::string m_strCompilationLogPrefix;
 
-	D3D9Device* m_pDevice;
-	std::hash_map<unsigned long long, ShaderProgram*> m_hashShaders;
-
-	LPD3DXEFFECTPOOL	m_pEffectPool;		// 用于在Shader之间共享常量
+	std::hash_map<unsigned long long, ShaderType> m_hashShaderTypes;
 };
 

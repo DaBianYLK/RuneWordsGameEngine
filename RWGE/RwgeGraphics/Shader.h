@@ -1,13 +1,15 @@
 #pragma once
 
 #include "Texture.h"
-#include <string>
 #include <d3dx9.h>
 
 class D3D9Device;
+class ShaderType;
+class Material;
+class Light;
 
 /*
-ShaderProgram仅能由ShaderManager创建和释放。
+Shader仅能由RenderTarget创建和释放。
 
 2016-03-02 ToDo：
 1.	目前Shader的设计不支持多Pass渲染，先将完整的渲染逻辑写完再考虑拓展。
@@ -16,32 +18,38 @@ ShaderProgram仅能由ShaderManager创建和释放。
 	A.	纹理不使用固定的名字，由程序生成，并绑定到相应的GetXXX()函数中（较简单）
 	B.	technique由程序动态生成，以便拆分渲染过程，支持多pass渲染（实现难度较大）
 
-2016-03-11 ToDo:
-目前的ShaderProgram是绑定于Device的，这样一来增加一个Device，所有的ShaderProgram就会冗余一次。可以借鉴UE4的方法进行优化
-UE4中的做法是：
+目前的Shader是绑定于Device的，这样一来增加一个Device，所有的Shader就会冗余一次，所以需要对Shader进行拆分：
 1.	定义一个ShaderType类，该类与Device无关，它与具体的Material对应，定义了一个shader的实现，相当于对应了一个Shader的二进制文件
 2.	定义一个Shader类，该类绑定于某一个ShaderType，它的对象是一个ShaderType的具体实例，绑定于某一个Device
 3.	维护一个ShaderTypeMap，用于生成与管理ShaderType
-4.	每个ShaderType中维护一个vector<Shader*>，为每个RenderTarget从0到1设置编号，当某一个RenderTarget激活时，从ShaderType中获取相应编号的Shader
+4.	每个RenderTarget中维护一个hash_map<ShaderType*, Shader>，通过ShaderType指针就可以获取相应的Shader
+
+Shader由RenderTarget管理而不由ShaderType管理的原因：
+如果一个RenderTarget被释放掉，相应的Shader也需要被一并释放，如果由ShaderType管理Shader，释放过程效率较低
 */
 
-class ShaderProgram
+class Shader
 {
-	friend class ShaderManager;
+	friend class RenderTarget;
 
-protected:
-	ShaderProgram(const std::string& strPath);
-	~ShaderProgram();
+private:
+	Shader(ShaderType* pShaderType);
+
+public:
+	Shader(Shader&& shader);
+	~Shader();
 
 	bool Load(const D3D9Device* pDevice, LPD3DXEFFECTPOOL pEffectPool);
 
-public:
 	void Begin() const;
 	void End() const;
+	void CommitChanges() const;
 
-	void SetTransform(const void* pTransform);
+	void SetMaterial(Material* pMaterial, RenderTarget* pRenderTarget);
+
+	void SetTransform(const D3DXMATRIX* pWorld, const D3DXMATRIX* pWVP);
 	void SetViewOppositeDirection(const void* pDirection);
-	void SetMaterial(const void* pMaterialConstant, unsigned int uSize);
+	void SetMaterialConstant(const void* pMaterialConstant, unsigned int uSize);
 	void SetBaseColorTexture(const Texture* pTexture);
 	void SetEmissiveColorTexture(const Texture* pTexture);
 	void SetNormalTexture(const Texture* pTexture);
@@ -53,11 +61,12 @@ public:
 	void SetLight(const void* pLight, unsigned int uSize);
 
 private:
-	std::string m_strFilePath;
+	ShaderType*	m_pShaderType;
 
 	LPD3DXEFFECT m_pEffect;
 
-	D3DXHANDLE m_hTransform;
+	D3DXHANDLE m_hWorldTransform;
+	D3DXHANDLE m_hWVPTransform;
 	D3DXHANDLE m_hViewOppositeDirection;
 	D3DXHANDLE m_hMaterial;
 	D3DXHANDLE m_hBaseColorTexture;

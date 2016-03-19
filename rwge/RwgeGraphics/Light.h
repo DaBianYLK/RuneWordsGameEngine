@@ -6,6 +6,7 @@
 
 enum ELightType
 {
+	LT_NoLight,
 	LT_Directional,
 	LT_Point,
 
@@ -22,7 +23,7 @@ public:
 
 	virtual ELightType GetLightType() const = 0;
 	virtual void UpdateConstantBuffer() const = 0;
-	virtual void GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) const = 0;
+	virtual void GetConstantBuffer(void*& pBuffer, unsigned char& uSize) const = 0;
 
 	void SetAmbietnColor(const FColorRGB& color);
 	void SetDiffuseColor(const FColorRGB& color);
@@ -45,7 +46,7 @@ public:
 
 	ELightType GetLightType() const override { return LT_Directional; }
 	void UpdateConstantBuffer() const override;
-	void GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) const override;
+	void GetConstantBuffer(void*& pBuffer, unsigned char& uSize) const override;
 
 	void SetWorldDirection(const D3DXVECTOR3& direction);
 	const D3DXVECTOR3& GetWorldDirection() const;
@@ -65,8 +66,16 @@ public:
 
 	ELightType GetLightType() const override { return LT_Point; }
 	void UpdateConstantBuffer() const override;
-	void GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) const override;
+	void GetConstantBuffer(void*& pBuffer, unsigned char& uSize) const override;
+	void UpdateWorldTransform() const override;
 
 private:
-	mutable unsigned char m_ConstantBuffer[36];
+	struct PointLightConstantBuffer
+	{
+		FColorRGB ambientColor;
+		FColorRGB diffuseColor;
+		D3DXVECTOR3 position;
+	};
+
+	mutable PointLightConstantBuffer m_ConstantBuffer;
 };

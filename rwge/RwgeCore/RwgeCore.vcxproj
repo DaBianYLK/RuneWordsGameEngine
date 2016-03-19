@@ -22,7 +22,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -40,9 +40,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics;$(SolutionDir)RwgeMath;$(SolutionDir)RwgeResources;$(SolutionDir)RwgeUtils;$(IncludePath)</IncludePath>
+    <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)RwgeGraphics;$(SolutionDir)RwgeMath;$(SolutionDir)RwgeResources;$(SolutionDir)RwgeUtils;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics;$(SolutionDir)RwgeMath;$(SolutionDir)RwgeResources;$(SolutionDir)RwgeUtils;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -69,6 +70,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\RwgeGraphics\DisplayWindow.cpp" />
     <ClCompile Include="AppDelegate.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="HighPrecisionClock.cpp" />
@@ -77,6 +79,7 @@
     <ClCompile Include="InputManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\RwgeGraphics\DisplayWindow.h" />
     <ClInclude Include="AppConfig.h" />
     <ClInclude Include="AppDelegate.h" />
     <ClInclude Include="Application.h" />

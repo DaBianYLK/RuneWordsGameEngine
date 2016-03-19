@@ -18,11 +18,16 @@ struct Bone
 
 class Model : public SceneNode
 {
-public:
+	friend class ModelFactory;
+
+private:
 	Model();
+
+public:
 	~Model();
 
-	const std::list<Mesh*>& GetMeshes();
+	void AddMesh(Mesh* pMesh);
+	std::list<Mesh*>& GetMeshes();
 
 private:
 	std::list<Mesh*>					m_listMeshes;

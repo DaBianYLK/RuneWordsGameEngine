@@ -9,11 +9,15 @@
 
 class DisplayWindow
 {
+	friend class Application;
+
 private:
 	DisplayWindow(HINSTANCE hAppInstance, bool bFullScreen = false);
 	DisplayWindow(HINSTANCE hAppInstance, const char* strName, bool bFullScreen = false);
 	DisplayWindow(HINSTANCE hAppInstance, int x, int y, int width, int height);
 	DisplayWindow(HINSTANCE hAppInstance, const char* strName, int x, int y, int width, int height);
+
+public:
 	~DisplayWindow();
 
 private:
@@ -27,6 +31,7 @@ public:
 	void Show(bool bShow = true);
 	void Hide();
 	
+	const std::string& GetName() const;
 	HWND GetHandle() const;
 	void GetSize(int& x, int&y, int& width, int& height) const;
 	int GetX() const;
@@ -39,10 +44,10 @@ private:
 	HWND m_hWnd;
 	std::string m_strName;
 
-	int m_sX;
-	int m_sY;
-	int m_sWidth;
-	int m_sHeight;
+	int m_nX;
+	int m_nY;
+	int m_nWidth;
+	int m_nHeight;
 	bool m_bFullScreen;
 	bool m_bShow;
 };

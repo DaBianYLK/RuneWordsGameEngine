@@ -50,14 +50,14 @@ void DirectionalLight::UpdateConstantBuffer() const
 	if (m_bConstantBufferOutOfDate)
 	{
 		memcpy(m_ConstantBuffer, &m_AmbientColor, sizeof(m_AmbientColor));
-		memcpy(m_ConstantBuffer, &m_DiffuseColor, sizeof(m_DiffuseColor));
-		memcpy(m_ConstantBuffer, &m_WorldDirection, sizeof(m_WorldDirection));
+		memcpy(m_ConstantBuffer + sizeof(m_AmbientColor), &m_DiffuseColor, sizeof(m_DiffuseColor));
+		memcpy(m_ConstantBuffer + sizeof(m_AmbientColor)+sizeof(m_DiffuseColor), &m_WorldDirection, sizeof(m_WorldDirection));
 
 		m_bConstantBufferOutOfDate = false;
 	}
 }
 
-void DirectionalLight::GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) const
+void DirectionalLight::GetConstantBuffer(void*& pBuffer, unsigned char& uSize) const
 {
 	UpdateConstantBuffer();
 
@@ -87,27 +87,32 @@ PointLight::~PointLight()
 
 void PointLight::UpdateConstantBuffer() const
 {
-	if (m_bWorldTransformChanged)
-	{
-		UpdateWorldTransform();
-
-		m_bConstantBufferOutOfDate = true;
-	}
+	UpdateWorldTransform();
 
 	if (m_bConstantBufferOutOfDate)
 	{
-		memcpy(m_ConstantBuffer, &m_AmbientColor, sizeof(m_AmbientColor));
-		memcpy(m_ConstantBuffer, &m_DiffuseColor, sizeof(m_DiffuseColor));
-		memcpy(m_ConstantBuffer, &m_WorldPosition, sizeof(m_WorldPosition));
+		m_ConstantBuffer.ambientColor = m_AmbientColor;
+		m_ConstantBuffer.diffuseColor = m_DiffuseColor;
+		m_ConstantBuffer.position = m_WorldPosition;
 
 		m_bConstantBufferOutOfDate = false;
 	}
 }
 
-void PointLight::GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) const
+void PointLight::GetConstantBuffer(void*& pBuffer, unsigned char& uSize) const
 {
 	UpdateConstantBuffer();
 
-	pBuffer = m_ConstantBuffer;
+	pBuffer = &m_ConstantBuffer;
 	uSize = 36;
+}
+
+void PointLight::UpdateWorldTransform() const
+{
+	if (m_bWorldTransformChanged)
+	{
+		SceneNode::UpdateWorldTransform();
+
+		m_bConstantBufferOutOfDate = true;
+	}
 }
