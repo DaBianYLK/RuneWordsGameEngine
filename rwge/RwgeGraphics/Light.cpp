@@ -87,13 +87,11 @@ PointLight::~PointLight()
 
 void PointLight::UpdateConstantBuffer() const
 {
-	UpdateWorldTransform();
-
 	if (m_bConstantBufferOutOfDate)
 	{
 		m_ConstantBuffer.ambientColor = m_AmbientColor;
 		m_ConstantBuffer.diffuseColor = m_DiffuseColor;
-		m_ConstantBuffer.position = m_WorldPosition;
+		m_ConstantBuffer.position = GetWorldPosition();
 
 		m_bConstantBufferOutOfDate = false;
 	}
@@ -109,10 +107,7 @@ void PointLight::GetConstantBuffer(void*& pBuffer, unsigned char& uSize) const
 
 void PointLight::UpdateWorldTransform() const
 {
-	if (m_bWorldTransformChanged)
-	{
-		SceneNode::UpdateWorldTransform();
+	SceneNode::UpdateWorldTransform();
 
-		m_bConstantBufferOutOfDate = true;
-	}
+	m_bConstantBufferOutOfDate = true;
 }

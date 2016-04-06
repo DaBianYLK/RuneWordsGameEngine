@@ -3,8 +3,8 @@
 #include "AssertUtil.h"
 
 const char* DefaultName = "Rune Words Game Engine";
-const int DefaultWidth = 800;
-const int DefaultHeight = 600;
+const int DefaultWidth = 1440;
+const int DefaultHeight = 900;
 
 DisplayWindow::DisplayWindow(HINSTANCE hAppInstance, bool bFullScreen)
 {

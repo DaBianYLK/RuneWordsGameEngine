@@ -6,7 +6,11 @@ class ModelFactory
 {
 public:
 	static Model* CreateTriangle();
+	static Model* CreatePanel();
 	static Model* CreateBox();
 
-	static Model* LoadModel(std::string strPath);
+	static Mesh*  LoadMesh(const std::string& strPath);
+	static Model* CreateZhanHun();
+
+	static Model* LoadModel(const std::string& strPath);
 };

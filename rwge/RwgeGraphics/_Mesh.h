@@ -87,7 +87,7 @@
 //	~Mesh();
 //
 //	static Mesh* CreatePanel(const D3DXVECTOR3& position, float length, float width);				// length is parallel with X-axis, width is parallel with Z-axis.
-//	static Mesh* CreateBox(const D3DXVECTOR3& position, float length, float width, float height);	// length is parallel with X-axis, width is parallel with Z-axis, height is parallel with Y-axis.
+//	static Mesh* CreateWoodenBox(const D3DXVECTOR3& position, float length, float width, float height);	// length is parallel with X-axis, width is parallel with Z-axis, height is parallel with Y-axis.
 //
 //	static void SetDevice(IDirect3DDevice9* pDevice);
 //	static void SetVertexShader(RwgeVertexShader* pVertexShader);

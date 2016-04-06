@@ -46,6 +46,7 @@ public:
 	~Camera();
 
 	void SetPerspective(float fFovy, float fAspect, float fLookNear, float fLookFar);
+	void SetOrthogonal(float fW, float fH, float fLookNear, float fLookFar);
 
 	const D3DXMATRIX* GetViewTransform() const;
 	const D3DXMATRIX* GetProjectionTransform() const;

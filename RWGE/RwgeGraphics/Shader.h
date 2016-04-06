@@ -28,6 +28,13 @@ Shader由RenderTarget管理而不由ShaderType管理的原因：
 如果一个RenderTarget被释放掉，相应的Shader也需要被一并释放，如果由ShaderType管理Shader，释放过程效率较低
 */
 
+struct SHCoefficients
+{
+	D3DXVECTOR4 R;
+	D3DXVECTOR4 G;
+	D3DXVECTOR4 B;
+};
+
 class Shader
 {
 	friend class RenderTarget;
@@ -59,6 +66,7 @@ public:
 	void SetOpacityTexture(const Texture* pTexture);
 	void SetOpacityMaskTexture(const Texture* pTexture);
 	void SetLight(const void* pLight, unsigned int uSize);
+	void SetSHCoefficients(const SHCoefficients* pCoefficients);
 
 private:
 	ShaderType*	m_pShaderType;
@@ -79,4 +87,5 @@ private:
 	D3DXHANDLE m_hOpacityMaskTexture;
 	D3DXHANDLE m_hDirectionalLight;
 	D3DXHANDLE m_hPointLight;
+	D3DXHANDLE m_hSHCoefficients;
 };

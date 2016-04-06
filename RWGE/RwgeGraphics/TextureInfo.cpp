@@ -1,6 +1,6 @@
 #include "TextureInfo.h"
 
-#include "RenderTarget.h";
+#include "RenderTarget.h"
 
 TextureInfo::TextureInfo(const std::string strPath) :
 	m_strFilePath(strPath)

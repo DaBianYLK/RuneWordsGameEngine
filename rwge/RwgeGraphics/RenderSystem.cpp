@@ -62,6 +62,13 @@ void RenderSystem::RenderScene(SceneManager* pSceneManager)
 	//	bLighted = true;
 	}
 
+	// 设置球谐函数系数（暂时先全部设为1）
+	SHCoefficients coefficients;
+	coefficients.R = D3DXVECTOR4(1, 1, 1, 1);
+	coefficients.G = D3DXVECTOR4(1, 1, 1, 1);
+	coefficients.B = D3DXVECTOR4(1, 1, 1, 1);
+	pShader->SetSHCoefficients(&coefficients);
+
 	D3DXVECTOR3 viewOppoisteDirection = -(pSceneManager->GetActiveCamera()->GetDirection());
 	pShader->SetViewOppositeDirection(&viewOppoisteDirection);
 

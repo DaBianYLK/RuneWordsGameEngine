@@ -87,7 +87,7 @@ public:
 	void NotifyParentToUpdate();
 	void NotifyChildrenToUpdate();
 
-	void UpdateSelfAndAllChildren() const;		// 更新当前节点以及所有需要更新的子节点
+	void UpdateSelfAndAllChildren(bool bForceUpdate = false) const;		// 更新当前节点以及所有需要更新的子节点
 
 	static D3DXMATRIX* SetTransform(
 		D3DXMATRIX& pOut, 
@@ -96,6 +96,13 @@ public:
 		const D3DXVECTOR3& scale);
 
 	SceneManager* GetAttachedSceneManager() const;
+
+	void SetInheritTranslation(bool bInherit);
+	void SetInheritRotation(bool bInherit);
+	void SetInheritScale(bool bInherit);
+	bool GetInheritTranslation() const;
+	bool GetInheritRotation() const;
+	bool GetInheritScale() const;
 
 protected:
 			SceneManager*			m_pSceneManager;

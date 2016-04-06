@@ -81,7 +81,7 @@ void SceneNode::AttachChild(SceneNode* pNode)
 		pNode->m_pSceneManager = this->m_pSceneManager;
 
 		// 因为pNode的父节点发生了改变，所以需要更新pNode的世界变换
-		pNode->m_bWorldTransformChanged = true;
+		pNode->NeedUpdate();
 
 		// 将节点子树中包含的模型加入场景管理器
 		pNode->m_pSceneManager->AddModelBySceneNode(pNode);
@@ -464,6 +464,7 @@ void SceneNode::UpdateWorldTransform() const
 	// 重置更新世界变换的标志
 	m_bWorldTransformChanged = false;
 	m_bParentHasNotified = false;
+	m_bCachedWorldTransformOutOfDate = true;
 }
 
 void SceneNode::UpdateCachedTransform() const
@@ -525,32 +526,35 @@ void SceneNode::NotifyChildrenToUpdate()
 {
 	// 如果需要更新所有的子节点，说明已经执行过通知了
 
-	// 不需要更新所有的子节点时才执行通知
-	if (!m_bNeedAllChildrenUpdate)
-	{
-		for (auto pChild : m_listChildren)
-		{
-			// 如果子节点需要更新世界变换，说明该子节点已经广播过通知，则不需要重复广播
+	//// 不需要更新所有的子节点时才执行通知
+	//if (!m_bNeedAllChildrenUpdate)
+	//{
+	//	for (auto pChild : m_listChildren)
+	//	{
+	//		// 如果子节点需要更新世界变换，说明该子节点已经广播过通知，则不需要重复广播
 
-			// 如果子节点不知道世界变换发生了改变，才执行通知
-			if (!pChild->m_bWorldTransformChanged)
-			{
-				pChild->m_bWorldTransformChanged = true;
+	//		// 如果子节点不知道世界变换发生了改变，才执行通知
+	//		if (!pChild->m_bWorldTransformChanged)
+	//		{
+	//			pChild->m_bWorldTransformChanged = true;
 
-				// 向子树广播通知
-				pChild->NotifyChildrenToUpdate();
-			}
-		}
+	//			// 向子树广播通知
+	//			pChild->NotifyChildrenToUpdate();
+	//		}
+	//	}
 
-		m_bNeedAllChildrenUpdate = true;
-		m_listChildrenToUpdate.clear();		// 所有的子节点都需要更新时，清空待更新子节点列表
-	}
+	//	m_bNeedAllChildrenUpdate = true;
+	//	m_listChildrenToUpdate.clear();		// 所有的子节点都需要更新时，清空待更新子节点列表
+	//}
+
+	m_bNeedAllChildrenUpdate = true;
+	m_listChildrenToUpdate.clear();		// 所有的子节点都需要更新时，清空待更新子节点列表
 }
 
-void SceneNode::UpdateSelfAndAllChildren() const
+void SceneNode::UpdateSelfAndAllChildren(bool bForceUpdate /* = false */) const
 {
 	// 更新当前节点
-	if (m_bWorldTransformChanged)
+	if (m_bWorldTransformChanged || bForceUpdate)
 	{
 		UpdateWorldTransform();
 
@@ -563,7 +567,7 @@ void SceneNode::UpdateSelfAndAllChildren() const
 	{
 		for (auto pChild : m_listChildren)
 		{
-			pChild->UpdateSelfAndAllChildren();
+			pChild->UpdateSelfAndAllChildren(true);
 		}
 
 		m_bNeedAllChildrenUpdate = false;
@@ -572,10 +576,7 @@ void SceneNode::UpdateSelfAndAllChildren() const
 	{
 		for (auto pChild : m_listChildrenToUpdate)
 		{
-			if (pChild->m_bWorldTransformChanged)
-			{
-				pChild->UpdateSelfAndAllChildren();
-			}
+			pChild->UpdateSelfAndAllChildren(true);
 		}
 
 		m_listChildrenToUpdate.clear();
@@ -610,4 +611,34 @@ D3DXMATRIX* SceneNode::SetTransform(D3DXMATRIX& pOut, const D3DXVECTOR3& transla
 SceneManager* SceneNode::GetAttachedSceneManager() const
 {
 	return m_pSceneManager;
+}
+
+void SceneNode::SetInheritTranslation(bool bInherit)
+{
+	m_bInheritTranslation = bInherit;
+}
+
+void SceneNode::SetInheritRotation(bool bInherit)
+{
+	m_bInheritRotation = bInherit;
+}
+
+void SceneNode::SetInheritScale(bool bInherit)
+{
+	m_bInheritScale = bInherit;
+}
+
+bool SceneNode::GetInheritTranslation() const
+{
+	return m_bInheritTranslation;
+}
+
+bool SceneNode::GetInheritRotation() const
+{
+	return m_bInheritRotation;
+}
+
+bool SceneNode::GetInheritScale() const
+{
+	return m_bInheritScale;
 }

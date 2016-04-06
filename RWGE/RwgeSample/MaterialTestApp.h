@@ -45,6 +45,13 @@ private:
 	Model*				m_pModel;
 	PointLight*			m_pLight;
 
+	Material*			m_pWoodenMaterial;
+	Material*			m_pMetalMaterial;
+	Material*			m_pWoodenWithoutNormalMap;
+	Material*			m_pMetalWithoutNormalMap;
+	Material*			m_pBodyMaterial;
+	Material*			m_pBodyMaterialWithoutNormalMap;
+
 	SceneNode*			m_pCameraAxis;
 	SceneNode*			m_pLightAxis;
 

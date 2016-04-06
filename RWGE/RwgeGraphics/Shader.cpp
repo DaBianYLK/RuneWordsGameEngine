@@ -101,7 +101,7 @@ bool Shader::Load(const D3D9Device* pDevice, LPD3DXEFFECTPOOL pEffectPool)
 	m_hOpacityMaskTexture	= m_pEffect->GetParameterByName(nullptr, "g_OpacityMaskTexture");
 	m_hDirectionalLight		= m_pEffect->GetParameterByName(nullptr, "g_DirectionalLight");
 	m_hPointLight			= m_pEffect->GetParameterByName(nullptr, "g_PointLight");
-
+	m_hSHCoefficients		= m_pEffect->GetParameterByName(nullptr, "g_OneBandSHCoefficients");
 	return true;
 }
 
@@ -238,4 +238,9 @@ void Shader::SetOpacityMaskTexture(const Texture* pTexture)
 void Shader::SetLight(const void* pLight, unsigned int uSize)
 {
 	m_pEffect->SetValue(m_hPointLight, pLight, uSize);
+}
+
+void Shader::SetSHCoefficients(const SHCoefficients* pCoefficients)
+{
+	m_pEffect->SetRawValue(m_hSHCoefficients, pCoefficients, 0, sizeof(float)* 12);
 }

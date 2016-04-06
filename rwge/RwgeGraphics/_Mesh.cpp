@@ -152,7 +152,7 @@
 //	return pPanel;
 //}
 //
-//Mesh* Mesh::CreateBox(const D3DXVECTOR3& position, float length, float width, float height)
+//Mesh* Mesh::CreateWoodenBox(const D3DXVECTOR3& position, float length, float width, float height)
 //{
 //	Mesh* pBox = new Mesh();
 //

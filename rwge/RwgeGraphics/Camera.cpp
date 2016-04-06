@@ -32,6 +32,11 @@ void Camera::SetPerspective(float fFovy, float fAspect, float fLookNear, float f
 	D3DXMatrixPerspectiveFovLH(&m_ProjectionTransform, fFovy, fAspect, fLookNear, fLookFar);
 }
 
+void Camera::SetOrthogonal(float fW, float fH, float fLookNear, float fLookFar)
+{
+	D3DXMatrixOrthoLH(&m_ProjectionTransform, fW, fH, fLookNear, fLookFar);
+}
+
 const D3DXMATRIX* Camera::GetViewTransform() const
 {
 	if (m_bCachedWorldTransformOutOfDate || m_bCacheViewTransformOutOfDate)

@@ -7,6 +7,9 @@
 #include "VertexStream.h"
 #include "IndexStream.h"
 #include "VertexDeclarationType.h"
+#include <fstream>
+
+using namespace std;
 
 struct VertexData
 {
@@ -58,6 +61,48 @@ Model* ModelFactory::CreateTriangle()
 	pIndexData[0] = 0;
 	pIndexData[1] = 1;
 	pIndexData[2] = 2;
+	IndexStream* pIndexStream = new IndexStream(uIndexCount, pIndexData);
+
+	pPrimitive->AddVertexStream(pVertexStream);
+	pPrimitive->SetIndexStream(pIndexStream);
+
+	pMesh->AddRenderPrimitive(pPrimitive);
+
+	return pModel;
+}
+
+Model* ModelFactory::CreatePanel()
+{
+	Model* pModel = new Model();
+
+	Mesh* pMesh = new Mesh();
+	pModel->AddMesh(pMesh);
+
+	pMesh->SetMaterial(MaterialFactory::CreateBackgroundMaterial());
+
+	RenderPrimitive* pPrimitive = new RenderPrimitive();
+
+	pPrimitive->SetVertexDeclaration(VertexDeclarationManager::GetInstance().GetDefaultVertexDeclaration());
+	pPrimitive->SetPrimitiveType(D3DPT_TRIANGLELIST);
+	pPrimitive->SetPrimitiveCount(2);
+
+	const unsigned int uVertexSize = pPrimitive->GetVertexDeclarationType()->GetStreamVertexSize(0);
+	const unsigned int uVertexCount = 4;
+	VertexData* pVertexData = new VertexData[uVertexSize * uVertexCount];
+	pVertexData[0] = VertexData(D3DXVECTOR3( 720, 0,  450), D3DXVECTOR2(1, 0), D3DXVECTOR3(0, 1, 0), D3DXVECTOR3(1, 0, 0));
+	pVertexData[1] = VertexData(D3DXVECTOR3(-720, 0,  450), D3DXVECTOR2(0, 0), D3DXVECTOR3(0, 1, 0), D3DXVECTOR3(1, 0, 0));
+	pVertexData[2] = VertexData(D3DXVECTOR3(-720, 0, -450), D3DXVECTOR2(0, 1), D3DXVECTOR3(0, 1, 0), D3DXVECTOR3(1, 0, 0));
+	pVertexData[3] = VertexData(D3DXVECTOR3( 720, 0, -450), D3DXVECTOR2(1, 1), D3DXVECTOR3(0, 1, 0), D3DXVECTOR3(1, 0, 0));
+	VertexStream* pVertexStream = new VertexStream(uVertexSize, uVertexCount, pVertexData);
+
+	const unsigned int uIndexCount = 6;
+	unsigned short* pIndexData = new unsigned short[uIndexCount];
+	pIndexData[0] = 1;
+	pIndexData[1] = 0;
+	pIndexData[2] = 3;
+	pIndexData[3] = 3;
+	pIndexData[4] = 2;
+	pIndexData[5] = 1;
 	IndexStream* pIndexStream = new IndexStream(uIndexCount, pIndexData);
 
 	pPrimitive->AddVertexStream(pVertexStream);
@@ -155,7 +200,69 @@ Model* ModelFactory::CreateBox()
 	return pModel;
 }
 
-Model* ModelFactory::LoadModel(std::string strPath)
+Mesh* ModelFactory::LoadMesh(const string& strPath)
+{
+	Mesh* pMesh = new Mesh();
+
+	ifstream meshFile(strPath, ios::in | ios::binary);
+
+	unsigned int uVertexCount = 0;
+	unsigned int uFaceCount = 0;
+	meshFile.read(reinterpret_cast<char*>(&uVertexCount), sizeof(uVertexCount));
+	meshFile.read(reinterpret_cast<char*>(&uFaceCount), sizeof(uFaceCount));
+
+	RenderPrimitive* pPrimitive = new RenderPrimitive();
+
+	pPrimitive->SetVertexDeclaration(VertexDeclarationManager::GetInstance().GetDefaultVertexDeclaration());
+	pPrimitive->SetPrimitiveType(D3DPT_TRIANGLELIST);
+	pPrimitive->SetPrimitiveCount(uFaceCount);
+
+	const unsigned int uVertexSize = pPrimitive->GetVertexDeclarationType()->GetStreamVertexSize(0);
+	unsigned int uVertexDataSize = uVertexSize * uVertexCount;
+	VertexData* pVertexData = new VertexData[uVertexDataSize];
+
+	meshFile.read(reinterpret_cast<char*>(pVertexData), uVertexDataSize);
+
+	VertexStream* pVertexStream = new VertexStream(uVertexSize, uVertexCount, pVertexData);
+
+	const unsigned int uIndexCount = uFaceCount * 3;
+	unsigned short* pIndexData = new unsigned short[uIndexCount];
+	meshFile.read(reinterpret_cast<char*>(pIndexData), uIndexCount * sizeof(unsigned short));
+
+	IndexStream* pIndexStream = new IndexStream(uIndexCount, pIndexData);
+
+	pPrimitive->AddVertexStream(pVertexStream);
+	pPrimitive->SetIndexStream(pIndexStream);
+
+	pMesh->AddRenderPrimitive(pPrimitive);
+
+	meshFile.close();
+
+	return pMesh;
+}
+
+Model* ModelFactory::CreateZhanHun()
+{
+	Model* pModel = new Model();
+
+	pModel->AddMesh(LoadMesh("meshes/对象05.mesh"));
+	pModel->AddMesh(LoadMesh("meshes/对象01.mesh"));
+	pModel->AddMesh(LoadMesh("meshes/2d4dbb8_obj.mesh"));
+	pModel->AddMesh(LoadMesh("meshes/man_hand02.mesh"));
+	pModel->AddMesh(LoadMesh("meshes/man_head04.mesh"));
+
+	list<Mesh*>& plistMeshes = pModel->GetMeshes();
+	auto itMeshPtr = plistMeshes.begin();
+	(*itMeshPtr++)->SetMaterial(MaterialFactory::CreateZhanHunBodyMaterial());
+	(*itMeshPtr++)->SetMaterial(MaterialFactory::CreateZhanHunShoulderMaterial());
+	(*itMeshPtr++)->SetMaterial(MaterialFactory::CreateZhanHunHairMaterial());
+	(*itMeshPtr++)->SetMaterial(MaterialFactory::CreateZhanHunHandMaterial());
+	(*itMeshPtr++)->SetMaterial(MaterialFactory::CreateZhanHunHeadMaterial());
+
+	return pModel;
+}
+
+Model* ModelFactory::LoadModel(const string& strPath)
 {
 	Model* pModel = new Model();
 
