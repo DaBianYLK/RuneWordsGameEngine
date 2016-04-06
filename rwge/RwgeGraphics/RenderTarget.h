@@ -37,6 +37,10 @@ RenderTarget与RenderSystem的关系说明：
 4.	ShaderManager
 5.	Shader
 6.	Texture
+
+2016-04-06 ToDo:
+	D3D中也有RenderTarget的概念：可以用于接收渲染结果并保存渲染图像的缓冲对象，它可以是BackBuffer、Texture等等。
+	而这与我定义的RenderTarget是有冲突的，根据上面的定义，RenderTarget不能够继承D3D9Device。因此相关的内容需要进行重构。
 */
 
 class RenderTarget : public D3D9Device
