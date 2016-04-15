@@ -1,4 +1,4 @@
-#include <Application.h>
+#include <RwgeApplication.h>
 
 #include "MaterialTestApp.h"
 
@@ -6,7 +6,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 {
 	MaterialTestApp myApp;
 
-	Application application;
+	RApplication application;
 	application.SetDelegate(&myApp);
 	application.Run();
 

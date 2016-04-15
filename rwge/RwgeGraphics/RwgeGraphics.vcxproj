@@ -39,12 +39,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeCore;$(SolutionDir)RwgeUtils;$(SolutionDir)RwgeResources;$(SolutionDir)RwgeMath;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeUtils\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeCore;$(SolutionDir)RwgeUtils;$(SolutionDir)RwgeResources;$(SolutionDir)RwgeMath;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeUtils\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -72,86 +72,75 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Color.cpp" />
-    <ClCompile Include="D3D9Device.cpp" />
-    <ClCompile Include="IndexBuffer.cpp" />
-    <ClCompile Include="Light.cpp" />
-    <ClCompile Include="MaterialExpression.cpp" />
-    <ClCompile Include="Material.cpp" />
-    <ClCompile Include="MaterialFactory.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="ModelFactory.cpp" />
-    <ClCompile Include="ShaderType.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
-    <ClCompile Include="TextureInfo.cpp" />
-    <ClCompile Include="VertexDeclarationManager.cpp" />
-    <ClCompile Include="VertexDeclaration.cpp" />
-    <ClCompile Include="_Mesh.cpp" />
-    <ClCompile Include="PixelShader.cpp" />
-    <ClCompile Include="RenderPrimitive.cpp" />
-    <ClCompile Include="RenderQueue.cpp" />
-    <ClCompile Include="RenderSystem.cpp" />
-    <ClCompile Include="RenderTarget.cpp" />
-    <ClCompile Include="RwgePixelShader.cpp" />
-    <ClCompile Include="RwgeVertexShader.cpp" />
-    <ClCompile Include="SceneManager.cpp" />
-    <ClCompile Include="SceneNode.cpp" />
-    <ClCompile Include="ShaderManager.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="_Sprite.cpp" />
-    <ClCompile Include="MExpTextrue2DSample.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="VertexDeclarationType.cpp" />
-    <ClCompile Include="VertexShader.cpp" />
-    <ClCompile Include="VertexBuffer.cpp" />
-    <ClCompile Include="Viewport.cpp" />
+    <ClCompile Include="Source\RwgeAnimation.cpp" />
+    <ClCompile Include="Source\RwgeCamera.cpp" />
+    <ClCompile Include="Source\RwgeColor.cpp" />
+    <ClCompile Include="Source\RwgeD3D9Device.cpp" />
+    <ClCompile Include="Source\RwgeIndexBuffer.cpp" />
+    <ClCompile Include="Source\RwgeLight.cpp" />
+    <ClCompile Include="Source\RwgeMaterial.cpp" />
+    <ClCompile Include="Source\RwgeMaterialExpression.cpp" />
+    <ClCompile Include="Source\RwgeMaterialFactory.cpp" />
+    <ClCompile Include="Source\RwgeMesh.cpp" />
+    <ClCompile Include="Source\RwgeMExpTexture2dSample.cpp" />
+    <ClCompile Include="Source\RwgeModel.cpp" />
+    <ClCompile Include="Source\RwgeModelFactory.cpp" />
+    <ClCompile Include="Source\RwgeRenderPrimitive.cpp" />
+    <ClCompile Include="Source\RwgeRenderQueue.cpp" />
+    <ClCompile Include="Source\RwgeRenderSystem.cpp" />
+    <ClCompile Include="Source\RwgeRenderTarget.cpp" />
+    <ClCompile Include="Source\RwgeSceneManager.cpp" />
+    <ClCompile Include="Source\RwgeSceneNode.cpp" />
+    <ClCompile Include="Source\RwgeShader.cpp" />
+    <ClCompile Include="Source\RwgeShaderManager.cpp" />
+    <ClCompile Include="Source\RwgeShaderType.cpp" />
+    <ClCompile Include="Source\RwgeTexture.cpp" />
+    <ClCompile Include="Source\RwgeTextureInfo.cpp" />
+    <ClCompile Include="Source\RwgeTextureManager.cpp" />
+    <ClCompile Include="Source\RwgeVertexBuffer.cpp" />
+    <ClCompile Include="Source\RwgeVertexDeclaration.cpp" />
+    <ClCompile Include="Source\RwgeVertexDeclarationManager.cpp" />
+    <ClCompile Include="Source\RwgeVertexDeclarationType.cpp" />
+    <ClCompile Include="Source\RwgeViewport.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Animation.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Color.h" />
-    <ClInclude Include="D3D9Device.h" />
-    <ClInclude Include="D3DX9Extension.h" />
-    <ClInclude Include="GraphicsDefinitions.h" />
-    <ClInclude Include="IndexStream.h" />
-    <ClInclude Include="IndexBuffer.h" />
-    <ClInclude Include="Light.h" />
-    <ClInclude Include="MaterialExpression.h" />
-    <ClInclude Include="MaterialFactory.h" />
-    <ClInclude Include="MaterialInput.h" />
-    <ClInclude Include="Material.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="ModelFactory.h" />
-    <ClInclude Include="RenderState.h" />
-    <ClInclude Include="ShaderType.h" />
-    <ClInclude Include="TextureManager.h" />
-    <ClInclude Include="TextureInfo.h" />
-    <ClInclude Include="VertexDeclarationManager.h" />
-    <ClInclude Include="VertexDeclaration.h" />
-    <ClInclude Include="_Mesh.h" />
-    <ClInclude Include="PixelShader.h" />
-    <ClInclude Include="RenderPrimitive.h" />
-    <ClInclude Include="RenderQueue.h" />
-    <ClInclude Include="RenderSystem.h" />
-    <ClInclude Include="RenderTarget.h" />
-    <ClInclude Include="RwgePixelShader.h" />
-    <ClInclude Include="RwgeVertexShader.h" />
-    <ClInclude Include="SceneManager.h" />
-    <ClInclude Include="SceneNode.h" />
-    <ClInclude Include="ShaderManager.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="_Sprite.h" />
-    <ClInclude Include="MExpTexture2DSample.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="VertexDeclarationType.h" />
-    <ClInclude Include="VertexShader.h" />
-    <ClInclude Include="VertexStream.h" />
-    <ClInclude Include="VertexBuffer.h" />
-    <ClInclude Include="Viewport.h" />
+    <ClInclude Include="Include\RwgeAnimation.h" />
+    <ClInclude Include="Include\RwgeCamera.h" />
+    <ClInclude Include="Include\RwgeColor.h" />
+    <ClInclude Include="Include\RwgeD3D9Device.h" />
+    <ClInclude Include="Include\RwgeD3DX9Extension.h" />
+    <ClInclude Include="Include\RwgeGraphics.h" />
+    <ClInclude Include="Include\RwgeIndexBuffer.h" />
+    <ClInclude Include="Include\RwgeIndexStream.h" />
+    <ClInclude Include="Include\RwgeLight.h" />
+    <ClInclude Include="Include\RwgeMaterial.h" />
+    <ClInclude Include="Include\RwgeMaterialExpression.h" />
+    <ClInclude Include="Include\RwgeMaterialFactory.h" />
+    <ClInclude Include="Include\RwgeMaterialInput.h" />
+    <ClInclude Include="Include\RwgeMesh.h" />
+    <ClInclude Include="Include\RwgeMExpTexture2dSample.h" />
+    <ClInclude Include="Include\RwgeModel.h" />
+    <ClInclude Include="Include\RwgeModelFactory.h" />
+    <ClInclude Include="Include\RwgeRenderPrimitive.h" />
+    <ClInclude Include="Include\RwgeRenderQueue.h" />
+    <ClInclude Include="Include\RwgeRenderState.h" />
+    <ClInclude Include="Include\RwgeRenderSystem.h" />
+    <ClInclude Include="Include\RwgeRenderTarget.h" />
+    <ClInclude Include="Include\RwgeSceneManager.h" />
+    <ClInclude Include="Include\RwgeSceneNode.h" />
+    <ClInclude Include="Include\RwgeShader.h" />
+    <ClInclude Include="Include\RwgeShaderConstantBuffer.h" />
+    <ClInclude Include="Include\RwgeShaderManager.h" />
+    <ClInclude Include="Include\RwgeShaderType.h" />
+    <ClInclude Include="Include\RwgeTexture.h" />
+    <ClInclude Include="Include\RwgeTextureInfo.h" />
+    <ClInclude Include="Include\RwgeTextureManager.h" />
+    <ClInclude Include="Include\RwgeVertexBuffer.h" />
+    <ClInclude Include="Include\RwgeVertexDeclaration.h" />
+    <ClInclude Include="Include\RwgeVertexDeclarationManager.h" />
+    <ClInclude Include="Include\RwgeVertexDeclarationType.h" />
+    <ClInclude Include="Include\RwgeVertexStream.h" />
+    <ClInclude Include="Include\RwgeViewport.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\shaders\src\BRDF.hlsli" />

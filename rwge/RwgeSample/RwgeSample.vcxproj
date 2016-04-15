@@ -39,14 +39,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeCore;$(SolutionDir)RwgeUtils;$(SolutionDir)RwgeGraphics;$(SolutionDir)RwgeResources;$(SolutionDir)RwgeMath;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeUtils\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryPath>$(SolutionDir)Debug;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Bin\</OutDir>
     <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeCore;$(SolutionDir)RwgeUtils;$(SolutionDir)RwgeGraphics;$(SolutionDir)RwgeResources;$(SolutionDir)RwgeMath;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeUtils\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)Release;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Bin\</OutDir>
   </PropertyGroup>
@@ -85,15 +85,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MaterialTestApp.cpp" />
-    <ClCompile Include="MyApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Controller.h" />
     <ClInclude Include="MaterialTestApp.h" />
-    <ClInclude Include="MyApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

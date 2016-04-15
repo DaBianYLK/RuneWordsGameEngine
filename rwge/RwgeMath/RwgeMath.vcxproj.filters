@@ -11,19 +11,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Quaternion.cpp">
+    <ClInclude Include="Include\RwgeQuaternion.h">
       <Filter>源文件</Filter>
-    </ClCompile>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeMath.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeAngle.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Quaternion.h">
+    <ClCompile Include="Source\RwgeQuaternion.cpp">
       <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="AngleDefinitions.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MathDefinitions.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
+    </ClCompile>
   </ItemGroup>
 </Project>

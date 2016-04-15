@@ -1,11 +1,11 @@
 #include "MaterialTestApp.h"
 
-#include <Application.h>
-#include <RenderSystem.h>
-#include <ModelFactory.h>
-#include <MaterialFactory.h>
-#include <InputManager.h>
-#include <Mesh.h>
+#include <RwgeApplication.h>
+#include <RwgeRenderSystem.h>
+#include <RwgeModelFactory.h>
+#include <RwgeMaterialFactory.h>
+#include <RwgeInputManager.h>
+#include <RwgeMesh.h>
 
 /*
 2016-03-16 ToDo£º
@@ -27,7 +27,7 @@ MaterialTestApp::~MaterialTestApp()
 
 void MaterialTestApp::Initialize()
 {
-	m_pWindow = Application::GetInstance().CreateDisplayWindow();
+	m_pWindow = RApplication::GetInstance().CreateDisplayWindow();
 	m_pRenderTarget = RenderSystem::GetInstance().CreateRenderTarget(m_pWindow);
 	m_pViewport = m_pRenderTarget->CreateViewport();
 	m_pSceneManager = new SceneManager();
@@ -77,12 +77,12 @@ void MaterialTestApp::Initialize()
 	m_pSceneManager->GetSceneRoot()->AttachChild(pBackgroundModel);
 	pBackgroundModel->SetPosition(D3DXVECTOR3(0, -65, 0));
 
-	InputManager::GetInstance().AddListener(this);
+	RInputManager::GetInstance().AddListener(this);
 }
 
 void MaterialTestApp::Update(float fDeltaTime)
 {
-	m_fMovingSpeed = m_fMovingSpeedPerSecond / Application::GetInstance().GetCurrentFPS();
+	m_fMovingSpeed = m_fMovingSpeedPerSecond / RApplication::GetInstance().GetCurrentFPS();
 
 	/*switch (m_CameraMovingDirection)
 	{

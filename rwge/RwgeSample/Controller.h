@@ -1,12 +1,12 @@
 //#pragma once
 //
-//#include <InputListener.h>
-//#include <Model.h>
-//#include <Light.h>
-//#include <Camera.h>
-//#include <InputManager.h>
-//#include <SceneNode.h>
-//#include <Mesh.h>
+//#include <RwgeInputListener.h>
+//#include <RwgeModel.h>
+//#include <RwgeLight.h>
+//#include <RwgeCamera.h>
+//#include <RwgeInputManager.h>
+//#include <RwgeSceneNode.h>
+//#include <RwgeMesh.h>
 //
 //#define ANIMATION_STAND					0
 //#define ANIMATION_STAND_WEAPON			1

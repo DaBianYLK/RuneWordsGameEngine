@@ -10,6 +10,15 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\RwgeAssert.h" />
+    <ClInclude Include="Include\RwgeLog.h" />
+    <ClInclude Include="Include\RwgeSingleton.h" />
+    <ClInclude Include="Include\RwgeTime.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\RwgeLog.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1723D939-F091-4023-9816-75AD0332270B}</ProjectGuid>
     <RootNamespace>RwgeUtils</RootNamespace>
@@ -40,6 +49,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>$(ProjectName)d</TargetName>
+    <IncludePath>$(SolutionDir)RwgeUtils\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(SolutionDir)RwgeUtils\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -65,15 +78,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="LogUtil.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="AssertUtil.h" />
-    <ClInclude Include="TimeUtil.h" />
-    <ClInclude Include="LogUtil.h" />
-    <ClInclude Include="Singleton.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

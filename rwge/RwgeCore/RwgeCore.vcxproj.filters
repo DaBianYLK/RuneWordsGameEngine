@@ -5,76 +5,69 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="资源文件">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="源文件\Application">
       <UniqueIdentifier>{2566ad4b-612f-49da-8de8-cb3c8f5e9524}</UniqueIdentifier>
     </Filter>
     <Filter Include="源文件\Input">
       <UniqueIdentifier>{faca2b6c-957e-453f-8c0f-898c75ac8827}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\Display">
-      <UniqueIdentifier>{ad881196-c9a1-4799-b403-0dc4c34e1d3b}</UniqueIdentifier>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{b470e32c-f0a3-485d-991a-c5e11f4e0a17}</UniqueIdentifier>
     </Filter>
     <Filter Include="源文件\Common">
       <UniqueIdentifier>{5c997a6b-69f0-45ae-82db-18edb7afdea7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\_Deprecated">
-      <UniqueIdentifier>{662dbf96-bb5e-4012-bf49-7a344d972736}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AppDelegate.cpp">
-      <Filter>源文件\Application</Filter>
-    </ClCompile>
-    <ClCompile Include="Application.cpp">
-      <Filter>源文件\Application</Filter>
-    </ClCompile>
-    <ClCompile Include="InputListener.cpp">
-      <Filter>源文件\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>源文件\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="FPSController.cpp">
+    <ClInclude Include="Include\RwgeObject.h">
       <Filter>源文件\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="HighPrecisionClock.cpp">
+    </ClInclude>
+    <ClInclude Include="Include\RwgeClock.h">
       <Filter>源文件\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\RwgeGraphics\DisplayWindow.cpp">
+    </ClInclude>
+    <ClInclude Include="Include\RwgeFpsController.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeCoreDef.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeWindow.h">
       <Filter>源文件\Application</Filter>
-    </ClCompile>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeApplication.h">
+      <Filter>源文件\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeAppDelegate.h">
+      <Filter>源文件\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeInputListener.h">
+      <Filter>源文件\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeInputManager.h">
+      <Filter>源文件\Input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AppDelegate.h">
+    <ClCompile Include="Source\RwgeClock.cpp">
+      <Filter>源文件\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RwgeFpsController.cpp">
+      <Filter>源文件\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RwgeWindow.cpp">
       <Filter>源文件\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="Application.h">
+    </ClCompile>
+    <ClCompile Include="Source\RwgeApplication.cpp">
       <Filter>源文件\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="InputListener.h">
+    </ClCompile>
+    <ClCompile Include="Source\RwgeAppDelegate.cpp">
+      <Filter>源文件\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RwgeInputListener.cpp">
       <Filter>源文件\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="InputManager.h">
+    </ClCompile>
+    <ClCompile Include="Source\RwgeInputManager.cpp">
       <Filter>源文件\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="CoreDefinitions.h">
-      <Filter>源文件\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="FPSController.h">
-      <Filter>源文件\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="HighPrecisionClock.h">
-      <Filter>源文件\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="AppConfig.h">
-      <Filter>源文件\_Deprecated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\RwgeGraphics\DisplayWindow.h">
-      <Filter>源文件\Application</Filter>
-    </ClInclude>
+    </ClCompile>
   </ItemGroup>
 </Project>

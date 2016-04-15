@@ -1,14 +1,14 @@
 #pragma once
 
-#include <AppDelegate.h>
-#include <DisplayWindow.h>
-#include <RenderTarget.h>
-#include <Viewport.h>
-#include <SceneManager.h>
-#include <Camera.h>
-#include <Model.h>
-#include <Light.h>
-#include <InputListener.h>
+#include <RwgeAppDelegate.h>
+#include <RwgeWindow.h>
+#include <RwgeRenderTarget.h>
+#include <RwgeViewport.h>
+#include <RwgeSceneManager.h>
+#include <RwgeCamera.h>
+#include <RwgeModel.h>
+#include <RwgeLight.h>
+#include <RwgeInputListener.h>
 
 enum EMovingDirection
 {
@@ -23,7 +23,7 @@ enum EMovingDirection
 	MovingDirection_MAX
 };
 
-class MaterialTestApp : public AppDelegate, public InputListener
+class MaterialTestApp : public RAppDelegate, public RInputListener
 {
 public:
 	MaterialTestApp();
@@ -37,7 +37,7 @@ public:
 	void OnKeyDown(unsigned int key);
 
 private:
-	DisplayWindow*		m_pWindow;
+	RWindow*		m_pWindow;
 	RenderTarget*		m_pRenderTarget;
 	Viewport*			m_pViewport;
 	SceneManager*		m_pSceneManager;

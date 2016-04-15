@@ -2,7 +2,7 @@
 
 
 #include <list>
-#include "GraphicsDefinitions.h"
+#include "GraphicsDef.h"
 
 class Camera;
 

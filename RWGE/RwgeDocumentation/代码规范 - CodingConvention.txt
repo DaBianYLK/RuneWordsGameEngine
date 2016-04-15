@@ -1,0 +1,78 @@
+/*--------------------------------------------------------------------------------------------------------------------*\
+【CREATE】	AUTH :	大便一箩筐																	   DATE : 2016-04-15
+			DESC :	RWGE游戏引擎的代码命名、格式与写法规范
+\*--------------------------------------------------------------------------------------------------------------------*/
+
+
+1.	命名规则以驼峰命名法为基础，除变量名首字母小写外，所有单词首字母大写。
+	例：类型声明		- class Name;
+		函数声明		- void  Name();
+		变量声明		- Name  name;
+
+2.	当遇到大写的固定词组或缩写需要与其他单词组合时，若组合后命名中连续大写字母数小于三，则维持正常写法；若连续大写字
+	母数大于或等于三个，则固定词组或缩写只有首字母大写，其余字母小写。(数字算大写字母)
+	例：A B Cde			- ABCde
+		AB C De			- AbCDe
+		ABC De			- AbcDe
+		D3D	Device		- D3dDevice
+		OpenGL Shader	- OpenGlShader
+
+3.	所有继承自RObject 的类需要在类名前加前缀[R] 。
+	例：class RWindow : public RObject
+
+4.	所有struct都不能定义任何成员函数，否则将struct声明改为class声明。
+
+5.	声明枚举类型时，在枚举类型前加前缀[E] ，枚举类型的值加上枚举类型名中包含的所有大写字母和下划线[_] 作为前缀，并在
+	最后定义一个MAX值。
+	例：enum EPencilColor
+		{
+			EPC_Red,
+			EPC_Green,
+			EPC_MAX
+		};
+
+6.	变量类型是C++ 内建类型或STL 类型时，按如下对应关系为变量名前加小写的类型前缀。	
+	[s8	] - char												[str ] - string
+	[s16] - short, wchar_t										[it  ] - iterator
+	[s32] - int, long											[vec ] - vector
+	[s64] - long long											[list] - list
+	[u8 ] - bool, unsigned char, BYTE							[que ] - queue
+	[u16] - unsigned short, unsigned wchar_t, WORD				[set ] - set
+	[u32] - unsigned int, unsigned long, DWORD					[map ] - map
+	[u64] - unsigned long long									[hash] - hash_map
+	[f32] - float												[pair] - pair
+	[f64] - double
+	遇到typedef 类型或宏时，以解析后的类型为准；遇到模板名或auto时，可以视情况遵循或忽略此规则。
+	例：int			s32Integer;
+		RObject		object;
+
+7.	为指针变量命名时，忽略变量类型前缀，并为变量名加上前缀[p]					（多维指针叠加前缀）
+	为数组变量命名时，忽略变量类型前缀，并为变量名加上前缀[ary]					（多维数组在ary后加上维度）
+	为数组指针变量命名时，忽略变量类型前缀，并为变量名加上前缀[p] 和后缀[Ary]	（多维情况同上）
+	例：int*		pInteger;
+		int**		ppInteger;
+		RObject*	pObject;
+		int			aryInteger[10];
+		int			ary2Integer[10][10];
+		int*		aryInteger = new int[*pInteger];
+		int*		pIntegerAry[10];
+
+8.	class的成员变量在上一规则的基础上加前缀[m_]，struct忽略此规则。
+	例：class RWindow : public RObject
+		{
+			int*	m_pInteger;
+			int		m_aryInteger[10];
+			int		m_s32Integer;
+			RObject	m_Object;
+		};
+
+9.	除非用于特别短的函数块，否则大括号独占一行。
+	例：inline int GetWidth() const { return m_s32Width; }
+		inline Size GetSize()
+		{
+			Size size;
+			size.s32Width = m_s32Width;
+			size.s32Height = m_s32Height;
+
+			return size;
+		}

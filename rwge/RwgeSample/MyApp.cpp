@@ -2,12 +2,12 @@
 //
 //#include <Sprite.h>
 //#include <Graphics.h>
-//#include <SceneManager.h>
-//#include <Light.h>
-//#include <InputManager.h>
-//#include <LogUtil.h>
+//#include <RwgeSceneManager.h>
+//#include <RwgeLight.h>
+//#include <RwgeInputManager.h>
+//#include <RwgeLog.h>
 //#include <AppConfig.h>
-//#include <DisplayWindow.h>
+//#include <RwgeWindow.h>
 //
 //MyApp::MyApp()
 //{

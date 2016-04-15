@@ -11,27 +11,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="3dsmaxsdk_preinclude.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Rwge3dsMaxPlug.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-    <ClInclude Include="RwgeModelFile.h">
-      <Filter>源文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="DllEntry.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Rwge3dsMaxPlug.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Rwge3dsMaxPlug.def">
-      <Filter>源文件</Filter>
+      <Filter>资源文件</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\3dsmaxsdk_preinclude.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Rwge3dsMaxPlug.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeModelFile.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Rwge3dsMaxPlug.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

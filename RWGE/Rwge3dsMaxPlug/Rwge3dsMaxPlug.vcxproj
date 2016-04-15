@@ -67,7 +67,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>.\midl\Win32;$(MAX_SDK)\include;%(AdditionalIncludeDirectories);$(IncludePath)</IncludePath>
+    <IncludePath>.\midl\Win32;$(MAX_SDK)\include;%(AdditionalIncludeDirectories);.\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MAX_SDK)\lib;%(AdditionalLibraryDirectories);$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)d</TargetName>
     <TargetExt>.dle</TargetExt>
@@ -79,7 +79,7 @@
     <TargetExt>.dle</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>.\midl\Win32;$(MAX_SDK)\include;%(AdditionalIncludeDirectories);$(IncludePath)</IncludePath>
+    <IncludePath>.\midl\Win32;$(MAX_SDK)\include;%(AdditionalIncludeDirectories);.\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MAX_SDK)\lib;%(AdditionalLibraryDirectories);$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)</TargetName>
     <TargetExt>.dle</TargetExt>
@@ -162,16 +162,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="3dsmaxsdk_preinclude.h" />
-    <ClInclude Include="Rwge3dsMaxPlug.h" />
-    <ClInclude Include="RwgeModelFile.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="DllEntry.cpp" />
-    <ClCompile Include="Rwge3dsMaxPlug.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Rwge3dsMaxPlug.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\3dsmaxsdk_preinclude.h" />
+    <ClInclude Include="Include\Rwge3dsMaxPlug.h" />
+    <ClInclude Include="Include\RwgeModelFile.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Rwge3dsMaxPlug.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
