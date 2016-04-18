@@ -2,20 +2,8 @@
 
 #include "RwgeAssert.h"
 
-const char* DefaultName = "Rune Words Game Engine";
-const int DefaultWidth = 1440;
-const int DefaultHeight = 900;
-
-RWindow::RWindow(HINSTANCE hAppInstance, bool bFullScreen)
-{
-	m_hWnd = nullptr;
-	m_strName = DefaultName;
-	SetDefaultSize();
-	m_bFullScreen = bFullScreen;
-	m_bShow = false;
-
-	Init(hAppInstance);
-}
+const int DefaultWidth = 800;
+const int DefaultHeight = 600;
 
 RWindow::RWindow(HINSTANCE hAppInstance, const char* strName, bool bFullScreen)
 {
@@ -23,20 +11,6 @@ RWindow::RWindow(HINSTANCE hAppInstance, const char* strName, bool bFullScreen)
 	m_strName = strName;
 	SetDefaultSize();
 	m_bFullScreen = bFullScreen;
-	m_bShow = false;
-
-	Init(hAppInstance);
-}
-
-RWindow::RWindow(HINSTANCE hAppInstance, int x, int y, int width, int height)
-{
-	m_hWnd = nullptr;
-	m_strName = DefaultName;
-	m_nX = x;
-	m_nY = y;
-	m_nWidth = width;
-	m_nHeight = height;
-	m_bFullScreen = false;
 	m_bShow = false;
 
 	Init(hAppInstance);
