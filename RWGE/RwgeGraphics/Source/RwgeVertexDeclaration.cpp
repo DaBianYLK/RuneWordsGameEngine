@@ -1,6 +1,6 @@
 #include "RwgeVertexDeclaration.h"
 
-#include "RwgeD3D9Device.h"
+#include "RwgeD3d9Device.h"
 #include "RwgeVertexDeclarationType.h"
 #include <RwgeAssert.h>
 
@@ -22,7 +22,7 @@ VertexDeclaration::~VertexDeclaration()
 {
 }
 
-bool VertexDeclaration::Load(const D3D9Device* pDevice)
+bool VertexDeclaration::Load(const RD3d9Device* pDevice)
 {
 	unsigned int uElementCount = m_pVertexDeclarationType->GetElementCount();
 	unsigned int uStreamCount = m_pVertexDeclarationType->GetStreamCount();
@@ -48,11 +48,11 @@ bool VertexDeclaration::Load(const D3D9Device* pDevice)
 
 	pVertexElements[uElementCount] = D3DDECL_END();
 
-	HRESULT hResult = pDevice->GetDevicePtr()->CreateVertexDeclaration(pVertexElements, &m_pD3DVertexDeclaration);
+	HRESULT hResult = pDevice->GetD3dDevice()->CreateVertexDeclaration(pVertexElements, &m_pD3DVertexDeclaration);
 
 	if (FAILED(hResult))
 	{
-		ErrorBox("Create vertex declaration failed : %X", hResult);
+		RwgeErrorBox("Create vertex declaration failed : %X", hResult);
 	}
 
 	delete[]pVertexElements;

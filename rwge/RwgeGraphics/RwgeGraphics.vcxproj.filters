@@ -42,6 +42,9 @@
     <Filter Include="源文件\Render\Texture">
       <UniqueIdentifier>{73625f58-1e5f-405c-a537-4907272c3c78}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\D3D9">
+      <UniqueIdentifier>{95d483a7-9ed6-43ba-9de2-b3bbd0d6fddc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\RwgeColor.cpp">
@@ -86,19 +89,10 @@
     <ClCompile Include="Source\RwgeVertexBuffer.cpp">
       <Filter>源文件\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Source\RwgeRenderTarget.cpp">
-      <Filter>源文件\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\RwgeRenderSystem.cpp">
-      <Filter>源文件\Render</Filter>
-    </ClCompile>
     <ClCompile Include="Source\RwgeRenderQueue.cpp">
       <Filter>源文件\Render</Filter>
     </ClCompile>
     <ClCompile Include="Source\RwgeIndexBuffer.cpp">
-      <Filter>源文件\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\RwgeD3D9Device.cpp">
       <Filter>源文件\Render</Filter>
     </ClCompile>
     <ClCompile Include="Source\RwgeShaderType.cpp">
@@ -134,12 +128,27 @@
     <ClCompile Include="Source\RwgeAnimation.cpp">
       <Filter>源文件\Scene\Model\Animation</Filter>
     </ClCompile>
+    <ClCompile Include="Source\RwgeShaderCompilerEnv.cpp">
+      <Filter>源文件\Render\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RwgeShaderKey.cpp">
+      <Filter>源文件\Render\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RwgeD3d9Device.cpp">
+      <Filter>源文件\D3D9</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RwgeD3d9SwapChain.cpp">
+      <Filter>源文件\D3D9</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RwgeD3d9RenderSystem.cpp">
+      <Filter>源文件\D3D9</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RwgeD3d9RenderTarget.cpp">
+      <Filter>源文件\D3D9</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\RwgeColor.h">
-      <Filter>源文件\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\RwgeD3DX9Extension.h">
       <Filter>源文件\Common</Filter>
     </ClInclude>
     <ClInclude Include="Include\RwgeGraphics.h">
@@ -193,12 +202,6 @@
     <ClInclude Include="Include\RwgeVertexBuffer.h">
       <Filter>源文件\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Include\RwgeRenderTarget.h">
-      <Filter>源文件\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\RwgeRenderSystem.h">
-      <Filter>源文件\Render</Filter>
-    </ClInclude>
     <ClInclude Include="Include\RwgeRenderState.h">
       <Filter>源文件\Render</Filter>
     </ClInclude>
@@ -206,9 +209,6 @@
       <Filter>源文件\Render</Filter>
     </ClInclude>
     <ClInclude Include="Include\RwgeIndexBuffer.h">
-      <Filter>源文件\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\RwgeD3D9Device.h">
       <Filter>源文件\Render</Filter>
     </ClInclude>
     <ClInclude Include="Include\RwgeShaderType.h">
@@ -246,6 +246,27 @@
     </ClInclude>
     <ClInclude Include="Include\RwgeAnimation.h">
       <Filter>源文件\Scene\Model\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeShaderCompilerEnv.h">
+      <Filter>源文件\Render\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeShaderKey.h">
+      <Filter>源文件\Render\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeD3d9Device.h">
+      <Filter>源文件\D3D9</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeD3dx9Extension.h">
+      <Filter>源文件\D3D9</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeD3d9SwapChain.h">
+      <Filter>源文件\D3D9</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeD3d9RenderSystem.h">
+      <Filter>源文件\D3D9</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeD3d9RenderTarget.h">
+      <Filter>源文件\D3D9</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

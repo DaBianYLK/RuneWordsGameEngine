@@ -2,12 +2,12 @@
 
 #include "RwgeShader.h"
 #include "RwgeShaderManager.h"
-#include "RwgeRenderTarget.h"
+#include "RwgeD3d9RenderTarget.h"
 
 
 ShaderType::ShaderType(unsigned long long u64Key) :
 	m_uShaderKey(u64Key),
-	m_strFilePath(ShaderManager::GetShaderPath(u64Key))
+	m_strFilePath(RShaderManager::GetShaderBinaryPath(u64Key))
 {
 
 }
@@ -17,7 +17,7 @@ ShaderType::~ShaderType()
 {
 }
 
-Shader* ShaderType::GetShader(RenderTarget* pRenderTarget)
+RShader* ShaderType::GetShader(RenderTarget* pRenderTarget)
 {
 	return pRenderTarget->GetShader(this);
 }

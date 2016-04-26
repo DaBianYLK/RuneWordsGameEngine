@@ -3,11 +3,11 @@
 #include <string>
 
 class RenderTarget;
-class Shader;
+class RShader;
 
 class ShaderType
 {
-	friend class ShaderManager;
+	friend class RShaderManager;
 
 private:
 	ShaderType(unsigned long long u64Key);
@@ -15,7 +15,7 @@ private:
 public:
 	~ShaderType();
 
-	Shader* GetShader(RenderTarget* pRenderTarget);
+	RShader* GetShader(RenderTarget* pRenderTarget);
 	unsigned long long GetShaderKey() const;
 	const std::string& GetShaderPath() const;
 

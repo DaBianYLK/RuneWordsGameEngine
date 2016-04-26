@@ -39,12 +39,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeUtils\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeUtils\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -75,7 +75,8 @@
     <ClCompile Include="Source\RwgeAnimation.cpp" />
     <ClCompile Include="Source\RwgeCamera.cpp" />
     <ClCompile Include="Source\RwgeColor.cpp" />
-    <ClCompile Include="Source\RwgeD3D9Device.cpp" />
+    <ClCompile Include="Source\RwgeD3d9Device.cpp" />
+    <ClCompile Include="Source\RwgeD3d9SwapChain.cpp" />
     <ClCompile Include="Source\RwgeIndexBuffer.cpp" />
     <ClCompile Include="Source\RwgeLight.cpp" />
     <ClCompile Include="Source\RwgeMaterial.cpp" />
@@ -87,11 +88,13 @@
     <ClCompile Include="Source\RwgeModelFactory.cpp" />
     <ClCompile Include="Source\RwgeRenderPrimitive.cpp" />
     <ClCompile Include="Source\RwgeRenderQueue.cpp" />
-    <ClCompile Include="Source\RwgeRenderSystem.cpp" />
-    <ClCompile Include="Source\RwgeRenderTarget.cpp" />
+    <ClCompile Include="Source\RwgeD3d9RenderSystem.cpp" />
+    <ClCompile Include="Source\RwgeD3d9RenderTarget.cpp" />
     <ClCompile Include="Source\RwgeSceneManager.cpp" />
     <ClCompile Include="Source\RwgeSceneNode.cpp" />
     <ClCompile Include="Source\RwgeShader.cpp" />
+    <ClCompile Include="Source\RwgeShaderCompilerEnv.cpp" />
+    <ClCompile Include="Source\RwgeShaderKey.cpp" />
     <ClCompile Include="Source\RwgeShaderManager.cpp" />
     <ClCompile Include="Source\RwgeShaderType.cpp" />
     <ClCompile Include="Source\RwgeTexture.cpp" />
@@ -107,8 +110,9 @@
     <ClInclude Include="Include\RwgeAnimation.h" />
     <ClInclude Include="Include\RwgeCamera.h" />
     <ClInclude Include="Include\RwgeColor.h" />
-    <ClInclude Include="Include\RwgeD3D9Device.h" />
-    <ClInclude Include="Include\RwgeD3DX9Extension.h" />
+    <ClInclude Include="Include\RwgeD3d9Device.h" />
+    <ClInclude Include="Include\RwgeD3d9SwapChain.h" />
+    <ClInclude Include="Include\RwgeD3dx9Extension.h" />
     <ClInclude Include="Include\RwgeGraphics.h" />
     <ClInclude Include="Include\RwgeIndexBuffer.h" />
     <ClInclude Include="Include\RwgeIndexStream.h" />
@@ -124,12 +128,14 @@
     <ClInclude Include="Include\RwgeRenderPrimitive.h" />
     <ClInclude Include="Include\RwgeRenderQueue.h" />
     <ClInclude Include="Include\RwgeRenderState.h" />
-    <ClInclude Include="Include\RwgeRenderSystem.h" />
-    <ClInclude Include="Include\RwgeRenderTarget.h" />
+    <ClInclude Include="Include\RwgeD3d9RenderSystem.h" />
+    <ClInclude Include="Include\RwgeD3d9RenderTarget.h" />
     <ClInclude Include="Include\RwgeSceneManager.h" />
     <ClInclude Include="Include\RwgeSceneNode.h" />
     <ClInclude Include="Include\RwgeShader.h" />
+    <ClInclude Include="Include\RwgeShaderCompilerEnv.h" />
     <ClInclude Include="Include\RwgeShaderConstantBuffer.h" />
+    <ClInclude Include="Include\RwgeShaderKey.h" />
     <ClInclude Include="Include\RwgeShaderManager.h" />
     <ClInclude Include="Include\RwgeShaderType.h" />
     <ClInclude Include="Include\RwgeTexture.h" />

@@ -5,9 +5,9 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
 {
 	MaterialTestApp myApp;
+	RApplication::SetDelegate(&myApp);
 
 	RApplication application;
-	application.SetDelegate(&myApp);
 	application.Run();
 
 	return 0;

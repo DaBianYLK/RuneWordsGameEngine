@@ -3,7 +3,7 @@
 #include "RwgeShader.h"
 #include "RwgeShaderManager.h"
 
-Material::Material() : 
+RMaterial::RMaterial() : 
 	m_bTwoSided(false), 
 	m_fOpacityMaskClipValue(0.0f), 
 	m_BlendMode(BM_Opaque), 
@@ -11,19 +11,18 @@ Material::Material() :
 	m_bConstantBufferOutOfDate(true), 
 	m_uConstantBufferSize(0), 
 	m_bTextureListOutOfDate(true), 
-	m_bMaterialKeyOutOfDate(true), 
-	m_u64MaterialKey(0), 
+	m_bMaterialKeyOutOfDate(true),
 	m_pShaderType(nullptr)
 {
 	
 }
 
 
-Material::~Material()
+RMaterial::~RMaterial()
 {
 }
 
-void Material::UpdateConstantBuffer() const
+void RMaterial::UpdateConstantBuffer() const
 {
 	m_uConstantBufferSize = 0;
 
@@ -39,7 +38,7 @@ void Material::UpdateConstantBuffer() const
 	m_bConstantBufferOutOfDate = false;
 }
 
-void Material::GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) const
+void RMaterial::GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) const
 {
 	if (m_bConstantBufferOutOfDate)
 	{
@@ -50,7 +49,7 @@ void Material::GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) 
 	uSize = m_uConstantBufferSize;
 }
 
-void Material::UpdateTextureInfoList() const
+void RMaterial::UpdateTextureInfoList() const
 {
 	m_listTextureInfos.clear();
 
@@ -81,7 +80,7 @@ void Material::UpdateTextureInfoList() const
 	m_bTextureListOutOfDate = false;
 }
 
-const std::list<TextureInfo*>& Material::GetTextureInfoList() const
+const std::list<TextureInfo*>& RMaterial::GetTextureInfoList() const
 {
 	if (m_bTextureListOutOfDate)
 	{
@@ -91,28 +90,51 @@ const std::list<TextureInfo*>& Material::GetTextureInfoList() const
 	return m_listTextureInfos;
 }
 
-void Material::UpdateMaterialKey() const
+void RMaterial::UpdateMaterialKey() const
 {
-	m_u64MaterialKey = ShaderManager::GetMaterialKey(this);
+	m_MaterialKey.SetBaseColorKey(m_BaseColor.GetExpressionID());
+	m_MaterialKey.SetEmissiveColorKey(m_EmissiveColor.GetExpressionID());
+	m_MaterialKey.SetNormalKey(m_Normal.GetExpressionID());
+	m_MaterialKey.SetMetallicKey(m_Metallic.GetExpressionID());
+	m_MaterialKey.SetSpecularKey(m_Specular.GetExpressionID());
+	m_MaterialKey.SetRoughnessKey(m_Roughness.GetExpressionID());
+	m_MaterialKey.SetOpacityKey(m_Opacity.GetExpressionID());
+	m_MaterialKey.SetOpacityMaskKey(m_OpacityMask.GetExpressionID());
+	m_MaterialKey.SetBlendModeKey(m_BlendMode);
+	m_MaterialKey.SetShadingModeKey(m_ShadingMode);
+	m_MaterialKey.SetTwoSidedKey(m_bTwoSided);
+	m_MaterialKey.SetNonMetalKey(IsNonMetal());
+	m_MaterialKey.SetFullyRoughKey(IsFullyRough());
+
 	m_bMaterialKeyOutOfDate = false;
 }
 
-unsigned long long Material::GetMaterialKey() const
+const MaterialKey& RMaterial::GetMaterialKey() const
 {
 	if (m_bMaterialKeyOutOfDate)
 	{
 		UpdateMaterialKey();
 	}
 
-	return m_u64MaterialKey;
+	return m_MaterialKey;
 }
 
-void Material::SetShaderType(ShaderType* pShaderType)
+void RMaterial::SetShaderType(ShaderType* pShaderType)
 {
 	m_pShaderType = pShaderType;
 }
 
-ShaderType* Material::GetShaderType() const
+ShaderType* RMaterial::GetShaderType() const
 {
 	return m_pShaderType;
+}
+
+bool RMaterial::IsNonMetal() const
+{
+	return m_Metallic.GetExpression() == nullptr && m_Metallic.GetConstant() == 0.0f;
+}
+
+bool RMaterial::IsFullyRough() const
+{
+	return m_Roughness.GetExpression() == nullptr && m_Roughness.GetConstant() == 1.0f;
 }

@@ -21,9 +21,4 @@ enum EShadingMode
 	ShadingMode_MAX
 };
 
-#define D3D9SafeRelease(ptr) \
-	if (ptr)\
-	{\
-		ptr->Release(); \
-		ptr = nullptr; \
-	}
+#define D3d9SafeRelease(ptr)	if (ptr) { ptr->Release(); ptr = nullptr; }

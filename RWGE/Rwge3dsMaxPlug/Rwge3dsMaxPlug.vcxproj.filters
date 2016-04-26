@@ -30,5 +30,8 @@
     <ClCompile Include="Source\Rwge3dsMaxPlug.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DllEntry.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

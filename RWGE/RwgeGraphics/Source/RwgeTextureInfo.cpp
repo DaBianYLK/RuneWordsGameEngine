@@ -1,6 +1,6 @@
 #include "RwgeTextureInfo.h"
 
-#include "RwgeRenderTarget.h"
+#include "RwgeD3d9RenderTarget.h"
 
 TextureInfo::TextureInfo(const std::string strPath) :
 	m_strFilePath(strPath)

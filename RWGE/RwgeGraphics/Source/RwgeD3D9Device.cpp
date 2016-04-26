@@ -1,147 +1,135 @@
-#include "RwgeD3D9Device.h"
+#include "RwgeD3d9Device.h"
 
-#include "RwgeWindow.h"
+#include "RwgeAppWindow.h"
 #include "RwgeAssert.h"
-#include "RwgeRenderSystem.h"
-#include "RwgeApplication.h"
+#include "RwgeD3d9RenderSystem.h"
+#include <RwgeLog.h>
 
-const D3DDEVTYPE			DefaultDeviceType				= D3DDEVTYPE_HAL;
-const unsigned int			DefaultAdapterID				= D3DADAPTER_DEFAULT;
-const D3DFORMAT				DefaultBackBufferFormat			= D3DFMT_A8R8G8B8;
-const unsigned int			DefaultBackBufferCount			= 1;
-const D3DMULTISAMPLE_TYPE	DefaultMultiSampleType			= D3DMULTISAMPLE_NONE;
-const DWORD					DefaultMultiSampleQuality		= 0;
+using namespace RwgeAppWindow;
+
+const unsigned int			DefaultAdapterID				= D3DADAPTER_DEFAULT;					// 显卡适配器ID
+const D3DDEVTYPE			DefaultDeviceType				= D3DDEVTYPE_HAL;						// D3D模式：HAL，硬件驱动；REF，软件驱动
+const D3DFORMAT				DefaultBackBufferFormat			= D3DFMT_A8R8G8B8;						// 后台缓冲格式
+const unsigned int			DefaultBackBufferCount			= 1;									// 后台缓冲数：只能为0或1
+const D3DMULTISAMPLE_TYPE	DefaultMultiSampleType			= D3DMULTISAMPLE_NONE;					// 多重采样抗锯齿设置
+const DWORD					DefaultMultiSampleQuality		= 0;									// 这个似乎没用
 const D3DSWAPEFFECT			DefaultSwapEffect				= D3DSWAPEFFECT_DISCARD;
 const bool					DefaultEnableAutoDepthStencil	= true;
-const D3DFORMAT				DefaultAutoDepthStencilFormat	= D3DFMT_D24S8;
-const D3DFORMAT				DefaultAutoDepthStencilFormat2	= D3DFMT_D16;
+const D3DFORMAT				DefaultAutoDepthStencilFormat	= D3DFMT_D24S8;							// 深度与模板缓冲格式
+const D3DFORMAT				DefaultAutoDepthStencilFormat2	= D3DFMT_D16;							// 备选深度与模板缓冲格式
 const DWORD					DefaultFlags					= D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL;
 const unsigned int			DefaultFullScreenRefreshRate	= D3DPRESENT_RATE_DEFAULT;
-const unsigned int			DefaultPresentationInterval		= D3DPRESENT_INTERVAL_IMMEDIATE;	// 垂直同步，开启：D3DPRESENT_INTERVAL_ONE，关闭：D3DPRESENT_INTERVAL_IMMEDIATE
+const unsigned int			DefaultPresentationInterval		= D3DPRESENT_INTERVAL_IMMEDIATE;		// 垂直同步：开启，ONE；关闭，IMMEDIATE
 
-D3D9Device::D3D9Device(const RWindow& window)
+RD3d9Device::RD3d9Device(const RAppWindow& window) :
+	m_pD3dDevice(nullptr)
 {
-	SetDefaultParam();
-	Init(window);
-}
+	IDirect3D9* pD3D9 = RD3d9RenderSystem::GetInstance().GetD3d9();
 
-D3D9Device::D3D9Device(D3D9Device&& device) :
-	m_DeviceType(device.m_DeviceType), 
-	m_PresentParam(device.m_PresentParam), 
-	m_uAdapterID(device.m_uAdapterID), 
-	m_uVertexProcessType(device.m_uVertexProcessType), 
-	m_pDevice(device.m_pDevice)
-{
-	device.m_pDevice = nullptr;
-}
+	m_u32AdapterID = DefaultAdapterID;
+	m_DeviceType = DefaultDeviceType;
 
-D3D9Device::~D3D9Device()
-{
-}
+	// ============================== 设置默认显示参数 ==============================
+	m_D3dPresentParam.BackBufferFormat				= DefaultBackBufferFormat;
+	m_D3dPresentParam.BackBufferCount				= DefaultBackBufferCount;
+	m_D3dPresentParam.MultiSampleType				= DefaultMultiSampleType;
+	m_D3dPresentParam.MultiSampleQuality			= DefaultMultiSampleQuality;
+	m_D3dPresentParam.SwapEffect					= DefaultSwapEffect;
+	m_D3dPresentParam.EnableAutoDepthStencil		= DefaultEnableAutoDepthStencil;
+	m_D3dPresentParam.AutoDepthStencilFormat		= DefaultAutoDepthStencilFormat;
+	m_D3dPresentParam.Flags							= DefaultFlags;
+	m_D3dPresentParam.FullScreen_RefreshRateInHz	= DefaultFullScreenRefreshRate;
+	m_D3dPresentParam.PresentationInterval			= DefaultPresentationInterval;
+	m_D3dPresentParam.BackBufferWidth				= window.GetWidth();
+	m_D3dPresentParam.BackBufferHeight				= window.GetHeight();
+	m_D3dPresentParam.hDeviceWindow					= window.GetHandle();
+	m_D3dPresentParam.Windowed						= window.IsTrueFullScreen();	// 注意：全屏时，如果后台缓冲小于屏幕尺寸会导致Device创建失败
 
-void D3D9Device::SetDefaultParam()
-{
-	m_DeviceType								= DefaultDeviceType;
-	m_uAdapterID								= DefaultAdapterID;
-	m_PresentParam.BackBufferFormat				= DefaultBackBufferFormat;
-	m_PresentParam.BackBufferCount				= DefaultBackBufferCount;
-	m_PresentParam.MultiSampleType				= DefaultMultiSampleType;
-	m_PresentParam.MultiSampleQuality			= DefaultMultiSampleQuality;
-	m_PresentParam.SwapEffect					= DefaultSwapEffect;
-	m_PresentParam.EnableAutoDepthStencil		= DefaultEnableAutoDepthStencil;
-	m_PresentParam.AutoDepthStencilFormat		= DefaultAutoDepthStencilFormat;
-	m_PresentParam.Flags						= DefaultFlags;
-	m_PresentParam.FullScreen_RefreshRateInHz	= DefaultFullScreenRefreshRate;
-	m_PresentParam.PresentationInterval			= DefaultPresentationInterval;
-}
+	// ============================== 检查BackBufferFormat是否可用 ==============================
+	HRESULT hResult = pD3D9->CheckDeviceType(
+		m_u32AdapterID, 
+		m_DeviceType, 
+		m_D3dPresentParam.BackBufferFormat, 
+		m_D3dPresentParam.BackBufferFormat, 
+		m_D3dPresentParam.Windowed);
 
-bool D3D9Device::Init(const RWindow& window)
-{
-	IDirect3D9* pD3D9 = g_RenderSystem.GetD3D9Ptr();
-	if (!pD3D9)
+	if (FAILED(hResult))
 	{
-		return false;
+		RwgeLog("Failed to create D3D Device using default back buffer format.");
+
+		D3DDISPLAYMODE d3dDisplayMode;
+		hResult = pD3D9->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3dDisplayMode);
+		if (FAILED(hResult))
+		{
+			RwgeErrorBox("Failed to get graphics adapter's display mode. Create D3D Device failed.");
+			return;
+		}
+
+		m_D3dPresentParam.BackBufferFormat = d3dDisplayMode.Format;
+	}
+	
+	// ============================== 检查硬件顶点处理是否可用 ==============================
+	hResult = pD3D9->GetDeviceCaps(m_u32AdapterID, m_DeviceType, &m_D3dDeviceCapabilites);
+	if (FAILED(hResult))
+	{
+		RwgeErrorBox("Failed to get D3D Device Capabilites. Create D3D Device failed.");
+		return;
 	}
 
-	D3DCAPS9 caps;
-	pD3D9->GetDeviceCaps(m_uAdapterID, m_DeviceType, &caps);
-
-	if (caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT)
+	if (m_D3dDeviceCapabilites.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT && m_D3dDeviceCapabilites.VertexShaderVersion >= D3DVS_VERSION(1, 1))
 	{
-		m_uVertexProcessType = D3DCREATE_HARDWARE_VERTEXPROCESSING;
+		m_u32VertexProcessType = D3DCREATE_HARDWARE_VERTEXPROCESSING;
 	}
 	else
 	{
-		m_uVertexProcessType = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
+		m_u32VertexProcessType = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 	}
 
-	HWND hWnd = window.GetHandle();
-	const_cast<RWindow&>(window).Resize(0, 0, 1920, 1080);
+	// ============================== 尝试创建Device ==============================
+	hResult = pD3D9->CreateDevice(
+		m_u32AdapterID,						// primary adapter
+		m_DeviceType,						// device type
+		m_D3dPresentParam.hDeviceWindow,	// window associated with device
+		m_u32VertexProcessType,				// vertex processing
+		&m_D3dPresentParam,					// present parameters
+		&m_pD3dDevice);						// return created device
 
-	m_PresentParam.BackBufferWidth = window.GetWidth();
-	m_PresentParam.BackBufferHeight = window.GetHeight();
-	//m_PresentParam.BackBufferWidth = 1440;
-	//m_PresentParam.BackBufferHeight = 900;
-	m_PresentParam.hDeviceWindow = hWnd;
-	m_PresentParam.Windowed = !window.IsFullScreen();		// 不使用窗口模式时，如果指定的帧缓冲尺寸小于屏幕尺寸，会导致Device创建失败
-	
-	HRESULT result = pD3D9->CreateDevice(
-		m_uAdapterID,					// primary adapter
-		m_DeviceType,					// device type
-		hWnd,							// window associated with device
-		m_uVertexProcessType,			// vertex processing
-		&m_PresentParam,				// present parameters
-		&m_pDevice);					// return created device
-
-	if (FAILED(result))
+	if (FAILED(hResult))
 	{
-		// try again using a 16-bit depth buffer
-		m_PresentParam.AutoDepthStencilFormat = DefaultAutoDepthStencilFormat2;
+		RwgeLog("Failed to create D3D Device with 32-bit Depth / Stencil Buffer. Try again with 16-bit Depth Buffer.");
 
-		result = pD3D9->CreateDevice(
-			m_uAdapterID,
+		m_D3dPresentParam.AutoDepthStencilFormat = DefaultAutoDepthStencilFormat2;
+
+		hResult = pD3D9->CreateDevice(
+			m_u32AdapterID,
 			m_DeviceType,
-			hWnd,
-			m_uVertexProcessType,
-			&m_PresentParam,
-			&m_pDevice);
+			m_D3dPresentParam.hDeviceWindow,
+			m_u32VertexProcessType,
+			&m_D3dPresentParam,
+			&m_pD3dDevice);
 
-		if (FAILED(result))
+		if (FAILED(hResult))
 		{
-			ErrorBox("Create Direct3D9 device failed.");
-			return false;
+			RwgeErrorBox("Create D3D Device failed.");
+			return;
 		}
 	}
-
-	RWindow* pW = RApplication::GetInstance().CreateDisplayWindow();
-	//pW->Resize(0, 0, 1440, 900);
-	pW->SetFullScreen();
-	pW->Resize(0, 0, 1440, 900);
-	pW->Show();
-	
-	// Use the current display mode.  使用当前的显示模式
-	D3DDISPLAYMODE mode;
-	pD3D9->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &mode);
-
-	m_PresentParam.Windowed = true;										// SwapChain不能设置为全屏，否则会创建失败
-	m_PresentParam.BackBufferWidth = 1920;								// 设置为0时，SwapChain会取一个随机值
-	m_PresentParam.BackBufferHeight = 1080;								// 设置为0时，SwapChain会取一个随机值
-	m_PresentParam.hDeviceWindow = pW->GetHandle();
-	m_PresentParam.MultiSampleType = D3DMULTISAMPLE_NONE;				// SwapChain的这个参数没有效果
-	m_PresentParam.MultiSampleQuality = 0;								// SwapChain的这个参数没有效果,但定义为3或3以上时会创建SwapChain失败
-	m_pDevice->CreateAdditionalSwapChain(&m_PresentParam, &m_pSwapChain);
-
-	LPDIRECT3DSURFACE9 pBack = NULL;
-	m_pSwapChain->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &pBack);
-	m_pDevice->SetRenderTarget(0, pBack);
-	pBack->Release();
-
-	return true;
 }
 
-bool D3D9Device::Release()
+RD3d9Device::~RD3d9Device()
 {
-	D3D9SafeRelease(m_pDevice);
+	D3d9SafeRelease(m_pD3dDevice);
+}
 
-	return true;
+void RD3d9Device::Resize(int s32Width, int s32Height, EDisplayMode mode)
+{
+	m_D3dPresentParam.BackBufferWidth	= s32Width;
+	m_D3dPresentParam.BackBufferHeight	= s32Height;
+	m_D3dPresentParam.Windowed			= mode == EDM_TrueFullScreen;
+
+	HRESULT hResult = m_pD3dDevice->Reset(&m_D3dPresentParam);
+	if (FAILED(hResult))
+	{
+		RwgeLog(TEXT("D3D Device reset failed!"));
+	}
 }

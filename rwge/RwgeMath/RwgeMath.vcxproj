@@ -47,12 +47,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeUtils\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeUtils\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

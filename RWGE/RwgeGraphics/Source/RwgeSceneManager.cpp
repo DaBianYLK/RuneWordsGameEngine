@@ -2,7 +2,7 @@
 
 #include "RwgeCamera.h"
 #include "RwgeViewport.h"
-#include "RwgeRenderSystem.h"
+#include "RwgeD3d9RenderSystem.h"
 #include "RwgeModel.h"
 #include "RwgeMesh.h"
 #include "RwgeMath.h"
@@ -48,9 +48,9 @@ void SceneManager::RenderScene(Viewport* pViewport)
 	// ToDo：视锥体裁剪
 
 	// 将渲染图元加入渲染队列
-	SetupRenderQueue(m_pActiveCamera, RenderSystem::GetInstance().GetRenderQueuePtr(), m_bEnvironmentChanged || bSceneChanged);
+	SetupRenderQueue(m_pActiveCamera, RD3d9RenderSystem::GetInstance().GetRenderQueuePtr(), m_bEnvironmentChanged || bSceneChanged);
 
-	RenderSystem::GetInstance().RenderScene(this);
+	RD3d9RenderSystem::GetInstance().RenderScene(this);
 }
 
 void SceneManager::AddModel(Model* pModel)
@@ -130,16 +130,16 @@ void SceneManager::SetupRenderQueue(Camera* pCamera, RenderQueue* pRenderQueue, 
 		// auto = Mesh*
 		for (auto pMesh : pModel->GetMeshes())
 		{
-			Material* pMaterial = pMesh->GetMaterialPtr();
+			RMaterial* pMaterial = pMesh->GetMaterialPtr();
 			const list<RenderPrimitive*> listPrimitives = pMesh->GetRenderPrimitives();
 
 			renderState.pMaterial = pMaterial;
 
 			// 如果要更新shader
-			if (pMaterial->GetShaderType() == nullptr || bNeedUpdateShader)
+			if (bNeedUpdateShader || pMaterial->GetShaderType() == nullptr)
 			{
-				unsigned long long u64ShaderKey = ShaderManager::GetShaderKey(pMaterial->GetMaterialKey(), ShaderManager::GetEnvironmentKey(m_pLight));
-				pMaterial->SetShaderType(ShaderManager::GetInstance().GetShaderType(u64ShaderKey));
+				unsigned long long u64ShaderKey = RShaderManager::GetShaderKey(pMaterial->GetMaterialKey(), RShaderManager::GetEnvironmentKey(m_pLight));
+				pMaterial->SetShaderType(RShaderManager::GetInstance().GetShaderType(u64ShaderKey));
 			}
 
 			// auto = RenderPrimitive*

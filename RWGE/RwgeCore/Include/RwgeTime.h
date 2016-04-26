@@ -1,7 +1,8 @@
 #pragma once
 
-#include <string>
 #include <time.h>
+#include "RwgeTString.h"
+#include <tchar.h>
 
 enum ETimeFormat
 {
@@ -12,34 +13,34 @@ enum ETimeFormat
 	TimeFormat_MAX
 };
 
-static std::string GetCurrentDateTime(ETimeFormat format = TF_DigitalOnly)
+static Rwge::tstring GetCurrentDateTime(ETimeFormat format = TF_DigitalOnly)
 {
 	const unsigned int uBufferSize = 32;
-	char buffer[uBufferSize];
+	TCHAR szBuffer[uBufferSize];
 	time_t	timeValue = time(nullptr);
 	tm		time;
 
 	localtime_s(&time, &timeValue);
 
-	char* formatString;
+	char* szFormat;
 
 	switch (format)
 	{
 	default:
 	case TF_DigitalOnly:
-		formatString = "%Y%m%d%H%M%S";
+		szFormat = TEXT("%Y%m%d%H%M%S");
 		break;
 
 	case TF_Standard:
-		formatString = "%Y-%m-%d %X";
+		szFormat = TEXT("%Y-%m-%d %X");
 		break;
 
 	case TF_DigitalWithUnderline:
-		formatString = "%Y_%m_%d_%H_%M_%S";
+		szFormat = TEXT("%Y_%m_%d_%H_%M_%S");
 		break;
 	}
 
-	strftime(buffer, uBufferSize, formatString, &time);
+	_tcsftime(szBuffer, uBufferSize, szFormat, &time);
 
-	return std::string(buffer);
+	return Rwge::tstring(szBuffer);
 }

@@ -39,11 +39,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeUtils\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
     <TargetName>$(ProjectName)d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeUtils\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(DXSDK_DIR)Include;$(SolutionDir)RwgeGraphics\Include;$(SolutionDir)RwgeMath\Include;$(SolutionDir)RwgeResources\Include;$(SolutionDir)RwgeCore\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -81,29 +81,33 @@
     <ProjectReference Include="..\RwgeMath\RwgeMath.vcxproj">
       <Project>{6277fe95-0800-45b8-b3ad-ce1ca0cdd61a}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\RwgeUtils\RwgeUtils.vcxproj">
-      <Project>{1723d939-f091-4023-9816-75ad0332270b}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\RwgeAppDelegate.h" />
+    <ClInclude Include="Include\RwgeEnumAsByte.h" />
     <ClInclude Include="Include\RwgeApplication.h" />
+    <ClInclude Include="Include\RwgeAppWindowListener.h" />
+    <ClInclude Include="Include\RwgeAssert.h" />
     <ClInclude Include="Include\RwgeCoreDef.h" />
-    <ClInclude Include="Include\RwgeWindow.h" />
+    <ClInclude Include="Include\RwgeAppWindow.h" />
     <ClInclude Include="Include\RwgeFpsController.h" />
     <ClInclude Include="Include\RwgeClock.h" />
     <ClInclude Include="Include\RwgeInputListener.h" />
     <ClInclude Include="Include\RwgeInputManager.h" />
+    <ClInclude Include="Include\RwgeLog.h" />
+    <ClInclude Include="Include\RwgeMessageDef.h" />
+    <ClInclude Include="Include\RwgeNoCopy.h" />
     <ClInclude Include="Include\RwgeObject.h" />
+    <ClInclude Include="Include\RwgeSingleton.h" />
+    <ClInclude Include="Include\RwgeTime.h" />
+    <ClInclude Include="Include\RwgeTString.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\RwgeAppDelegate.cpp" />
     <ClCompile Include="Source\RwgeApplication.cpp" />
-    <ClCompile Include="Source\RwgeWindow.cpp" />
+    <ClCompile Include="Source\RwgeAppWindow.cpp" />
     <ClCompile Include="Source\RwgeFpsController.cpp" />
     <ClCompile Include="Source\RwgeClock.cpp" />
-    <ClCompile Include="Source\RwgeInputListener.cpp" />
     <ClCompile Include="Source\RwgeInputManager.cpp" />
+    <ClCompile Include="Source\RwgeLog.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

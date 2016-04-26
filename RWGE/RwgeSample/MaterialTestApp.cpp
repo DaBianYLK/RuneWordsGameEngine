@@ -1,7 +1,7 @@
 #include "MaterialTestApp.h"
 
 #include <RwgeApplication.h>
-#include <RwgeRenderSystem.h>
+#include <RwgeD3d9RenderSystem.h>
 #include <RwgeModelFactory.h>
 #include <RwgeMaterialFactory.h>
 #include <RwgeInputManager.h>
@@ -23,12 +23,14 @@ MaterialTestApp::MaterialTestApp() :
 
 MaterialTestApp::~MaterialTestApp()
 {
+
 }
 
-void MaterialTestApp::Initialize()
+void MaterialTestApp::OnCreate()
 {
-	m_pWindow = RApplication::GetInstance().CreateDisplayWindow();
-	m_pRenderTarget = RenderSystem::GetInstance().CreateRenderTarget(m_pWindow);
+	m_pWindow = RApplication::GetInstance().CreateAppWindow("Material Test App"); 
+	m_pWindow->Show();
+	m_pRenderTarget = RD3d9RenderSystem::GetInstance().CreateRenderTarget(m_pWindow);
 	m_pViewport = m_pRenderTarget->CreateViewport();
 	m_pSceneManager = new SceneManager();
 	m_pCamera = new Camera();
@@ -62,7 +64,7 @@ void MaterialTestApp::Initialize()
 	Model* pLightModel = ModelFactory::CreateBox();
 	Mesh* pLightModelMesh = *pLightModel->GetMeshes().begin();
 	pLightModelMesh->SetMaterial(MaterialFactory::CreateWhiteMaterial());
-	pLightModel->SetScale(D3DXVECTOR3(0.1, 0.1, 0.1));
+	pLightModel->SetScale(D3DXVECTOR3(0.1f, 0.1f, 0.1f));
 	m_pLight->AttachChild(pLightModel);
 
 	m_pWoodenMaterial = (*m_pModel->GetMeshes().begin())->GetMaterialPtr();
@@ -77,10 +79,10 @@ void MaterialTestApp::Initialize()
 	m_pSceneManager->GetSceneRoot()->AttachChild(pBackgroundModel);
 	pBackgroundModel->SetPosition(D3DXVECTOR3(0, -65, 0));
 
-	RInputManager::GetInstance().AddListener(this);
+	RInputManager::GetInstance().RegKeyBoardListener(this);
 }
 
-void MaterialTestApp::Update(float fDeltaTime)
+void MaterialTestApp::OnUpdateFrame(float f32DeltaTime)
 {
 	m_fMovingSpeed = m_fMovingSpeedPerSecond / RApplication::GetInstance().GetCurrentFPS();
 
@@ -175,11 +177,12 @@ void MaterialTestApp::Update(float fDeltaTime)
 	}
 }
 
-void MaterialTestApp::Cleanup()
+void MaterialTestApp::OnDestroy()
 {
+	
 }
 
-void MaterialTestApp::OnKeyUp(unsigned int key)
+void MaterialTestApp::OnKeyUp(HWND hWnd, unsigned int key)
 {
 	switch (key)
 	{
@@ -206,7 +209,7 @@ void MaterialTestApp::OnKeyUp(unsigned int key)
 	}
 }
 
-void MaterialTestApp::OnKeyDown(unsigned int key)
+void MaterialTestApp::OnKeyDown(HWND hWnd, unsigned int key)
 {
 	switch (key)
 	{

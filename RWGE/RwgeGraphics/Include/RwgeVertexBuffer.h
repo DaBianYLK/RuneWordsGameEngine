@@ -3,7 +3,7 @@
 #include "RwgeVertexDeclarationType.h"
 
 struct VertexStream;
-class D3D9Device;
+class RD3d9Device;
 struct IDirect3DDevice9;
 struct IDirect3DVertexBuffer9;
 
@@ -14,7 +14,7 @@ struct IDirect3DVertexBuffer9;
 class VertexBuffer
 {
 public:
-	VertexBuffer(const D3D9Device& device, unsigned int uBufferSize);
+	VertexBuffer(const RD3d9Device& device, unsigned int uBufferSize);
 	VertexBuffer(VertexBuffer&& buffer);
 	~VertexBuffer();
 

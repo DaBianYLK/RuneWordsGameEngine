@@ -4,8 +4,8 @@
 #include <synchapi.h>
 
 RFpsController::RFpsController() :
-	m_fTimeSinceLastFrame	(0.0f),
-	m_fCurrentFPS			(0.0f),
+	m_f32TimeSinceLastFrame	(0.0f),
+	m_f32CurrentFPS			(0.0f),
 	m_bFPSLocked			(false)
 {
 
@@ -18,8 +18,8 @@ RFpsController::~RFpsController()
 
 void RFpsController::FrameStart()
 {
-	m_fTimeSinceLastFrame = Tick();
-	m_fCurrentFPS = 1.0f / m_fTimeSinceLastFrame;
+	m_f32TimeSinceLastFrame = Tick();
+	m_f32CurrentFPS = 1.0f / m_f32TimeSinceLastFrame;
 }
 
 void RFpsController::FrameEnd() const
@@ -40,12 +40,12 @@ void RFpsController::FrameEnd() const
 	}
 }
 
-void RFpsController::LockMaxFPS(float fMaxFPS)
+void RFpsController::LockMaxFPS(float f32MaxFPS)
 {
-	if (fMaxFPS > 0.0f)
+	if (f32MaxFPS > 0.0f)
 	{
 		m_bFPSLocked = true;
-		m_MinIntervalCount.QuadPart = static_cast<long long>(m_Frequency.QuadPart / fMaxFPS);
+		m_MinIntervalCount.QuadPart = static_cast<long long>(m_Frequency.QuadPart / f32MaxFPS);
 	}
 }
 
@@ -56,10 +56,10 @@ void RFpsController::UnLockMaxFPS()
 
 float RFpsController::GetCurrentFPS() const
 {
-	return m_fCurrentFPS;
+	return m_f32CurrentFPS;
 }
 
 float RFpsController::GetTimeSinceLastFrame() const
 {
-	return m_fTimeSinceLastFrame;
+	return m_f32TimeSinceLastFrame;
 }

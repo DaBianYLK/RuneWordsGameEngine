@@ -67,7 +67,7 @@ void Camera::UpdateCachedViewTransform() const
 		UpdateCachedWorldTransform();
 	}
 
-	ASSERT(D3DXMatrixInverse(&m_ViewTransform, nullptr, &m_WorldTransform));
+	RwgeAssert(D3DXMatrixInverse(&m_ViewTransform, nullptr, &m_WorldTransform));
 
 	m_bCacheViewTransformOutOfDate = false;
 }

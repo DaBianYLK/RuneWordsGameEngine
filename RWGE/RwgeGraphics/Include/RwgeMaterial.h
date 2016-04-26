@@ -1,3 +1,27 @@
+/*--------------------------------------------------------------------------------------------------------------------*\
+   【CREATE】
+	AUTH :	大便一箩筐																			   DATE : 2016-01-08
+	DESC :	
+	1.	材质定义了一个渲染单元的渲染状态，它承担了C++与shader之间的参数传递工作
+	2.	PBR材质相比传统材质的优点
+		A.	透明度从BaseColor中剥离，防止透明度在多个变量中定义，导致计算逻辑混乱
+		B.	各项属性更直观，没有传统材质中定义三种颜色的冗余
+
+		在不同混合模式下，各项属性的有效性：
+		--------------------	Opacity		Translucent Additive	Modulation	Masked
+		BaseColor				○			○			○			○			○
+		EmissiveColor			○			○			○			○			○
+		Normal					○			○			○			○			○
+		Metallic				○			○			○			○			○
+		Specular				○			○			○			○			○
+		Roughness				○			○			○			○			○
+		Opacity					×			○			○			×			×
+		OpacityMask				×			×			×			×			○
+		TwoSided				○			○			○			○			○
+		OpacityMaskClipValue	×			×			×			×			○
+\*--------------------------------------------------------------------------------------------------------------------*/
+
+
 #pragma once
 
 #include "RwgeGraphics.h"
@@ -6,47 +30,24 @@
 #include "d3dx9.h"
 #include "RwgeTexture.h"
 #include <list>
+#include <RwgeObject.h>
+#include "RwgeShaderKey.h"
 
 class ShaderType;
 
-/*
-定义一个渲染单元的渲染状态
-
-负责C++与shader之间的参数传递
-
-PBR材质相比传统材质的优点
-1.	透明度从BaseColor中剥离，防止透明度在多个变量中定义，导致计算逻辑混乱
-2.	各项属性更直观，没有传统材质中定义三种颜色的冗余
-
-在不同混合模式下，各项属性的有效性：
---------------------	Opacity		Translucent Additive	Modulation	Masked
-BaseColor				○			○			○			○			○
-EmissiveColor			○			○			○			○			○
-Normal					○			○			○			○			○
-Metallic				○			○			○			○			○
-Specular				○			○			○			○			○
-Roughness				○			○			○			○			○
-Opacity					×			○			○			×			×
-OpacityMask				×			×			×			×			○
-
-TwoSided				○			○			○			○			○
-OpacityMaskClipValue	×			×			×			×			○
-*/
-
-
-class Material
+class RMaterial : public RObject
 {
 	// 用于定义材质排序
 	friend class OpaqueGroupPolicy;
 	friend class TranslucentGroupPolicy;
 
-	friend class ShaderManager;
-	friend class Shader;
+	friend class RShaderManager;
+	friend class RShader;
 	friend class MaterialFactory;
 
 public:
-	Material();
-	virtual ~Material();
+	RMaterial();
+	virtual ~RMaterial();
 
 	void UpdateConstantBuffer() const;
 	void GetConstantBuffer(unsigned char*& pBuffer, unsigned char& uSize) const;
@@ -57,10 +58,13 @@ public:
 	EBlendMode GetBlendMode() const { return m_BlendMode; }
 
 	void UpdateMaterialKey() const;
-	unsigned long long GetMaterialKey() const;
+	const MaterialKey& GetMaterialKey() const;
 
 	void SetShaderType(ShaderType* pShaderType);
 	ShaderType* GetShaderType() const;
+
+	bool IsNonMetal() const;
+	bool IsFullyRough() const;
 
 protected:
 	MaterialInput<FColorRGB>	m_BaseColor;
@@ -87,7 +91,7 @@ private:
 
 	// 缓存MaterialKey
 	mutable bool				m_bMaterialKeyOutOfDate;
-	mutable unsigned long long	m_u64MaterialKey;			// 与EnvironmentKey拼接可以得到ShaderKey
+	mutable MaterialKey			m_MaterialKey;				// 与EnvironmentKey拼接可以得到ShaderKey
 
 	/*
 	一个shader可能与材质、顶点格式、环境有关，所以严格来说shader是不能够直接与材质绑定的，

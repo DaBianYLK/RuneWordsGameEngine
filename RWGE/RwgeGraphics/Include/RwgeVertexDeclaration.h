@@ -1,7 +1,7 @@
 #pragma once
 
 class VertexDeclarationType;
-class D3D9Device;
+class RD3d9Device;
 struct IDirect3DVertexDeclaration9;
 
 /*
@@ -11,7 +11,7 @@ struct IDirect3DVertexDeclaration9;
 class VertexDeclaration
 {
 	friend class RenderTarget;
-	friend class RenderSystem;
+	friend class RD3d9RenderSystem;
 
 private:
 	VertexDeclaration(VertexDeclarationType* pVertexDeclaration);
@@ -20,7 +20,7 @@ public:
 	VertexDeclaration(VertexDeclaration&& declaration);
 	~VertexDeclaration();
 
-	bool Load(const D3D9Device* pDevice);
+	bool Load(const RD3d9Device* pDevice);
 
 private:
 	VertexDeclarationType* m_pVertexDeclarationType;

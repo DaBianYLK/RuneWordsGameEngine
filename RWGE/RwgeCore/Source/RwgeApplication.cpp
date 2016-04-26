@@ -1,38 +1,56 @@
 #include "RwgeApplication.h"
 
-#include "RwgeAppDelegate.h"
 #include "RwgeInputManager.h"
-#include "RwgeRenderSystem.h"
+#include "RwgeD3d9RenderSystem.h"
 #include "RwgeLog.h"
-#include "RwgeWindow.h"
-#include <tchar.h>
+#include "RwgeAppWindow.h"
 
 using namespace std;
 
-RApplication::RApplication(): 
-	m_pDelegate		(nullptr),
+RApplication::AppDelegate* RApplication::m_pDelegate = nullptr;
+
+RApplication::RApplication() :
 	m_pRenderSystem	(nullptr),
 	m_pInputManager	(nullptr)
 {
 	m_hInstance = GetModuleHandle(nullptr);
+
+	// ================ 初始化各个模块 ================
+	m_pRenderSystem = new RD3d9RenderSystem();
+	m_pInputManager = new RInputManager();
+
+	// ================ 注册窗口类 ================
+	WNDCLASSEX wcex;
+	wcex.cbSize = sizeof(WNDCLASSEX);
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = AppWndProc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = m_hInstance;
+	wcex.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+	wcex.hbrBackground = HBRUSH(COLOR_WINDOW + 1);
+	wcex.lpszMenuName = nullptr;
+	wcex.lpszClassName = "RuneWordsGameEngine";
+	wcex.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
+	RegisterClassEx(&wcex);
+
+	m_pDelegate->OnCreate();
 }
 
 
 RApplication::~RApplication()
 {
-
+	m_pDelegate->OnDestroy();
 }
 
-void RApplication::SetDelegate(RAppDelegate* pDelegate)
+void RApplication::SetDelegate(AppDelegate* pDelegate)
 {
 	m_pDelegate = pDelegate;
 }
 
 void RApplication::Run()
 {
-	// 初始化应用程序
-	Initialize();
-
 	// 启动主循环
 	MSG msg = { 0 };
 	while (WM_QUIT != msg.message)
@@ -44,11 +62,9 @@ void RApplication::Run()
 		}
 		else
 		{
-			Update();
+			UpdateFrame();
 		}
 	}
-
-	Release();
 }
 
 HINSTANCE RApplication::GetHandle() const
@@ -61,36 +77,49 @@ float RApplication::GetTimeSinceLastFrame() const
 	return m_FPSController.GetTimeSinceLastFrame();
 }
 
-RWindow* RApplication::CreateDisplayWindow()
+RAppWindow* RApplication::CreateAppWindow(const char* pName)
 {
-	RWindow* pWindow = new RWindow(m_hInstance);
+	RAppWindow* pWindow = new RAppWindow(m_hInstance, pName);
 
-	m_mapDisplayWindows.insert(make_pair(pWindow->GetName(), pWindow));
+	m_mapAppWindows.insert(make_pair(pWindow->GetName(), pWindow));
+	m_pInputManager->RegAppWindow(pWindow);		// 在输入管理器注册窗口
 
 	return pWindow;
 }
 
-RWindow* RApplication::CreateDisplayWindow(const char* strName, bool bFullScreen /* = false */)
+RAppWindow* RApplication::GetAppWindow(const char* pName)
 {
-	RWindow* pWindow = new RWindow(m_hInstance, strName, bFullScreen);
+	map<string, RAppWindow*>::iterator itWindow = m_mapAppWindows.find(pName);
+	if (itWindow == m_mapAppWindows.end())
+	{
+		return nullptr;
+	}
 
-	m_mapDisplayWindows.insert(make_pair(pWindow->GetName(), pWindow));
-
-	return pWindow;
+	return itWindow->second;
 }
 
-RWindow* RApplication::CreateDisplayWindow(const char* strName, int x, int y, int width, int height)
+RAppWindow* RApplication::GetPrimaryWindow()
 {
-	RWindow* pWindow = new RWindow(m_hInstance, strName, x, y, width, height);
+	if (m_mapAppWindows.empty())
+	{
+		return nullptr;
+	}
 
-	m_mapDisplayWindows.insert(make_pair(pWindow->GetName(), pWindow));
-
-	return pWindow;
+	return m_mapAppWindows.begin()->second;
 }
 
-RWindow* RApplication::GetDisplayWindow(const char* strName)
+bool RApplication::DestroyAppWindow(const char* pName)
 {
-	return m_mapDisplayWindows.find(strName)->second;
+	map<string, RAppWindow*>::iterator itWindow = m_mapAppWindows.find(pName);
+	if (itWindow == m_mapAppWindows.end())
+	{
+		return false;
+	}
+	
+	delete itWindow->second;
+	m_mapAppWindows.erase(itWindow);
+
+	return true;
 }
 
 float RApplication::GetCurrentFPS() const
@@ -98,51 +127,20 @@ float RApplication::GetCurrentFPS() const
 	return m_FPSController.GetCurrentFPS();
 }
 
-LRESULT CALLBACK RApplication::AppWndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK RApplication::AppWndProc(HWND hWnd, UINT u32Message, WPARAM wParam, LPARAM lParam)
 {
-	return RInputManager::GetInstance().MessageHandler(hwnd, umessage, wparam, lparam);
+	return RInputManager::GetInstance().HandleMessage(hWnd, u32Message, wParam, lParam);
 }
 
-void RApplication::Initialize()
-{
-	// Register class
-	WNDCLASSEX wcex;
-	wcex.cbSize = sizeof(WNDCLASSEX);
-	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc = AppWndProc;
-	wcex.cbClsExtra = 0;
-	wcex.cbWndExtra = 0;
-	wcex.hInstance = m_hInstance;
-	wcex.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
-	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground = HBRUSH(COLOR_WINDOW + 1);
-	wcex.lpszMenuName = nullptr;
-	wcex.lpszClassName = "MainWindow";
-	wcex.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
-	RegisterClassEx(&wcex);
-
-	// 初始化各个单例模块
-	m_pRenderSystem = new RenderSystem();
-	m_pInputManager = new RInputManager();
-	
-	m_pDelegate->Initialize();
-}
-
-void RApplication::Update()
+void RApplication::UpdateFrame()
 {
 	m_FPSController.FrameStart();
 
-	float fDeltaTime = m_FPSController.GetTimeSinceLastFrame();
+	float f32DeltaTime = m_FPSController.GetTimeSinceLastFrame();
 
-	// 更新各个子模块
-	m_pInputManager->Update(fDeltaTime);
-	m_pDelegate->Update(fDeltaTime);
-	m_pRenderSystem->RenderOneFrame(fDeltaTime);
+	// ================ 更新各个模块 ================
+	m_pDelegate->OnUpdateFrame(f32DeltaTime);
+	m_pRenderSystem->RenderOneFrame(f32DeltaTime);
 
 	m_FPSController.FrameEnd();
-}
-
-void RApplication::Release()
-{
-	
 }

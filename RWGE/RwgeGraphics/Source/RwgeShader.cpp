@@ -1,17 +1,17 @@
 #include "RwgeShader.h"
 
-#include "RwgeD3D9Device.h"
+#include "RwgeD3d9Device.h"
 #include "RwgeShaderType.h"
 #include "RwgeMaterial.h"
 #include "RwgeTextureInfo.h"
 #include "RwgeTexture.h"
-#include "RwgeRenderTarget.h"
+#include "RwgeD3d9RenderTarget.h"
 #include <RwgeAssert.h>
 #include <list>
 
 using namespace std;
 
-Shader::Shader(ShaderType* pShaderType) : 
+RShader::RShader(ShaderType* pShaderType) : 
 	m_pShaderType(pShaderType),
 	m_pEffect(nullptr), 
 	m_hWVPTransform(nullptr), 
@@ -30,7 +30,7 @@ Shader::Shader(ShaderType* pShaderType) :
 {
 }
 
-Shader::Shader(Shader&& shader) :
+RShader::RShader(RShader&& shader) :
 	m_pShaderType(shader.m_pShaderType),
 	m_pEffect(shader.m_pEffect),
 	m_hWVPTransform(shader.m_hWVPTransform),
@@ -64,15 +64,15 @@ Shader::Shader(Shader&& shader) :
 	shader.m_hPointLight = nullptr;
 }
 
-Shader::~Shader()
+RShader::~RShader()
 {
 }
 
-bool Shader::Load(const D3D9Device* pDevice, LPD3DXEFFECTPOOL pEffectPool)
+bool RShader::Load(const RD3d9Device* pDevice, LPD3DXEFFECTPOOL pEffectPool)
 {
 	LPD3DXBUFFER pErrorBuffer = nullptr;
 
-	HRESULT hResult = D3DXCreateEffectFromFile(pDevice->GetDevicePtr(),					// D3D9Device接口指针
+	HRESULT hResult = D3DXCreateEffectFromFile(pDevice->GetD3dDevice(),					// D3D9Device接口指针
 											  m_pShaderType->GetShaderPath().c_str(),	// Shader资源文件路径
 											  nullptr,									// 宏定义声明（二进制文件不需要）
 											  nullptr,									// Include声明（二进制文件不需要）
@@ -83,7 +83,7 @@ bool Shader::Load(const D3D9Device* pDevice, LPD3DXEFFECTPOOL pEffectPool)
 
 	if (FAILED(hResult))
 	{
-		ErrorBox("Create effect failed : %X\n%s", hResult, pErrorBuffer);
+		RwgeErrorBox("Create effect failed : %X\n%s", hResult, pErrorBuffer);
 		return false;
 	}
 
@@ -105,25 +105,25 @@ bool Shader::Load(const D3D9Device* pDevice, LPD3DXEFFECTPOOL pEffectPool)
 	return true;
 }
 
-void Shader::Begin() const
+void RShader::Begin() const
 {
 	unsigned int uPassCount;
 	m_pEffect->Begin(&uPassCount, 0);
 	m_pEffect->BeginPass(0);		// 暂时不考虑多Pass，假定所有Technique都是单Pass
 }
 
-void Shader::End() const
+void RShader::End() const
 {
 	m_pEffect->EndPass();
 	m_pEffect->End();
 }
 
-void Shader::CommitChanges() const
+void RShader::CommitChanges() const
 {
 	m_pEffect->CommitChanges();
 }
 
-void Shader::SetMaterial(Material* pMaterial, RenderTarget* pRenderTarget)
+void RShader::SetMaterial(RMaterial* pMaterial, RenderTarget* pRenderTarget)
 {
 	// =========================== 绑定纹理 ===========================
 	TextureInfo* pTextureInfo = pMaterial->m_BaseColor.GetTextureInfo();
@@ -158,7 +158,7 @@ void Shader::SetMaterial(Material* pMaterial, RenderTarget* pRenderTarget)
 	SetMaterialConstant(pBuffer, uSize);
 }
 
-void Shader::SetTransform(const D3DXMATRIX* pWorld, const D3DXMATRIX* pWVP)
+void RShader::SetTransform(const D3DXMATRIX* pWorld, const D3DXMATRIX* pWVP)
 {
 	/*
 	Shader中的矩阵默认是column-major的，若使用SetRawValue或SetValue传递矩阵，需要先将矩阵转置
@@ -167,7 +167,7 @@ void Shader::SetTransform(const D3DXMATRIX* pWorld, const D3DXMATRIX* pWVP)
 	m_pEffect->SetMatrix(m_hWVPTransform, pWVP);
 }
 
-void Shader::SetViewOppositeDirection(const void* pDirection)
+void RShader::SetViewOppositeDirection(const void* pDirection)
 {
 	/*
 	从CPU向Shader传递数据时，需要注意Shader中所有的数据都是以float4为单位来排列的，即如果在hlsl中定义了一个结构体：
@@ -190,57 +190,57 @@ void Shader::SetViewOppositeDirection(const void* pDirection)
 	m_pEffect->SetRawValue(m_hViewOppositeDirection, pDirection, 0, sizeof(float)* 3);
 }
 
-void Shader::SetMaterialConstant(const void* pMaterialConstant, unsigned uSize)
+void RShader::SetMaterialConstant(const void* pMaterialConstant, unsigned uSize)
 {
 	m_pEffect->SetValue(m_hMaterial, pMaterialConstant, uSize);
 }
 
-void Shader::SetBaseColorTexture(const Texture* pTexture)
+void RShader::SetBaseColorTexture(const Texture* pTexture)
 {
 	m_pEffect->SetTexture(m_hBaseColorTexture, pTexture->GetD3DTexturePtr());
 }
 
-void Shader::SetEmissiveColorTexture(const Texture* pTexture)
+void RShader::SetEmissiveColorTexture(const Texture* pTexture)
 {
 	m_pEffect->SetTexture(m_hEmissiveColorTexture, pTexture->GetD3DTexturePtr());
 }
 
-void Shader::SetNormalTexture(const Texture* pTexture)
+void RShader::SetNormalTexture(const Texture* pTexture)
 {
 	m_pEffect->SetTexture(m_hNormalTexture, pTexture->GetD3DTexturePtr());
 }
 
-void Shader::SetMetallicTexture(const Texture* pTexture)
+void RShader::SetMetallicTexture(const Texture* pTexture)
 {
 	m_pEffect->SetTexture(m_hMetallicTexture, pTexture->GetD3DTexturePtr());
 }
 
-void Shader::SetSpecularTexture(const Texture* pTexture)
+void RShader::SetSpecularTexture(const Texture* pTexture)
 {
 	m_pEffect->SetTexture(m_hSpecularTexture, pTexture->GetD3DTexturePtr());
 }
 
-void Shader::SetRoughnessTexture(const Texture* pTexture)
+void RShader::SetRoughnessTexture(const Texture* pTexture)
 {
 	m_pEffect->SetTexture(m_hRoughnessTexture, pTexture->GetD3DTexturePtr());
 }
 
-void Shader::SetOpacityTexture(const Texture* pTexture)
+void RShader::SetOpacityTexture(const Texture* pTexture)
 {
 	m_pEffect->SetTexture(m_hOpacityTexture, pTexture->GetD3DTexturePtr());
 }
 
-void Shader::SetOpacityMaskTexture(const Texture* pTexture)
+void RShader::SetOpacityMaskTexture(const Texture* pTexture)
 {
 	m_pEffect->SetTexture(m_hOpacityMaskTexture, pTexture->GetD3DTexturePtr());
 }
 
-void Shader::SetLight(const void* pLight, unsigned int uSize)
+void RShader::SetLight(const void* pLight, unsigned int uSize)
 {
 	m_pEffect->SetValue(m_hPointLight, pLight, uSize);
 }
 
-void Shader::SetSHCoefficients(const SHCoefficients* pCoefficients)
+void RShader::SetSHCoefficients(const SHCoefficients* pCoefficients)
 {
 	m_pEffect->SetRawValue(m_hSHCoefficients, pCoefficients, 0, sizeof(float)* 12);
 }

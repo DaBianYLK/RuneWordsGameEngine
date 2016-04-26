@@ -5,18 +5,18 @@
 class MaterialFactory
 {
 public:
-	static Material* CreateWhiteMaterial();
-	static Material* CreateWoodenBoxMaterial();
-	static Material* CreateMetalBoxMaterial();
-	static Material* CreateWoodenBoxMaterialWithoutNormalMap();
-	static Material* CreateMetalBoxMaterialWithoutNormalMap();
+	static RMaterial* CreateWhiteMaterial();
+	static RMaterial* CreateWoodenBoxMaterial();
+	static RMaterial* CreateMetalBoxMaterial();
+	static RMaterial* CreateWoodenBoxMaterialWithoutNormalMap();
+	static RMaterial* CreateMetalBoxMaterialWithoutNormalMap();
 
-	static Material* CreateZhanHunBodyMaterialWithoutNormalMap();
-	static Material* CreateZhanHunShoulderMaterial();
-	static Material* CreateZhanHunBodyMaterial();
-	static Material* CreateZhanHunHeadMaterial();
-	static Material* CreateZhanHunHandMaterial();
-	static Material* CreateZhanHunHairMaterial();
+	static RMaterial* CreateZhanHunBodyMaterialWithoutNormalMap();
+	static RMaterial* CreateZhanHunShoulderMaterial();
+	static RMaterial* CreateZhanHunBodyMaterial();
+	static RMaterial* CreateZhanHunHeadMaterial();
+	static RMaterial* CreateZhanHunHandMaterial();
+	static RMaterial* CreateZhanHunHairMaterial();
 
-	static Material* CreateBackgroundMaterial();
+	static RMaterial* CreateBackgroundMaterial();
 };

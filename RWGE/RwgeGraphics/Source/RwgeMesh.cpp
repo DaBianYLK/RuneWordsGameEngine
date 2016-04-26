@@ -10,12 +10,12 @@ Mesh::~Mesh()
 {
 }
 
-void Mesh::SetMaterial(Material* pMaterial)
+void Mesh::SetMaterial(RMaterial* pMaterial)
 {
 	m_pMaterial = pMaterial;
 }
 
-Material* Mesh::GetMaterialPtr() const
+RMaterial* Mesh::GetMaterialPtr() const
 {
 	return m_pMaterial;
 }

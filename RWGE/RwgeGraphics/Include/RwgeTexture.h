@@ -4,7 +4,7 @@
 
 struct IDirect3DTexture9;
 class TextureInfo;
-class D3D9Device;
+class RD3d9Device;
 
 /*
 DX中，纹理贴图的坐上角为纹理坐标的原点，X轴水平向右，Y轴竖直向下，具体如下图：
@@ -22,7 +22,7 @@ public:
 	Texture(TextureInfo* pInfo);
 	~Texture();
 
-	void Load(const D3D9Device& device);
+	void Load(const RD3d9Device& device);
 	IDirect3DTexture9* GetD3DTexturePtr() const { return m_pD3DTexture; };
 
 private:

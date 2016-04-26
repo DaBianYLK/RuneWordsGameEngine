@@ -170,6 +170,7 @@
     <ClInclude Include="Include\RwgeModelFile.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\DllEntry.cpp" />
     <ClCompile Include="Source\Rwge3dsMaxPlug.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

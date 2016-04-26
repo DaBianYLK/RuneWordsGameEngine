@@ -4,7 +4,7 @@
 #include <hash_map>
 #include <RwgeSingleton.h>
 
-class D3D9Device;
+class RD3d9Device;
 struct IDirect3DDevice9;
 
 /*

@@ -22,8 +22,8 @@ public:
 	bool operator() (const RenderState& keyA, const RenderState& keyB) const
 	{
 		// 排序优先级：Material(Shader > Texture > MaterialConstant) > Depth
-		const Material* materialA = keyA.pMaterial;
-		const Material* materialB = keyB.pMaterial;
+		const RMaterial* materialA = keyA.pMaterial;
+		const RMaterial* materialB = keyB.pMaterial;
 
 		// 如果材质地址相同，说明是同一个材质，返回深度值的比较结果
 		if (materialA == materialB)
@@ -94,8 +94,8 @@ public:
 		}
 
 		// 如果深度值相同，则比较材质地址
-		const Material* materialA = keyA.pMaterial;
-		const Material* materialB = keyB.pMaterial;
+		const RMaterial* materialA = keyA.pMaterial;
+		const RMaterial* materialB = keyB.pMaterial;
 
 		// 如果材质地址相同，说明是同一个材质，直接返回false
 		if (materialA == materialB)
@@ -162,7 +162,7 @@ RenderQueue仅能由RenderSystem创建和释放
 
 class RenderQueue
 {
-	friend class RenderSystem;
+	friend class RD3d9RenderSystem;
 
 private:
 	RenderQueue();

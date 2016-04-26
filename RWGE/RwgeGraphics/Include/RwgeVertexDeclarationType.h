@@ -6,7 +6,7 @@
 
 struct IDirect3DVertexDeclaration9;
 struct IDirect3DDevice9;
-class D3D9Device;
+class RD3d9Device;
 class VertexDeclaration;
 class RenderTarget;
 

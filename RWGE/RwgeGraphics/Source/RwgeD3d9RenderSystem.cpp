@@ -1,6 +1,181 @@
-#include "RwgeRenderTarget.h"
+#include "RwgeD3d9RenderSystem.h"
 
-#include "RwgeWindow.h"
+#include "RwgeGraphics.h"
+#include "RwgeSceneManager.h"
+#include "RwgeLight.h"
+#include "RwgeRenderPrimitive.h"
+#include "RwgeCamera.h"
+
+RD3d9RenderSystem::RD3d9RenderSystem()
+{
+	m_pD3D9 = Direct3DCreate9(D3D_SDK_VERSION);
+	if (!m_pD3D9)
+	{
+		RwgeErrorBox("Initialize Direct3D-9 failed.");
+	}
+}
+
+RD3d9RenderSystem::~RD3d9RenderSystem()
+{
+	D3d9SafeRelease(m_pD3D9);
+}
+
+bool RD3d9RenderSystem::CreateDevice(const RAppWindow& window)
+{
+
+}
+
+bool RD3d9RenderSystem::DestroyDevice()
+{
+
+}
+
+void RD3d9RenderSystem::RenderOneFrame(float fDeltaTime)
+{
+	// 注意，此处auto需要加上引用，否则会创建副本
+	for (auto pRenderTarget : m_listRenderTarget)
+	{
+		m_pActiveRenderTarget = pRenderTarget;
+
+		pRenderTarget->Update();
+	}
+}
+
+void RD3d9RenderSystem::RenderScene(SceneManager* pSceneManager)
+{
+	// 设置着色器共享常量
+	RShader* pShader = m_pActiveRenderTarget->GetShader();
+
+	//static bool bLighted = false;
+	//if (!bLighted)
+	{
+		void* pLightData;
+		unsigned char uSize;
+		pSceneManager->GetLight()->GetConstantBuffer(pLightData, uSize);
+		pShader->SetLight(pLightData, uSize);
+
+	//	bLighted = true;
+	}
+
+	// 设置球谐函数系数（暂时先全部设为1）
+	SHCoefficients coefficients;
+	coefficients.R = D3DXVECTOR4(1, 1, 1, 1);
+	coefficients.G = D3DXVECTOR4(1, 1, 1, 1);
+	coefficients.B = D3DXVECTOR4(1, 1, 1, 1);
+	pShader->SetSHCoefficients(&coefficients);
+
+	D3DXVECTOR3 viewOppoisteDirection = -(pSceneManager->GetActiveCamera()->GetDirection());
+	pShader->SetViewOppositeDirection(&viewOppoisteDirection);
+
+	// 遍历渲染队列，并执行绘制函数
+	DrawRenderQueue();
+}
+
+void RD3d9RenderSystem::DrawRenderQueue()
+{
+	m_pActiveRenderTarget->GetD3dDevice()->BeginScene();
+
+	// 先画不透明组中的图元
+	//auto = pair <RenderStateKey, std::list<RenderPrimitive*>>
+	for (auto& renderOperation : m_RenderQueue.m_OpaqueGroup)
+	{
+		ApplyRenderState(renderOperation.first);
+
+		// auto = RenderPrimitive*
+		for (auto pPrimitive : renderOperation.second)
+		{
+			DrawPrimitive(*pPrimitive);
+		}
+	}
+
+	// 再画半透明组中的图元
+	//auto = pair <RenderStateKey, std::list<RenderPrimitive*>>
+	for (auto& renderOperation : m_RenderQueue.m_TranslucentGroup)
+	{
+		ApplyRenderState(renderOperation.first);
+
+		// auto = RenderPrimitive*
+		for (auto pPrimitive : renderOperation.second)
+		{
+			DrawPrimitive(*pPrimitive);
+		}
+	}
+
+	m_pActiveRenderTarget->GetD3dDevice()->EndScene();
+
+	//ResetRenderState();
+}
+
+void RD3d9RenderSystem::ApplyRenderState(const RenderState& renderState)
+{
+	m_pActiveRenderTarget->ApplyRenderState(renderState);
+}
+
+void RD3d9RenderSystem::ResetRenderState()
+{
+	m_pActiveRenderTarget->ResetRenderState();
+}
+
+void RD3d9RenderSystem::DrawPrimitive(const RenderPrimitive& primitive)
+{
+	m_pActiveRenderTarget->DrawPrimitive(primitive);
+}
+
+IDirect3D9* RD3d9RenderSystem::GetD3d9() const
+{
+	return m_pD3D9;
+}
+
+RenderTarget* RD3d9RenderSystem::CreateRenderTarget(const RAppWindow* pWindow)
+{
+	m_pActiveRenderTarget = new RenderTarget(pWindow);
+
+	m_listRenderTarget.push_back(m_pActiveRenderTarget);
+
+	return m_pActiveRenderTarget;
+}
+
+bool RD3d9RenderSystem::RemoveRenderTarget(RenderTarget* pTarget)
+{
+	RwgeAssert(pTarget);
+
+	if (pTarget == m_pActiveRenderTarget)
+	{
+		m_pActiveRenderTarget = nullptr;
+	}
+
+	m_listRenderTarget.remove(pTarget);
+
+	return true;
+}
+
+RenderTarget* RD3d9RenderSystem::GetActiveRenderTarget() const
+{
+	return m_pActiveRenderTarget;
+}
+
+RenderQueue* RD3d9RenderSystem::GetRenderQueuePtr()
+{
+	return &m_RenderQueue;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include "RwgeD3d9RenderTarget.h"
+
+#include "RwgeAppWindow.h"
 #include "RwgeShaderManager.h"
 #include "RwgeVertexDeclarationType.h"
 #include "RwgeRenderPrimitive.h"
@@ -10,19 +185,19 @@
 
 using namespace std;
 
-RenderTarget::RenderTarget(const RWindow* pWindow) :
-	D3D9Device							(*pWindow),
-	m_pWindow							(pWindow),
-	m_pActiveViewport					(nullptr), 
-	m_pIndexBuffer				(nullptr),
-	m_pEffectPool						(nullptr),
-	m_pCurrentVertexDeclaration	(nullptr),
-	m_pCurrentIndexBuffer			(nullptr)
+RenderTarget::RenderTarget(const RAppWindow* pWindow) :
+RD3d9Device(*pWindow),
+m_pWindow(pWindow),
+m_pActiveViewport(nullptr),
+m_pIndexBuffer(nullptr),
+m_pEffectPool(nullptr),
+m_pCurrentVertexDeclaration(nullptr),
+m_pCurrentIndexBuffer(nullptr)
 {
 	HRESULT hResult = D3DXCreateEffectPool(&m_pEffectPool);
 	if (FAILED(hResult))
 	{
-		ErrorBox("Create effect pool failed.")
+		RwgeErrorBox("Create effect pool failed.")
 	}
 
 	m_listVertexBuffers.push_back(new VertexBuffer(*this, m_uVertexBufferSize));
@@ -32,7 +207,7 @@ RenderTarget::RenderTarget(const RWindow* pWindow) :
 
 RenderTarget::~RenderTarget()
 {
-	
+
 }
 
 bool RenderTarget::Release()
@@ -41,14 +216,14 @@ bool RenderTarget::Release()
 	// 创建一个空的临时链表和利用swap函数交换内存，再利用临时链表的析构函数释放内存(如果需要立即释放可以通过大括号限定临时变量的作用域)
 	ViewportList emptyList;
 	m_ViewportList.swap(emptyList);
-	
+
 	return __super::Release();
 }
 
 Viewport* RenderTarget::CreateViewport()
 {
 	//m_ViewportList.emplace_back(Viewport(m_pDevice, 0, 0, m_pWindow->GetWidth(), m_pWindow->GetHeight()));
-	m_ViewportList.emplace_back(Viewport(m_pDevice, 0, 0, 1440, 900));
+	m_ViewportList.emplace_back(Viewport(m_pD3dDevice, 0, 0, 1440, 900));
 	m_pActiveViewport = &m_ViewportList.back();
 	m_pActiveViewport->m_pRenderTarget = this;
 
@@ -57,7 +232,7 @@ Viewport* RenderTarget::CreateViewport()
 
 bool RenderTarget::RemoveViewport(Viewport* pViewport)
 {
-	ASSERT(pViewport);
+	RwgeAssert(pViewport);
 
 	if (pViewport == m_pActiveViewport)
 	{
@@ -78,8 +253,8 @@ void RenderTarget::Update()
 
 		viewport.Update();
 
-		m_pDevice->Present(nullptr, nullptr, nullptr, nullptr);
-		m_pSwapChain->Present(nullptr, nullptr, nullptr, nullptr, 0);
+		m_pD3dDevice->Present(nullptr, nullptr, nullptr, nullptr);
+		m_pD3dSwapChain->Present(nullptr, nullptr, nullptr, nullptr, 0);
 	}
 }
 
@@ -93,7 +268,7 @@ SceneManager* RenderTarget::GetActiveSceneManager() const
 	return m_pActiveSceneManager;
 }
 
-Shader* RenderTarget::GetShader(ShaderType* pShaderType /* = nullptr */)
+RShader* RenderTarget::GetShader(ShaderType* pShaderType /* = nullptr */)
 {
 	// 如果着色器类型为空，则默认返回哈希表中的第一个着色器
 	if (pShaderType == nullptr)
@@ -101,13 +276,13 @@ Shader* RenderTarget::GetShader(ShaderType* pShaderType /* = nullptr */)
 		if (m_hashShaders.empty())
 		{
 			// 如果hash表为空，创建一个类型为空的着色器
-			return GetShader(ShaderManager::GetInstance().GetShaderType(0));
+			return GetShader(RShaderManager::GetInstance().GetShaderType(0));
 		}
 
 		return m_hashShaders.begin()->second;
 	}
 
-	hash_map<ShaderType*, Shader*>::iterator it = m_hashShaders.find(pShaderType);
+	hash_map<ShaderType*, RShader*>::iterator it = m_hashShaders.find(pShaderType);
 
 	// 如果找到了就返回着色器指针
 	if (it != m_hashShaders.end())
@@ -116,7 +291,7 @@ Shader* RenderTarget::GetShader(ShaderType* pShaderType /* = nullptr */)
 	}
 
 	// 如果没有找到就从文件里加载
-	Shader* pShader = new Shader(pShaderType);
+	RShader* pShader = new RShader(pShaderType);
 	pShader->Load(this, m_pEffectPool);
 
 	// 将加载好的着色器加入哈希表
@@ -164,10 +339,10 @@ Texture* RenderTarget::GetTexture(TextureInfo* pInfo)
 
 void RenderTarget::ApplyRenderState(const RenderState& renderState)
 {
-	Material* pCurrentMaterial = m_CurrentRenderState.pMaterial;
-	Material* pNewMaterial = renderState.pMaterial;
+	RMaterial* pCurrentMaterial = m_CurrentRenderState.pMaterial;
+	RMaterial* pNewMaterial = renderState.pMaterial;
 
-	Shader* pNewShader = pNewMaterial->GetShaderType()->GetShader(this);
+	RShader* pNewShader = pNewMaterial->GetShaderType()->GetShader(this);
 
 	// 如果当前材质为空，则直接绑定新材质
 	if (pCurrentMaterial == nullptr)
@@ -178,7 +353,7 @@ void RenderTarget::ApplyRenderState(const RenderState& renderState)
 	// 如果当前材质与新材质不同
 	else if (pCurrentMaterial != pNewMaterial)
 	{
-		Shader* pCurrentShader = pCurrentMaterial->GetShaderType()->GetShader(this);
+		RShader* pCurrentShader = pCurrentMaterial->GetShaderType()->GetShader(this);
 
 		// 如果当前着色器为空，直接绑定新着色器（这里其实不可能成立，因为有材质一定有shader）
 		if (pCurrentShader == nullptr)
@@ -212,11 +387,11 @@ void RenderTarget::ApplyRenderState(const RenderState& renderState)
 
 void RenderTarget::ResetRenderState()
 {
-	Material* pMaterial = m_CurrentRenderState.pMaterial;
+	RMaterial* pMaterial = m_CurrentRenderState.pMaterial;
 
 	if (pMaterial != nullptr)
 	{
-		Shader* pShader = pMaterial->GetShaderType()->GetShader(this);
+		RShader* pShader = pMaterial->GetShaderType()->GetShader(this);
 
 		if (pShader != nullptr)
 		{
@@ -232,15 +407,15 @@ void RenderTarget::ApplyVertexStreamAndIndexStream(VertexDeclaration* pVertexDec
 	if (m_pCurrentVertexDeclaration != pVertexDeclarationInstance)
 	{
 		// ======================== 设置D3D顶点声明 ========================
-		HRESULT hResult = m_pDevice->SetVertexDeclaration(pVertexDeclarationInstance->m_pD3DVertexDeclaration);
+		HRESULT hResult = m_pD3dDevice->SetVertexDeclaration(pVertexDeclarationInstance->m_pD3DVertexDeclaration);
 		if (FAILED(hResult))
 		{
-			ErrorBox("Set vertex declaration failed : %X", hResult);
+			RwgeErrorBox("Set vertex declaration failed : %X", hResult);
 		}
 
 		// ======================== 绑定Stream Buffer ========================
 		VertexDeclarationType* pVertexDeclaration = pVertexDeclarationInstance->m_pVertexDeclarationType;
-		
+
 		unsigned int uNewStreamCount = pVertexDeclaration->GetStreamCount();
 		unsigned int uMissingBufferCount = uNewStreamCount - m_listVertexBuffers.size();
 		for (unsigned int i = 0; i < uMissingBufferCount; ++i)
@@ -252,7 +427,7 @@ void RenderTarget::ApplyVertexStreamAndIndexStream(VertexDeclaration* pVertexDec
 		list<VertexBuffer*>::iterator itVertexBuffer = m_listVertexBuffers.begin();
 		for (; uStreamIndex < uNewStreamCount; ++uStreamIndex, ++itVertexBuffer)
 		{
-			m_pDevice->SetStreamSource(
+			m_pD3dDevice->SetStreamSource(
 				uStreamIndex,													// Stream ID
 				(*itVertexBuffer)->GetD3DVertexStreamBuffer(),					// 绑定的StreamBuffer
 				0,																// StreamBuffer的Offset
@@ -265,7 +440,7 @@ void RenderTarget::ApplyVertexStreamAndIndexStream(VertexDeclaration* pVertexDec
 			unsigned int uCurrentStreamCount = m_pCurrentVertexDeclaration->m_pVertexDeclarationType->GetStreamCount();
 			for (; uStreamIndex < uCurrentStreamCount; ++uStreamIndex)
 			{
-				m_pDevice->SetStreamSource(
+				m_pD3dDevice->SetStreamSource(
 					uStreamIndex,			// Stream ID
 					nullptr,				// 绑定的StreamBuffer
 					0,						// StreamBuffer的Offset
@@ -278,11 +453,11 @@ void RenderTarget::ApplyVertexStreamAndIndexStream(VertexDeclaration* pVertexDec
 
 	if (m_pCurrentIndexBuffer != m_pIndexBuffer)
 	{
-		HRESULT hResult = m_pDevice->SetIndices(m_pIndexBuffer->GetD3DIndexBuffer());
+		HRESULT hResult = m_pD3dDevice->SetIndices(m_pIndexBuffer->GetD3DIndexBuffer());
 
 		if (FAILED(hResult))
 		{
-			ASSERT(true);
+			RwgeAssert(true);
 		}
 
 		m_pCurrentIndexBuffer = m_pIndexBuffer;
@@ -309,7 +484,7 @@ void RenderTarget::DrawPrimitive(const RenderPrimitive& primitive)
 	m_pIndexBuffer->BindStreamData(pIndexStream->pIndexData, pIndexStream->uStreamSize);
 
 	// 执行DP
-	HRESULT hResult = m_pDevice->DrawIndexedPrimitive(
+	HRESULT hResult = m_pD3dDevice->DrawIndexedPrimitive(
 		primitive.GetPrimitiveType(),		// 图元类型
 		0,									// 从第几个顶点开始匹配0号索引
 		0,									// 最小顶点索引（？）
@@ -319,7 +494,7 @@ void RenderTarget::DrawPrimitive(const RenderPrimitive& primitive)
 
 	if (FAILED(hResult))
 	{
-		ErrorBox("Draw Primitive Failed : %X", hResult);
+		RwgeErrorBox("Draw Primitive Failed : %X", hResult);
 	}
 }
 

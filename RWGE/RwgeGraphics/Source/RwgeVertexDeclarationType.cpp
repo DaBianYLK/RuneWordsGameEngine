@@ -1,8 +1,8 @@
 #include "RwgeVertexDeclarationType.h"
 
-#include "RwgeD3D9Device.h"
+#include "RwgeD3d9Device.h"
 #include <d3dx9.h>
-#include "RwgeRenderTarget.h"
+#include "RwgeD3d9RenderTarget.h"
 
 VertexDeclarationType::VertexDeclarationType() :
 	m_bVertexDataOutOfDate(true), 

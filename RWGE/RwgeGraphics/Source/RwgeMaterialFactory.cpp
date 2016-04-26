@@ -3,9 +3,9 @@
 #include "RwgeMExpTexture2dSample.h"
 #include "RwgeTextureManager.h"
 
-Material* MaterialFactory::CreateWhiteMaterial()
+RMaterial* MaterialFactory::CreateWhiteMaterial()
 {
-	Material* pMaterial = new Material();
+	RMaterial* pMaterial = new RMaterial();
 
 	pMaterial->m_BaseColor.SetConstant(FColorRGB(1.0f));
 	pMaterial->m_EmissiveColor.SetConstant(FColorRGB(1.0f));
@@ -24,9 +24,9 @@ Material* MaterialFactory::CreateWhiteMaterial()
 	return pMaterial;
 }
 
-Material* MaterialFactory::CreateWoodenBoxMaterial()
+RMaterial* MaterialFactory::CreateWoodenBoxMaterial()
 {
-	Material* pMaterial = new Material();
+	RMaterial* pMaterial = new RMaterial();
 
 	MExpTexture2DSample* pBaseColorExpression = new MExpTexture2DSample();
 	pBaseColorExpression->SetTextureInfo(TextureManager::GetInstance().GetTextureInfo("textures/WoodenBox.jpg"));
@@ -52,9 +52,9 @@ Material* MaterialFactory::CreateWoodenBoxMaterial()
 	return pMaterial;
 }
 
-Material* MaterialFactory::CreateMetalBoxMaterial()
+RMaterial* MaterialFactory::CreateMetalBoxMaterial()
 {
-	Material* pMaterial = new Material();
+	RMaterial* pMaterial = new RMaterial();
 
 	MExpTexture2DSample* pBaseColorExpression = new MExpTexture2DSample();
 	pBaseColorExpression->SetTextureInfo(TextureManager::GetInstance().GetTextureInfo("textures/WoodenBox.jpg"));
@@ -80,9 +80,9 @@ Material* MaterialFactory::CreateMetalBoxMaterial()
 	return pMaterial;
 }
 
-Material* MaterialFactory::CreateWoodenBoxMaterialWithoutNormalMap()
+RMaterial* MaterialFactory::CreateWoodenBoxMaterialWithoutNormalMap()
 {
-	Material* pMaterial = new Material();
+	RMaterial* pMaterial = new RMaterial();
 
 	MExpTexture2DSample* pBaseColorExpression = new MExpTexture2DSample();
 	pBaseColorExpression->SetTextureInfo(TextureManager::GetInstance().GetTextureInfo("textures/WoodenBox.jpg"));
@@ -104,9 +104,9 @@ Material* MaterialFactory::CreateWoodenBoxMaterialWithoutNormalMap()
 	return pMaterial;
 }
 
-Material* MaterialFactory::CreateMetalBoxMaterialWithoutNormalMap()
+RMaterial* MaterialFactory::CreateMetalBoxMaterialWithoutNormalMap()
 {
-	Material* pMaterial = new Material();
+	RMaterial* pMaterial = new RMaterial();
 
 	MExpTexture2DSample* pBaseColorExpression = new MExpTexture2DSample();
 	pBaseColorExpression->SetTextureInfo(TextureManager::GetInstance().GetTextureInfo("textures/WoodenBox.jpg"));
@@ -128,9 +128,9 @@ Material* MaterialFactory::CreateMetalBoxMaterialWithoutNormalMap()
 	return pMaterial;
 }
 
-Material* MaterialFactory::CreateZhanHunBodyMaterial()
+RMaterial* MaterialFactory::CreateZhanHunBodyMaterial()
 {
-	Material* pMaterial = new Material();
+	RMaterial* pMaterial = new RMaterial();
 
 	MExpTexture2DSample* pBaseColorExpression = new MExpTexture2DSample();
 	pBaseColorExpression->SetTextureInfo(TextureManager::GetInstance().GetTextureInfo("textures/zhanhun1_cloth.bmp"));
@@ -156,9 +156,9 @@ Material* MaterialFactory::CreateZhanHunBodyMaterial()
 }
 
 
-Material* MaterialFactory::CreateZhanHunBodyMaterialWithoutNormalMap()
+RMaterial* MaterialFactory::CreateZhanHunBodyMaterialWithoutNormalMap()
 {
-	Material* pMaterial = new Material();
+	RMaterial* pMaterial = new RMaterial();
 
 	MExpTexture2DSample* pBaseColorExpression = new MExpTexture2DSample();
 	pBaseColorExpression->SetTextureInfo(TextureManager::GetInstance().GetTextureInfo("textures/zhanhun1_cloth.bmp"));
@@ -180,9 +180,9 @@ Material* MaterialFactory::CreateZhanHunBodyMaterialWithoutNormalMap()
 	return pMaterial;
 }
 
-Material* MaterialFactory::CreateZhanHunShoulderMaterial()
+RMaterial* MaterialFactory::CreateZhanHunShoulderMaterial()
 {
-	Material* pMaterial = new Material();
+	RMaterial* pMaterial = new RMaterial();
 
 	MExpTexture2DSample* pBaseColorExpression = new MExpTexture2DSample();
 	pBaseColorExpression->SetTextureInfo(TextureManager::GetInstance().GetTextureInfo("textures/alpha_zhanhun1_cloth.tga"));
@@ -207,9 +207,9 @@ Material* MaterialFactory::CreateZhanHunShoulderMaterial()
 	return pMaterial;
 }
 
-Material* MaterialFactory::CreateZhanHunHeadMaterial()
+RMaterial* MaterialFactory::CreateZhanHunHeadMaterial()
 {
-	Material* pMaterial = new Material();
+	RMaterial* pMaterial = new RMaterial();
 
 	MExpTexture2DSample* pBaseColorExpression = new MExpTexture2DSample();
 	pBaseColorExpression->SetTextureInfo(TextureManager::GetInstance().GetTextureInfo("textures/man_head_a.bmp"));
@@ -231,9 +231,9 @@ Material* MaterialFactory::CreateZhanHunHeadMaterial()
 	return pMaterial;
 }
 
-Material* MaterialFactory::CreateZhanHunHandMaterial()
+RMaterial* MaterialFactory::CreateZhanHunHandMaterial()
 {
-	Material* pMaterial = new Material();
+	RMaterial* pMaterial = new RMaterial();
 
 	MExpTexture2DSample* pBaseColorExpression = new MExpTexture2DSample();
 	pBaseColorExpression->SetTextureInfo(TextureManager::GetInstance().GetTextureInfo("textures/zhanhun1_hand.bmp"));
@@ -255,9 +255,9 @@ Material* MaterialFactory::CreateZhanHunHandMaterial()
 	return pMaterial;
 }
 
-Material* MaterialFactory::CreateZhanHunHairMaterial()
+RMaterial* MaterialFactory::CreateZhanHunHairMaterial()
 {
-	Material* pMaterial = new Material();
+	RMaterial* pMaterial = new RMaterial();
 
 	MExpTexture2DSample* pBaseColorExpression = new MExpTexture2DSample();
 	pBaseColorExpression->SetTextureInfo(TextureManager::GetInstance().GetTextureInfo("textures/alphat_zhanhun1_hair.tga"));
@@ -279,9 +279,9 @@ Material* MaterialFactory::CreateZhanHunHairMaterial()
 	return pMaterial;
 }
 
-Material* MaterialFactory::CreateBackgroundMaterial()
+RMaterial* MaterialFactory::CreateBackgroundMaterial()
 {
-	Material* pMaterial = new Material();
+	RMaterial* pMaterial = new RMaterial();
 
 	MExpTexture2DSample* pEmissiveColorExpression = new MExpTexture2DSample();
 	pEmissiveColorExpression->SetTextureInfo(TextureManager::GetInstance().GetTextureInfo("textures/Background.png"));

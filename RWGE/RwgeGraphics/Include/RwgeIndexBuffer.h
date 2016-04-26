@@ -1,6 +1,6 @@
 #pragma once
 
-class D3D9Device;
+class RD3d9Device;
 struct IDirect3DDevice9;
 struct IDirect3DIndexBuffer9;
 
@@ -11,7 +11,7 @@ struct IDirect3DIndexBuffer9;
 class IndexBuffer
 {
 public:
-	IndexBuffer(const D3D9Device& device, unsigned int uBufferSize);
+	IndexBuffer(const RD3d9Device& device, unsigned int uBufferSize);
 	~IndexBuffer();
 
 	IDirect3DIndexBuffer9* GetD3DIndexBuffer() const;

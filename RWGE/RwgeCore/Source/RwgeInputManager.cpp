@@ -1,11 +1,16 @@
 #include "RwgeInputManager.h"
 
-#include "RwgeInputListener.h"
 #include "RwgeApplication.h"
+#include "RwgeAppWindow.h"
+#include "RwgeInputListener.h"
+#include "RwgeMessageDef.h"
+
+using namespace std;
+using namespace RwgeAppWindow;
 
 RInputManager::RInputManager()
 {
-	memset(m_IsKeyDown, 0, sizeof(bool)* 256);
+	ZeroMemory(m_bIsKeyDown, sizeof(bool) * MAX_KEY_COUNT);
 }
 
 RInputManager::~RInputManager()
@@ -13,84 +18,153 @@ RInputManager::~RInputManager()
 
 }
 
-void RInputManager::Initialize()
+LRESULT CALLBACK RInputManager::HandleMessage(HWND hWnd, UINT u32Message, WPARAM wParam, LPARAM lParam)
 {
-
-}
-
-void RInputManager::Update(float deltaTime)
-{
-
-}
-
-void RInputManager::Cleanup()
-{
-
-}
-
-LRESULT CALLBACK RInputManager::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
-{
-	switch (umsg)
+	switch (u32Message)
 	{
-		// Check if the window is being destroyed.
 	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
-
-		// Check if the window is being closed.
 	case WM_CLOSE:
-		PostQuitMessage(0);
+		if (hWnd == RApplication::GetInstance().GetPrimaryWindow()->GetHandle())
+		{
+			PostQuitMessage(0);
+		}
 		return 0;
 
 	case WM_KEYDOWN:
-		// If a key is pressed send it to the input object so it can record that state.
-		KeyDown(static_cast<unsigned int>(wparam));
+		OnKeyDown(hWnd, static_cast<unsigned int>(wParam));
 		return 0;
 
-		// Check if a key has been released on the keyboard.
 	case WM_KEYUP:
-		// If a key is released then send it to the input object so it can unset the state for that key.
-		KeyUp(static_cast<unsigned int>(wparam));
+		OnKeyUp(hWnd, static_cast<unsigned int>(wParam));
 		return 0;
 
-		// All other messages pass to the message handler in the system class.
+	case WM_MOVE:
+		OnWindowMove(hWnd, wParam, lParam);
+		return 0;
+
+	case WM_SIZE:
+		OnWindowResize(hWnd, wParam, lParam);
+		return 0;
+
 	default:
-		return DefWindowProc(hwnd, umsg, wparam, lparam);
+		// All other messages pass to the message handler in the system class.
+		return DefWindowProc(hWnd, u32Message, wParam, lParam);
 	}
 }
 
-void RInputManager::KeyUp(unsigned int key)
+void RInputManager::OnKeyUp(HWND hWnd, UINT u32Key)
 {
-	m_IsKeyDown[key] = false;
+	m_bIsKeyDown[u32Key] = false;
 
-	std::list<RInputListener*>::iterator listener = m_InputListeners.begin();
-	while (listener != m_InputListeners.end())
+	for (RwgeInput::KeyBoardListener* pListener : m_listKeyBoardListeners)
 	{
-		(*listener)->OnKeyUp(key);
-
-		++listener;
+		pListener->OnKeyUp(hWnd, u32Key);
 	}
-}
 
-void RInputManager::KeyDown(unsigned int key)
-{
-	m_IsKeyDown[key] = true;
-
-	std::list<RInputListener*>::iterator listener = m_InputListeners.begin();
-	while (listener != m_InputListeners.end())
+	RAppWindow* pWindow = GetAppWindow(hWnd);
+	if (pWindow != nullptr)
 	{
-		(*listener)->OnKeyDown(key);
-
-		++listener;
+		pWindow->OnKeyUp(u32Key);
 	}
 }
 
-bool RInputManager::IsKeyDown(unsigned int key)
+void RInputManager::OnKeyDown(HWND hWnd, UINT u32Key)
 {
-	return m_IsKeyDown[key];
+	m_bIsKeyDown[u32Key] = true;
+
+	for (RwgeInput::KeyBoardListener* pListener : m_listKeyBoardListeners)
+	{
+		pListener->OnKeyDown(hWnd, u32Key);
+	}
+
+	RAppWindow* pWindow = GetAppWindow(hWnd);
+	if (pWindow != nullptr)
+	{
+		pWindow->OnKeyDown(u32Key);
+	}
 }
 
-void RInputManager::AddListener(RInputListener* listener)
+bool RInputManager::IsKeyDown(UINT u32Key)
 {
-	m_InputListeners.push_back(listener);
+	return m_bIsKeyDown[u32Key];
+}
+
+void RInputManager::OnWindowMove(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	RAppWindow* pWindow = GetAppWindow(hWnd);
+	if (pWindow != nullptr)
+	{
+		pWindow->OnMove(LOWORD(lParam), HIWORD(lParam));
+	}
+}
+
+void RInputManager::OnWindowResize(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	RAppWindow* pWindow = GetAppWindow(hWnd);
+	if (pWindow != nullptr)
+	{
+		if (wParam == SIZE_TRUE_FULLSCREEN)
+		{
+			pWindow->OnResize(LOWORD(lParam), HIWORD(lParam), EDM_TrueFullScreen);
+		}
+		else if (wParam == SIZE_FAKE_FULLSCREEN)
+		{
+			pWindow->OnResize(LOWORD(lParam), HIWORD(lParam), EDM_FakeFullScreen);
+		}
+		else
+		{
+			pWindow->OnResize(LOWORD(lParam), HIWORD(lParam), EDM_Windowed);
+		}
+	}
+}
+
+void RInputManager::RegKeyBoardListener(RwgeInput::KeyBoardListener* pListener)
+{
+#ifdef _DEBUG
+	for (RwgeInput::KeyBoardListener* pOldListener : m_listKeyBoardListeners)
+	{
+		RwgeAssert(pListener == pOldListener);
+	}
+#endif // _DEBUG
+
+	m_listKeyBoardListeners.push_back(pListener);
+}
+
+void RInputManager::DeRegKeyBoardListener(RwgeInput::KeyBoardListener* pListener)
+{
+#ifdef _DEBUG
+	bool bRegistered = false;
+	for (RwgeInput::KeyBoardListener* pOldListener : m_listKeyBoardListeners)
+	{
+		if (pListener == pOldListener)
+		{
+			bRegistered = true;
+			break;
+		}
+	}
+	RwgeAssert(bRegistered);
+#endif // _DEBUG
+
+	m_listKeyBoardListeners.remove(pListener);
+}
+
+void RInputManager::RegAppWindow(RAppWindow* pWindow)
+{
+	RwgeAssert(m_mapAppWindows.insert(make_pair(pWindow->GetHandle(), pWindow)).second);
+}
+
+void RInputManager::DeRegAppWindow(RAppWindow* pWindow)
+{
+	m_mapAppWindows.erase(pWindow->GetHandle());
+}
+
+RAppWindow* RInputManager::GetAppWindow(HWND hWnd)
+{
+	map<HWND, RAppWindow*>::iterator itWindow = m_mapAppWindows.find(hWnd);
+	if (itWindow == m_mapAppWindows.end())
+	{
+		return nullptr;
+	}
+
+	return itWindow->second;
 }

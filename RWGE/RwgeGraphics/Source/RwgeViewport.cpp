@@ -1,10 +1,10 @@
 #include "RwgeViewport.h"
 
 #include "RwgeCamera.h"
-#include "RwgeD3DX9Extension.h"
-#include "RwgeRenderTarget.h"
+#include "RwgeD3dx9Extension.h"
+#include "RwgeD3d9RenderTarget.h"
 
-using namespace D3DX9Extension;
+using namespace D3dx9Extension;
 
 Viewport::Viewport(IDirect3DDevice9* pDevice, unsigned uX, unsigned uY, unsigned uWidth, unsigned uHeight): 
 	m_pCamera			(nullptr),

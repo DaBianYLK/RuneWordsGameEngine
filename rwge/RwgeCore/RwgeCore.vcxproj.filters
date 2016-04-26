@@ -17,6 +17,9 @@
     <Filter Include="源文件\Common">
       <UniqueIdentifier>{5c997a6b-69f0-45ae-82db-18edb7afdea7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\DebugTool">
+      <UniqueIdentifier>{90f26727-baee-4c09-a735-1b790e5fd8c6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\RwgeObject.h">
@@ -31,20 +34,44 @@
     <ClInclude Include="Include\RwgeCoreDef.h">
       <Filter>源文件\Common</Filter>
     </ClInclude>
-    <ClInclude Include="Include\RwgeWindow.h">
-      <Filter>源文件\Application</Filter>
-    </ClInclude>
     <ClInclude Include="Include\RwgeApplication.h">
       <Filter>源文件\Application</Filter>
     </ClInclude>
-    <ClInclude Include="Include\RwgeAppDelegate.h">
+    <ClInclude Include="Include\RwgeInputManager.h">
+      <Filter>源文件\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeAppWindow.h">
+      <Filter>源文件\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeAssert.h">
+      <Filter>源文件\DebugTool</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeLog.h">
+      <Filter>源文件\DebugTool</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeSingleton.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeTime.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeAppWindowListener.h">
       <Filter>源文件\Application</Filter>
     </ClInclude>
     <ClInclude Include="Include\RwgeInputListener.h">
       <Filter>源文件\Input</Filter>
     </ClInclude>
-    <ClInclude Include="Include\RwgeInputManager.h">
+    <ClInclude Include="Include\RwgeTString.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeMessageDef.h">
       <Filter>源文件\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeEnumAsByte.h">
+      <Filter>源文件\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RwgeNoCopy.h">
+      <Filter>源文件\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -54,20 +81,17 @@
     <ClCompile Include="Source\RwgeFpsController.cpp">
       <Filter>源文件\Common</Filter>
     </ClCompile>
-    <ClCompile Include="Source\RwgeWindow.cpp">
-      <Filter>源文件\Application</Filter>
-    </ClCompile>
     <ClCompile Include="Source\RwgeApplication.cpp">
       <Filter>源文件\Application</Filter>
     </ClCompile>
-    <ClCompile Include="Source\RwgeAppDelegate.cpp">
-      <Filter>源文件\Application</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\RwgeInputListener.cpp">
-      <Filter>源文件\Input</Filter>
-    </ClCompile>
     <ClCompile Include="Source\RwgeInputManager.cpp">
       <Filter>源文件\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RwgeAppWindow.cpp">
+      <Filter>源文件\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RwgeLog.cpp">
+      <Filter>源文件\DebugTool</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -6,7 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RwgeSample", "RwgeSample\RwgeSample.vcxproj", "{F79ADA52-025B-4433-A0BA-3CE96932D042}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F1C2D02A-4281-474B-B88C-7218320A37FF} = {F1C2D02A-4281-474B-B88C-7218320A37FF}
-		{1723D939-F091-4023-9816-75AD0332270B} = {1723D939-F091-4023-9816-75AD0332270B}
 		{6277FE95-0800-45B8-B3AD-CE1CA0CDD61A} = {6277FE95-0800-45B8-B3AD-CE1CA0CDD61A}
 		{8FEFF6E1-E3D4-4268-8A13-06A95DC5FBD2} = {8FEFF6E1-E3D4-4268-8A13-06A95DC5FBD2}
 	EndProjectSection
@@ -14,19 +13,15 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RwgeCore", "RwgeCore\RwgeCore.vcxproj", "{8FEFF6E1-E3D4-4268-8A13-06A95DC5FBD2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F1C2D02A-4281-474B-B88C-7218320A37FF} = {F1C2D02A-4281-474B-B88C-7218320A37FF}
-		{1723D939-F091-4023-9816-75AD0332270B} = {1723D939-F091-4023-9816-75AD0332270B}
 		{6277FE95-0800-45B8-B3AD-CE1CA0CDD61A} = {6277FE95-0800-45B8-B3AD-CE1CA0CDD61A}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RwgeGraphics", "RwgeGraphics\RwgeGraphics.vcxproj", "{F1C2D02A-4281-474B-B88C-7218320A37FF}"
 	ProjectSection(ProjectDependencies) = postProject
-		{1723D939-F091-4023-9816-75AD0332270B} = {1723D939-F091-4023-9816-75AD0332270B}
 		{6277FE95-0800-45B8-B3AD-CE1CA0CDD61A} = {6277FE95-0800-45B8-B3AD-CE1CA0CDD61A}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RwgeMath", "RwgeMath\RwgeMath.vcxproj", "{6277FE95-0800-45B8-B3AD-CE1CA0CDD61A}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RwgeUtils", "RwgeUtils\RwgeUtils.vcxproj", "{1723D939-F091-4023-9816-75AD0332270B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Rwge3dsMaxPlug", "Rwge3dsMaxPlug\Rwge3dsMaxPlug.vcxproj", "{3CAEF9E7-47EC-4414-B0BC-F432D579ECCD}"
 EndProject
@@ -34,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RwgeDocumentation", "RwgeDo
 	ProjectSection(SolutionItems) = preProject
 		RwgeDocumentation\代码规范 - CodingConvention.txt = RwgeDocumentation\代码规范 - CodingConvention.txt
 		RwgeDocumentation\架构设计思路 - ArchitectureDesignIdeas.txt = RwgeDocumentation\架构设计思路 - ArchitectureDesignIdeas.txt
+		RwgeDocumentation\知识点备忘.txt = RwgeDocumentation\知识点备忘.txt
 	EndProjectSection
 EndProject
 Global
@@ -68,12 +64,6 @@ Global
 		{6277FE95-0800-45B8-B3AD-CE1CA0CDD61A}.Release|Win32.ActiveCfg = Release|Win32
 		{6277FE95-0800-45B8-B3AD-CE1CA0CDD61A}.Release|Win32.Build.0 = Release|Win32
 		{6277FE95-0800-45B8-B3AD-CE1CA0CDD61A}.Release|x64.ActiveCfg = Release|Win32
-		{1723D939-F091-4023-9816-75AD0332270B}.Debug|Win32.ActiveCfg = Debug|Win32
-		{1723D939-F091-4023-9816-75AD0332270B}.Debug|Win32.Build.0 = Debug|Win32
-		{1723D939-F091-4023-9816-75AD0332270B}.Debug|x64.ActiveCfg = Debug|Win32
-		{1723D939-F091-4023-9816-75AD0332270B}.Release|Win32.ActiveCfg = Release|Win32
-		{1723D939-F091-4023-9816-75AD0332270B}.Release|Win32.Build.0 = Release|Win32
-		{1723D939-F091-4023-9816-75AD0332270B}.Release|x64.ActiveCfg = Release|Win32
 		{3CAEF9E7-47EC-4414-B0BC-F432D579ECCD}.Debug|Win32.ActiveCfg = Debug|Win32
 		{3CAEF9E7-47EC-4414-B0BC-F432D579ECCD}.Debug|Win32.Build.0 = Debug|Win32
 		{3CAEF9E7-47EC-4414-B0BC-F432D579ECCD}.Debug|x64.ActiveCfg = Debug|x64

@@ -1,6 +1,6 @@
 #include <d3dx9.h>
 
-namespace D3DX9Extension
+namespace D3dx9Extension
 {
 	static const D3DCOLOR D3DColorBlack = D3DCOLOR_ARGB(255,   0,   0,   0);
 	static const D3DCOLOR D3DColorGray	= D3DCOLOR_ARGB(255, 128, 128, 128);

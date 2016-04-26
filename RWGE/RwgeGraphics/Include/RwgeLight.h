@@ -15,7 +15,7 @@ enum ELightType
 
 class Light
 {
-	friend class ShaderManager;
+	friend class RShaderManager;
 
 public:
 	Light();
