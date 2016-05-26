@@ -31,12 +31,13 @@ public:
 	class AppDelegate
 	{
 	public:
-		AppDelegate()									{};
-		virtual ~AppDelegate()							{};
+		AppDelegate()				{};
+		virtual ~AppDelegate()		{};
 
-		virtual void OnCreate()							{};
-		virtual void OnUpdateFrame(float f32DeltaTime)	{};
-		virtual void OnDestroy()						{};
+		virtual void OnCreate()		{};
+		virtual void OnDestroy()	{};
+		virtual void BeforeRenderingFrame(float f32DeltaTime)	{};		// 间隔时间为相对于上一帧渲染前过去的时间
+		virtual void AfterRenderingFrame(float f32DeltaTime)	{};		// 间隔时间为相对于上一帧渲染后过去的时间
 	};
 
 public:
@@ -51,7 +52,7 @@ public:
 
 	RAppWindow* CreateAppWindow(const char* pName);
 	RAppWindow* GetAppWindow(const char* pName);
-	RAppWindow* GetPrimaryWindow();
+	RAppWindow* GetMainWindow();
 	bool DestroyAppWindow(const char* pName);
 
 	float GetCurrentFPS() const;

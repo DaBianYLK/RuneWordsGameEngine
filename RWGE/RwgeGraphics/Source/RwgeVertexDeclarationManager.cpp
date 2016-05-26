@@ -1,54 +1,48 @@
 #include "RwgeVertexDeclarationManager.h"
 
 #include <d3dx9.h>
+#include <RwgeVertexDeclarationTemplate.h>
+#include <RwgeLog.h>
 
 using namespace std;
 
-char* VertexDeclarationManager::m_DefaultVertexDeclarationName = "DefaultVertexDeclaration";
+const string strDefaultVertexDeclarationName = "DefaultVertexDeclaration";
 
-VertexDeclarationManager::VertexDeclarationManager()
+RVertexDeclarationManager::RVertexDeclarationManager()
 {
 	GenerateDefaultVertexDeclaration();
 }
 
-VertexDeclarationManager::~VertexDeclarationManager()
+RVertexDeclarationManager::~RVertexDeclarationManager()
 {
 
 }
 
-void VertexDeclarationManager::GenerateDefaultVertexDeclaration()
+RD3d9VertexDeclaration* RVertexDeclarationManager::GetDefaultVertexDeclaration()
 {
-	VertexDeclarationType* pDeclaration = new VertexDeclarationType();
+	return m_mapVertexDeclarations[strDefaultVertexDeclarationName];
+}
 
-	// { Size, Type, Method, Usage, UsageIndex }
+void RVertexDeclarationManager::GenerateDefaultVertexDeclaration()
+{
+	RVertexDeclarationTemplate declarationTemplate;
+
+	// { Type, Method, Usage, UsageIndex }
 	// 使用D3DDECLMETHOD_CROSSUV时顶点声明会创建失败，原因不明（DX的官方Sample中Tangent使用的Method也是Default）
-	VertexElement position	= { 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 };
-	VertexElement texCoord	= {  8, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 };
-	VertexElement normal	= { 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL,   0 };
-	VertexElement tangent	= { 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TANGENT,  0 };
+	VertexElement position = { D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 };
+	VertexElement texCoord = { D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 };
+	VertexElement normal = { D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0 };
+	VertexElement tangent = { D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TANGENT, 0 };
 
-	pDeclaration->AddVertexElement(position);
-	pDeclaration->AddVertexElement(texCoord);
-	pDeclaration->AddVertexElement(normal);
-	pDeclaration->AddVertexElement(tangent);
+	declarationTemplate.PushBackVertexElement(position);
+	declarationTemplate.PushBackVertexElement(texCoord);
+	declarationTemplate.PushBackVertexElement(normal);
+	declarationTemplate.PushBackVertexElement(tangent);
 
-	pDeclaration->Update();
+	RD3d9VertexDeclaration* pVertexDeclaration = new RD3d9VertexDeclaration(declarationTemplate);
 
-	m_mapVertexDeclarations.insert(make_pair(m_DefaultVertexDeclarationName, pDeclaration));
-}
-
-VertexDeclarationType* VertexDeclarationManager::GetDefaultVertexDeclaration()
-{
-	return GetVertexDeclaration(m_DefaultVertexDeclarationName);
-}
-
-VertexDeclarationType* VertexDeclarationManager::GetVertexDeclaration(const string& strDeclarationName)
-{
-	map<string, VertexDeclarationType*>::iterator it = m_mapVertexDeclarations.find(strDeclarationName);
-	if (it != m_mapVertexDeclarations.end())
+	if (!m_mapVertexDeclarations.insert(make_pair(strDefaultVertexDeclarationName, pVertexDeclaration)).second)
 	{
-		return it->second;
+		RwgeLog(TEXT("Insert default vertex declaration failed!"));
 	}
-
-	return nullptr;
 }

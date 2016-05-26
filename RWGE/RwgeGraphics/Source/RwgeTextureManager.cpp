@@ -1,28 +1,36 @@
 #include "RwgeTextureManager.h"
 
+#include "RwgeD3d9Texture.h"
+
 using namespace std;
+using namespace Rwge;
 
-TextureManager::TextureManager()
+RTextureManager::RTextureManager()
 {
 
 }
 
-TextureManager::~TextureManager()
+RTextureManager::~RTextureManager()
 {
 }
 
-TextureInfo* TextureManager::GetTextureInfo(const std::string& strPath)
+RD3d9Texture* RTextureManager::GetTexture(const Rwge::tstring& strPath)
 {
-	auto itTexturePair = m_hashTextures.find(strPath);
-	if (itTexturePair != m_hashTextures.end())
+	map<tstring, RD3d9Texture>::iterator itTexture = m_mapTextures.find(strPath);
+	if (itTexture != m_mapTextures.end())
 	{
-		return itTexturePair->second;
+		return &(itTexture->second);
 	}
 
-	// 没有找到就加入到管理器中
-	TextureInfo* pTextureInfo = new TextureInfo(strPath);
+	// 没有找到就尝试从文件中加载
+	map<tstring, RD3d9Texture>::_Pairib result = m_mapTextures.insert(make_pair(strPath, RD3d9Texture()));
+	RwgeAssert(result.second);
+	RD3d9Texture& texture = result.first->second;
+	if (!texture.Load(strPath.c_str()))
+	{
+		m_mapTextures.erase(result.first);
+		return nullptr;
+	}
 
-	m_hashTextures.insert(make_pair(strPath, pTextureInfo));
-
-	return pTextureInfo;
+	return &texture;
 }

@@ -1,22 +1,22 @@
 #include "RwgeModel.h"
 
 
-Model::Model() : SceneNode()
+RModel::RModel() : RSceneNode()
 {
-	m_NodeType = NT_Model;
+	m_NodeType = ENT_Model;
 }
 
-Model::~Model()
+RModel::~RModel()
 {
 
 }
 
-void Model::AddMesh(Mesh* pMesh)
+void RModel::AddMesh(RMesh* pMesh)
 {
 	m_listMeshes.push_back(pMesh);
 }
 
-std::list<Mesh*>& Model::GetMeshes()
+std::list<RMesh*>& RModel::GetMeshes()
 {
 	return m_listMeshes;
 }

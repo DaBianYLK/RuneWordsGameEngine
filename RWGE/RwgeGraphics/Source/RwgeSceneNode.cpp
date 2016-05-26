@@ -7,9 +7,9 @@
 
 using namespace RwgeMath;
 
-SceneNode::SceneNode() : 
+RSceneNode::RSceneNode() : 
 	m_pSceneManager					(nullptr),
-	m_NodeType						(NT_Node),
+	m_NodeType						(ENT_Node),
     m_Position						(0.0f, 0.0f, 0.0f),
 	m_Orientation					(0.0f, 0.0f, 0.0f, 1.0f),
 	m_Scale							(1.0f, 1.0f, 1.0f),
@@ -30,14 +30,14 @@ SceneNode::SceneNode() :
 	D3DXMatrixIdentity(&m_WorldTransform);
 }
 
-SceneNode::~SceneNode()
+RSceneNode::~RSceneNode()
 {
 
 }
 
-SceneNode* SceneNode::CreateChild()
+RSceneNode* RSceneNode::CreateChild()
 {
-	SceneNode* pNode = new SceneNode();
+	RSceneNode* pNode = new RSceneNode();
 
 	// 将节点加入子节点列表
 	m_listChildren.push_back(pNode);
@@ -49,21 +49,18 @@ SceneNode* SceneNode::CreateChild()
 	return pNode;
 }
 
-void SceneNode::ReleaseChild(SceneNode* pNode)
+void RSceneNode::ReleaseChild(RSceneNode* pNode)
 {
 	if (pNode)
 	{
 		// 从子节点列表移除
 		m_listChildren.remove(pNode);
 
-		// 将节点子树中包含的模型从场景管理器中移除
-		pNode->m_pSceneManager->RemoveModelBySceneNode(pNode);
-
 		delete pNode;
 	}
 }
 
-void SceneNode::AttachChild(SceneNode* pNode)
+void RSceneNode::AttachChild(RSceneNode* pNode)
 {
 	if (pNode)
 	{
@@ -82,21 +79,21 @@ void SceneNode::AttachChild(SceneNode* pNode)
 
 		// 因为pNode的父节点发生了改变，所以需要更新pNode的世界变换
 		pNode->NeedUpdate();
-
-		// 将节点子树中包含的模型加入场景管理器
-		pNode->m_pSceneManager->AddModelBySceneNode(pNode);
 	}
+#ifdef _DEBUG
+	else
+	{
+		RwgeErrorBox("Attach node failed - The node attaching is null.");
+	}
+#endif
 }
 
-void SceneNode::RemoveChild(SceneNode* pNode)
+void RSceneNode::RemoveChild(RSceneNode* pNode)
 {
 	if (pNode)
 	{
 		// 从子节点列表移除
 		m_listChildren.remove(pNode);
-
-		// 将节点子树中包含的模型从场景管理器中移除
-		pNode->m_pSceneManager->RemoveModelBySceneNode(pNode);
 
 		// 将节点父节点设置为空
 		pNode->m_pParent = nullptr;
@@ -104,12 +101,12 @@ void SceneNode::RemoveChild(SceneNode* pNode)
 	}
 }
 
-SceneNode* SceneNode::GetParent() const
+RSceneNode* RSceneNode::GetParent() const
 {
 	return m_pParent;
 }
 
-void SceneNode::Translate(const D3DXVECTOR3& vector, ETransformSpace space /* = TB_Parent */)
+void RSceneNode::Translate(const D3DXVECTOR3& vector, ETransformSpace space /* = TB_Parent */)
 {
 	switch (space)
 	{
@@ -139,7 +136,7 @@ void SceneNode::Translate(const D3DXVECTOR3& vector, ETransformSpace space /* = 
 }
 
 // SetPosition等价于在m_Position = (0, 0, 0)时执行Translate
-void SceneNode::SetPosition(const D3DXVECTOR3& position, ETransformSpace space /* = TB_Parent */)
+void RSceneNode::SetPosition(const D3DXVECTOR3& position, ETransformSpace space /* = TB_Parent */)
 {
 	switch (space)
 	{
@@ -178,7 +175,7 @@ void SceneNode::SetPosition(const D3DXVECTOR3& position, ETransformSpace space /
 假设有定义在B旋转坐标系的向量V，旋转坐标系B相对于旋转坐标系A的旋转可以用四元数Q表示，
 则Q作用于V相当于把V从旋转坐标系B转换到了旋转坐标系A
 */
-void SceneNode::Rotate(const RQuaternion& rotation, ETransformSpace space /* = TS_Self */)
+void RSceneNode::Rotate(const RQuaternion& rotation, ETransformSpace space /* = TS_Self */)
 {
 	RQuaternion qNormal = rotation;
 	qNormal.Normalise();
@@ -212,7 +209,7 @@ void SceneNode::Rotate(const RQuaternion& rotation, ETransformSpace space /* = T
 }
 
 // SetOrientation等价于在m_Orientation = (1, 0, 0, 0)时执行Rotate
-void SceneNode::SetOrientation(const RQuaternion& orientation, ETransformSpace space /* = TS_Self */)
+void RSceneNode::SetOrientation(const RQuaternion& orientation, ETransformSpace space /* = TS_Self */)
 {
 	RQuaternion qNormal = orientation;
 	qNormal.Normalise();
@@ -242,22 +239,22 @@ void SceneNode::SetOrientation(const RQuaternion& orientation, ETransformSpace s
 	NeedUpdate();
 }
 
-void SceneNode::Pitch(const AngleRadian& radianAngle, ETransformSpace space /* = TS_Self */)
+void RSceneNode::Pitch(const AngleRadian& radianAngle, ETransformSpace space /* = TS_Self */)
 {
 	Rotate(RQuaternion(Vector3UnitX, radianAngle), space);
 }
 
-void SceneNode::Yaw(const AngleRadian& radianAngle, ETransformSpace space /* = TS_Self */)
+void RSceneNode::Yaw(const AngleRadian& radianAngle, ETransformSpace space /* = TS_Self */)
 {
 	Rotate(RQuaternion(Vector3UnitY, radianAngle), space);
 }
 
-void SceneNode::Roll(const AngleRadian& radianAngle, ETransformSpace space /* = TS_Self */)
+void RSceneNode::Roll(const AngleRadian& radianAngle, ETransformSpace space /* = TS_Self */)
 {
 	Rotate(RQuaternion(Vector3UnitZ, radianAngle), space);
 }
 
-D3DXVECTOR3 SceneNode::GetDirection(ETransformSpace space /* = TS_World */) const
+D3DXVECTOR3 RSceneNode::GetDirection(ETransformSpace space /* = TS_World */) const
 {
 	D3DXVECTOR3 originalDirection;
 
@@ -280,14 +277,14 @@ D3DXVECTOR3 SceneNode::GetDirection(ETransformSpace space /* = TS_World */) cons
 	return originalDirection;
 }
 
-void SceneNode::SetDirection(const D3DXVECTOR3& targetDirection, ETransformSpace space /* = TS_World */)
+void RSceneNode::SetDirection(const D3DXVECTOR3& targetDirection, ETransformSpace space /* = TS_World */)
 {
 	RQuaternion rotation;
 	RQuaternion::GetRotationBetween(&rotation, GetDirection(space), targetDirection);
 	Rotate(rotation, space);
 }
 
-void SceneNode::LookAt(const D3DXVECTOR3& targetPosition, ETransformSpace space /* = TS_World */)
+void RSceneNode::LookAt(const D3DXVECTOR3& targetPosition, ETransformSpace space /* = TS_World */)
 {
 	D3DXVECTOR3 targetDirection;
 	
@@ -310,7 +307,7 @@ void SceneNode::LookAt(const D3DXVECTOR3& targetPosition, ETransformSpace space 
 	SetDirection(targetDirection, space);
 }
 
-void SceneNode::Scale(const D3DXVECTOR3& scale)
+void RSceneNode::Scale(const D3DXVECTOR3& scale)
 {
 	m_Scale *= scale;
 
@@ -318,7 +315,7 @@ void SceneNode::Scale(const D3DXVECTOR3& scale)
 }
 
 // SetScale等价于在m_Scale = (1, 1, 1)时执行Scale
-void SceneNode::SetScale(const D3DXVECTOR3& scale, ETransformSpace space /* = TS_Self */)
+void RSceneNode::SetScale(const D3DXVECTOR3& scale, ETransformSpace space /* = TS_Self */)
 {
 	switch (space)
 	{
@@ -344,12 +341,12 @@ void SceneNode::SetScale(const D3DXVECTOR3& scale, ETransformSpace space /* = TS
 	NeedUpdate();
 }
 
-const D3DXVECTOR3& SceneNode::GetPosition() const
+const D3DXVECTOR3& RSceneNode::GetPosition() const
 {
 	return m_Position;
 }
 
-const D3DXVECTOR3& SceneNode::GetWorldPosition() const
+const D3DXVECTOR3& RSceneNode::GetWorldPosition() const
 {
 	// 如果需要更新世界变换
 	if (m_bWorldTransformChanged)
@@ -360,12 +357,12 @@ const D3DXVECTOR3& SceneNode::GetWorldPosition() const
 	return m_WorldPosition;
 }
 
-const RQuaternion& SceneNode::GetOrientation() const
+const RQuaternion& RSceneNode::GetOrientation() const
 {
 	return m_Orientation;
 }
 
-const RQuaternion& SceneNode::GetWorldOrientation() const
+const RQuaternion& RSceneNode::GetWorldOrientation() const
 {
 	// 如果需要更新世界变换
 	if (m_bWorldTransformChanged)
@@ -376,12 +373,12 @@ const RQuaternion& SceneNode::GetWorldOrientation() const
 	return m_WorldOrientation;
 }
 
-const D3DXVECTOR3& SceneNode::GetScale() const
+const D3DXVECTOR3& RSceneNode::GetScale() const
 {
 	return m_Scale;
 }
 
-const D3DXVECTOR3& SceneNode::GetWorldScale() const
+const D3DXVECTOR3& RSceneNode::GetWorldScale() const
 {
 	// 如果需要更新世界变换
 	if (m_bWorldTransformChanged)
@@ -392,7 +389,7 @@ const D3DXVECTOR3& SceneNode::GetWorldScale() const
 	return m_WorldScale;
 }
 
-const D3DXMATRIX& SceneNode::GetTransform() const
+const D3DXMATRIX& RSceneNode::GetTransform() const
 {
 	if (m_bCachedTransformOutOfDate)
 	{
@@ -402,7 +399,7 @@ const D3DXMATRIX& SceneNode::GetTransform() const
 	return m_Transform;
 }
 
-const D3DXMATRIX& SceneNode::GetWorldTransform() const
+const D3DXMATRIX& RSceneNode::GetWorldTransform() const
 {
 	if (m_bCachedWorldTransformOutOfDate)
 	{
@@ -412,11 +409,9 @@ const D3DXMATRIX& SceneNode::GetWorldTransform() const
 	return m_WorldTransform;
 }
 
-void SceneNode::UpdateWorldTransform() const
+void RSceneNode::UpdateWorldTransform() const
 {
-	/*
-	在自底向上更新世界变换的过程中，会自动递归，直到更新向场景树的根部更新完毕
-	*/
+	// 在自底向上更新世界变换的过程中，会自动递归，直到更新向场景树的根部更新完毕
 
 	if (m_pParent)
 	{
@@ -467,14 +462,14 @@ void SceneNode::UpdateWorldTransform() const
 	m_bCachedWorldTransformOutOfDate = true;
 }
 
-void SceneNode::UpdateCachedTransform() const
+void RSceneNode::UpdateCachedTransform() const
 {
 	SetTransform(m_Transform, m_Position, m_Orientation, m_Scale);
 
 	m_bCachedTransformOutOfDate = false;
 }
 
-void SceneNode::UpdateCachedWorldTransform() const
+void RSceneNode::UpdateCachedWorldTransform() const
 {
 	if (m_bWorldTransformChanged)
 	{
@@ -486,23 +481,17 @@ void SceneNode::UpdateCachedWorldTransform() const
 	m_bCachedWorldTransformOutOfDate = false;
 }
 
-void SceneNode::NeedUpdate()
+void RSceneNode::NeedUpdate()
 {
 	m_bWorldTransformChanged = true;
 	m_bCachedTransformOutOfDate = true;
 	m_bCachedWorldTransformOutOfDate = true;
 
-	NotifyParentToUpdate();		// 向上通知父节点需要更新
-	NotifyChildrenToUpdate();	// 向下通知子节点需要更新（OGRE没有执行这一步，可能是因为需要遍历子树，考虑到效率问题所以省略了）
-
-	/*
-	不通知子节点更新的优缺点分析：
-	优点：可以节约遍历子树的大量开销，不需要统一更新场景树（在用到某个节点时才更新该节点的世界变换）
-	缺点：子节点的世界变换更新会延迟一帧（若A节点的父节点在第1帧发生改变，第1帧时获取A节点的世界变换会得到父节点改变之前的值），且需要每一帧统一更新场景树
-	*/
+	NotifyParentToUpdate();		// 通知父节点需要更新
+	NotifyChildrenToUpdate();	// 通知子节点需要更新
 }
 
-void SceneNode::NotifyParentToUpdate()
+void RSceneNode::NotifyParentToUpdate()
 {
 	// 只有在父节点存在，且父节点未被通知的情况下才执行通知
 	if (m_pParent && !m_bParentHasNotified)
@@ -522,44 +511,52 @@ void SceneNode::NotifyParentToUpdate()
 	}
 }
 
-void SceneNode::NotifyChildrenToUpdate()
+void RSceneNode::NotifyChildrenToUpdate()
 {
-	// 如果需要更新所有的子节点，说明已经执行过通知了
+	// 不通知子节点更新的优缺点分析：
+	// 优点：可以节省遍历子树的开销
+	// 缺点：子节点的世界变换更新会延迟一帧（若A节点的父节点在第1帧发生改变，第1帧时获取A节点的世界变换会得到父节点改变之前的值）
 
-	//// 不需要更新所有的子节点时才执行通知
-	//if (!m_bNeedAllChildrenUpdate)
-	//{
-	//	for (auto pChild : m_listChildren)
-	//	{
-	//		// 如果子节点需要更新世界变换，说明该子节点已经广播过通知，则不需要重复广播
+#if NOTIFY_CHILDREN_WHEN_TRANSFORM
+	// 不需要更新所有的子节点时才执行通知
+	if (!m_bNeedAllChildrenUpdate)
+	{
+		for (auto pChild : m_listChildren)
+		{
+			// 如果子节点需要更新世界变换，说明该子节点已经广播过通知，则不需要重复广播
 
-	//		// 如果子节点不知道世界变换发生了改变，才执行通知
-	//		if (!pChild->m_bWorldTransformChanged)
-	//		{
-	//			pChild->m_bWorldTransformChanged = true;
+			// 如果子节点不知道世界变换发生了改变，才执行通知
+			if (!pChild->m_bWorldTransformChanged)
+			{
+				pChild->m_bWorldTransformChanged = true;
 
-	//			// 向子树广播通知
-	//			pChild->NotifyChildrenToUpdate();
-	//		}
-	//	}
+				// 向子树广播通知
+				pChild->NotifyChildrenToUpdate();
+			}
+		}
 
-	//	m_bNeedAllChildrenUpdate = true;
-	//	m_listChildrenToUpdate.clear();		// 所有的子节点都需要更新时，清空待更新子节点列表
-	//}
-
+		m_bNeedAllChildrenUpdate = true;
+		m_listChildrenToUpdate.clear();		// 所有的子节点都需要更新时，清空待更新子节点列表
+	}
+#else
 	m_bNeedAllChildrenUpdate = true;
-	m_listChildrenToUpdate.clear();		// 所有的子节点都需要更新时，清空待更新子节点列表
+	m_listChildrenToUpdate.clear();			// 所有的子节点都需要更新时，清空待更新子节点列表
+#endif
 }
 
-void SceneNode::UpdateSelfAndAllChildren(bool bForceUpdate /* = false */) const
+void RSceneNode::UpdateSelfAndAllChildren(bool bForceUpdate /* = false */) const
 {
 	// 更新当前节点
-	if (m_bWorldTransformChanged || bForceUpdate)
+	if (bForceUpdate)
 	{
 		UpdateWorldTransform();
 
 		m_bNeedAllChildrenUpdate = true;
 		m_listChildrenToUpdate.clear();
+	}
+	else if (m_bWorldTransformChanged)
+	{
+		UpdateWorldTransform();
 	}
 
 	// 更新子节点
@@ -583,7 +580,7 @@ void SceneNode::UpdateSelfAndAllChildren(bool bForceUpdate /* = false */) const
 	}
 }
 
-D3DXMATRIX* SceneNode::SetTransform(D3DXMATRIX& pOut, const D3DXVECTOR3& translation, const RQuaternion& rotation, const D3DXVECTOR3& scale)
+D3DXMATRIX* RSceneNode::SetTransform(D3DXMATRIX& pOut, const D3DXVECTOR3& translation, const RQuaternion& rotation, const D3DXVECTOR3& scale)
 {
 	// 先平移，再旋转，最后缩放
 	RQuaternion normalQuat = rotation;
@@ -608,37 +605,37 @@ D3DXMATRIX* SceneNode::SetTransform(D3DXMATRIX& pOut, const D3DXVECTOR3& transla
 	return &pOut;
 }
 
-SceneManager* SceneNode::GetAttachedSceneManager() const
+RSceneManager* RSceneNode::GetAttachedSceneManager() const
 {
 	return m_pSceneManager;
 }
 
-void SceneNode::SetInheritTranslation(bool bInherit)
+void RSceneNode::SetInheritTranslation(bool bInherit)
 {
 	m_bInheritTranslation = bInherit;
 }
 
-void SceneNode::SetInheritRotation(bool bInherit)
+void RSceneNode::SetInheritRotation(bool bInherit)
 {
 	m_bInheritRotation = bInherit;
 }
 
-void SceneNode::SetInheritScale(bool bInherit)
+void RSceneNode::SetInheritScale(bool bInherit)
 {
 	m_bInheritScale = bInherit;
 }
 
-bool SceneNode::GetInheritTranslation() const
+bool RSceneNode::GetInheritTranslation() const
 {
 	return m_bInheritTranslation;
 }
 
-bool SceneNode::GetInheritRotation() const
+bool RSceneNode::GetInheritRotation() const
 {
 	return m_bInheritRotation;
 }
 
-bool SceneNode::GetInheritScale() const
+bool RSceneNode::GetInheritScale() const
 {
 	return m_bInheritScale;
 }

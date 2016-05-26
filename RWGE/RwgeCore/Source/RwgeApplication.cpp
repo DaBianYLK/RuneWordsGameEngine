@@ -82,7 +82,8 @@ RAppWindow* RApplication::CreateAppWindow(const char* pName)
 	RAppWindow* pWindow = new RAppWindow(m_hInstance, pName);
 
 	m_mapAppWindows.insert(make_pair(pWindow->GetName(), pWindow));
-	m_pInputManager->RegAppWindow(pWindow);		// 在输入管理器注册窗口
+	m_pInputManager->RegAppWindow(pWindow);					// 在输入管理器注册窗口
+	pWindow->m_pRenderTarget = m_pRenderSystem->RegWinodwForRenderTarget(*pWindow);	// 在渲染系统注册窗口
 
 	return pWindow;
 }
@@ -98,8 +99,9 @@ RAppWindow* RApplication::GetAppWindow(const char* pName)
 	return itWindow->second;
 }
 
-RAppWindow* RApplication::GetPrimaryWindow()
+RAppWindow* RApplication::GetMainWindow()
 {
+	// 第一个被创建的窗口会被认为是主窗口
 	if (m_mapAppWindows.empty())
 	{
 		return nullptr;
@@ -139,8 +141,10 @@ void RApplication::UpdateFrame()
 	float f32DeltaTime = m_FPSController.GetTimeSinceLastFrame();
 
 	// ================ 更新各个模块 ================
-	m_pDelegate->OnUpdateFrame(f32DeltaTime);
+	m_pDelegate->BeforeRenderingFrame(f32DeltaTime);
 	m_pRenderSystem->RenderOneFrame(f32DeltaTime);
+	m_pDelegate->AfterRenderingFrame(f32DeltaTime);
+	m_pRenderSystem->PresentFrame();
 
 	m_FPSController.FrameEnd();
 }

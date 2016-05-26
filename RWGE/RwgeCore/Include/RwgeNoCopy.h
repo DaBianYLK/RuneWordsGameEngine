@@ -20,6 +20,6 @@ public:
 
 private:
 	// 不允许生成副本
-	FORCE_INLINE NoCopy(const NoCopy<T> &) {};
-	FORCE_INLINE NoCopy<T>& operator=(const NoCopy<T> &) { return *this; };
+	FORCE_INLINE NoCopy(const NoCopy<T> &) { RwgeErrorBox("[%s] can't be copied.", typeid(T).name()); };
+	FORCE_INLINE virtual NoCopy<T>& operator=(const NoCopy<T> &) { RwgeErrorBox("[%s] can't be copied.", typeid(T).name()); return *this; };
 };

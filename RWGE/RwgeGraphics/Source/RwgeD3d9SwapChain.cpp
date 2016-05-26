@@ -1,12 +1,16 @@
 #include "RwgeD3d9SwapChain.h"
 
 #include <RwgeAppWindow.h>
-#include <RwgeD3d9Device.h>
-#include <RwgeGraphics.h>
+#include "RwgeD3d9Device.h"
+#include "RwgeGraphics.h"
+#include <RwgeLog.h>
+#include "RwgeD3dx9Extension.h"
 
 using namespace RwgeAppWindow;
+using namespace RwgeD3dx9Extension;
 
-RD3d9SwapChain::RD3d9SwapChain(const RAppWindow& window)
+RD3d9SwapChain::RD3d9SwapChain(const RAppWindow& window) :
+	RD3d9RenderTarget(window.GetWidth(), window.GetHeight())
 {
 	IDirect3DDevice9* pD3dDevice = RD3d9Device::GetInstance().GetD3dDevice();
 
@@ -19,17 +23,18 @@ RD3d9SwapChain::RD3d9SwapChain(const RAppWindow& window)
 
 	pD3dDevice->CreateAdditionalSwapChain(&m_D3dPresentParam, &m_pD3dSwapChain);
 
+	// ============================== 获取RenderTarget ==============================
 	m_pD3dSwapChain->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &m_pD3dSurface);
 }
 
 RD3d9SwapChain::~RD3d9SwapChain()
 {
-	D3d9SafeRelease(m_pD3dSwapChain);
+	RwgeSafeRelease(m_pD3dSwapChain);
 }
 
 void RD3d9SwapChain::Resize(int s32Width, int s32Height, EDisplayMode mode)
 {
-	D3d9SafeRelease(m_pD3dSwapChain);
+	RwgeSafeRelease(m_pD3dSwapChain);
 
 	m_D3dPresentParam.BackBufferWidth = s32Width;							// 设置为0时，SwapChain会取一个随机值
 	m_D3dPresentParam.BackBufferHeight = s32Height;							// 设置为0时，SwapChain会取一个随机值
@@ -37,4 +42,30 @@ void RD3d9SwapChain::Resize(int s32Width, int s32Height, EDisplayMode mode)
 
 	IDirect3DDevice9* pD3dDevice = RD3d9Device::GetInstance().GetD3dDevice();
 	pD3dDevice->CreateAdditionalSwapChain(&m_D3dPresentParam, &m_pD3dSwapChain);
+	
+	RD3d9RenderTarget::Resize(s32Width, s32Height, mode);
+}
+
+void RD3d9SwapChain::Present()
+{
+	HRESULT hResult = m_pD3dSwapChain->Present(nullptr, nullptr, nullptr, nullptr, 0);
+	if (FAILED(hResult))
+	{
+		RwgeLog(TEXT("SwapChain present failed - ErrorCode: %s"), D3dErrorCodeToString(hResult));
+	}
+}
+
+IDirect3DSurface9* RD3d9SwapChain::GetD3dSurface()
+{
+	if (m_pD3dSurface)
+	{
+		m_pD3dSurface->Release();
+	}
+
+	HRESULT hResult = m_pD3dSwapChain->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &m_pD3dSurface);
+	if (FAILED(hResult))
+	{
+		RwgeLog(TEXT("Get swap chain back buffer failed - ErrorCode: %s"), D3dErrorCodeToString(hResult));
+	}
+	return m_pD3dSurface;
 }

@@ -1,7 +1,8 @@
 /*--------------------------------------------------------------------------------------------------------------------*\
    【CREATE】
 	AUTH :	大便一箩筐																			   DATE : 2016-01-09
-	DESC :	断言Debug工具
+	DESC :	Debug工具
+	1.	Assert只在Debug模式下执行，ErrorBox在Debug和Release模式下均执行
 \*--------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -12,18 +13,22 @@
 #include <csignal>
 #include <stdio.h>
 
+#ifdef _DEBUG
 // Show Assert Box when expression is FALSE
-#define RwgeAssert(expression) \
-	if (!(expression)) \
-	{ \
-		TCHAR AssertMessage[256]; \
-		_stprintf_s(AssertMessage, \
-				  TEXT("Assert Failed!\nExpression: %s\nFile: %s\nLine: %d"), \
-				  TEXT(#expression),\
-				  TEXT(__FILE__), \
-				  TEXT(__LINE__)); \
-		InterruptWindow(AssertMessage); \
-	}
+#	define RwgeAssert(expression) \
+		if (!(expression)) \
+			{ \
+				TCHAR AssertMessage[256]; \
+				_stprintf_s(AssertMessage, \
+						  TEXT("Assert Failed!\nExpression: %s\nFile: %s\nLine: %d"), \
+						  TEXT(#expression),\
+						  TEXT(__FILE__), \
+						  TEXT(__LINE__)); \
+				InterruptWindow(AssertMessage); \
+			}
+#else
+#	define RwgeAssert(expression)
+#endif
 
 // Show Error Box
 #define RwgeErrorBox(message, ...)\

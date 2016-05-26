@@ -6,20 +6,20 @@
 
 using namespace std;
 
-RLog::RLog()
+RLog::RLog() : m_pLogFile(nullptr)
 {
 	m_strOutputPath = TEXT("log/RWGE_");
-	m_strOutputPath.append(GetCurrentDateTime(TF_DigitalWithUnderline));
+	m_strOutputPath.append(GetCurrentDateTime(ETF_DigitalWithUnderline));
 	m_strOutputPath.append(TEXT(".log"));
 
 	m_MaxLogLength = 1024;
-	m_szBuffer = new char[m_MaxLogLength];
+	m_szBuffer = new TCHAR[m_MaxLogLength];
 	m_szBuffer[0] = TEXT('\t');
 
 	m_MaxMessageLength = m_MaxLogLength - 1;
 	m_szLogMessage = m_szBuffer + 1;
 
-	m_pLogFile = _tfopen(m_strOutputPath.c_str(), TEXT("w"));
+	_tfopen_s(&m_pLogFile, m_strOutputPath.c_str(), TEXT("w"));
 	_ftprintf_s(m_pLogFile, TEXT("\n"));
 
 	//m_LogStream.open(m_strOutputPath, ios::out);
@@ -50,6 +50,6 @@ void RLog::OutputToFile(const TCHAR* szFormat, ...)
 	//m_LogStream.write(strLogMessage.c_str(), strLogMessage.size());
 	
 
-	_ftprintf_s(m_pLogFile, TEXT("%s%s"), GetCurrentDateTime(TF_Standard).c_str(), m_szBuffer);
+	_ftprintf_s(m_pLogFile, TEXT("%s%s\n"), GetCurrentDateTime(ETF_Standard), m_szBuffer);
 	//m_LogStream << GetCurrentDateTime(TF_Standard).append(m_pBuffer) << endl;
 }

@@ -4,13 +4,14 @@
 	DESC :	
 	1.	本单例模板的主要作用是保证单例的唯一性：程序运行时一定不会出现两个同类型的单例对象，否则程序会报错，所以不需
 		要将派生类的构造函数设置为私有函数
-	2.	所派生的单例对象的生命周期由开发者自行管理（开发者需要自行调用单例的构造和析构函数）
+	2.	所派生的单例对象的生命周期由开发者自行管理（开发者需要自行调用单例的构造和析构函数），调用时不执行有效性检查
 
    【UPDATE】
 	AUTH :	大便一箩筐																			   DATE : 2016-04-26
 	DESC :
-	1.	增加懒汉模式的单例模板：单例首次被使用时构造，ToDo：需要通过MemoryBarrier 和双重验证锁保证线程安全
-	2.	增加饿汉模式的单例模板：单例在程序初始化时构造，整个程序运行期间一直存在
+	1.	增加懒汉模式的单例模板SingletonLazyMode：首次使用时构造单例，每次调用执行有效性检查
+		ToDo：需要通过MemoryBarrier 和双重验证锁保证线程安全
+	2.	增加饿汉模式的单例模板SingletonEagerMode：程序初始化时构造单例，整个程序运行期间一直存在，调用时不执行检查
 \*--------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -48,16 +49,12 @@ protected:
 public:
 	FORCE_INLINE static T& GetInstance()
 	{
-		if (m_pInstance == nullptr)
-		{
-			RwgeErrorBox(TEXT("%s : Singleton can't be used before created."), typeid(T).name());
-		}
-
+		// 指针有效性由开发者自行保证
 		return *m_pInstance;
 	}
 
 protected:
-	static T*	m_pInstance;
+	static T* m_pInstance;
 };
 
 template<class T>

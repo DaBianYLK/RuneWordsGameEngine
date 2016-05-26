@@ -20,6 +20,9 @@
     <ClInclude Include="Include\RwgeAngle.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="Include\RwgeBinaryNumber.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\RwgeQuaternion.cpp">

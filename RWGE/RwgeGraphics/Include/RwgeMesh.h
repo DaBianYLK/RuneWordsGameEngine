@@ -1,24 +1,33 @@
+/*--------------------------------------------------------------------------------------------------------------------*\
+   【CREATE】
+	AUTH :	大便一箩筐																			   DATE : 2016-05-23
+	DESC :	
+	1.	一个模型中材质相同的可渲染单元组成了一个Mesh
+\*--------------------------------------------------------------------------------------------------------------------*/
+
+
 #pragma once
 
 #include <list>
+#include <RwgeObject.h>
 
 class RMaterial;
-class RenderPrimitive;
+class RRenderUnit;
 
-class Mesh
+class RMesh : public RObject
 {
 public:
-	Mesh();
-	~Mesh();
+	RMesh();
+	~RMesh();
 	
 	void SetMaterial(RMaterial* pMaterial);
-	RMaterial* GetMaterialPtr() const;
+	RMaterial* GetMaterial() const;
 
-	void AddRenderPrimitive(RenderPrimitive* pPrimitive);
-	std::list<RenderPrimitive*> GetRenderPrimitives();
+	void AddRenderUnit(RRenderUnit* pPrimitive);
+	const std::list<RRenderUnit*>& GetRenderUnits();
 
 private:
 	RMaterial* m_pMaterial;
-	std::list<RenderPrimitive*> m_listPrimitives;
+	std::list<RRenderUnit*> m_listPrimitives;
 };
 

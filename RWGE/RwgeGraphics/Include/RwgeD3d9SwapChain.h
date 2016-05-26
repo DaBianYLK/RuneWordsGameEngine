@@ -35,6 +35,8 @@ class RD3d9Device;
 
 class RD3d9SwapChain : public RD3d9RenderTarget
 {
+	friend class RD3d9RenderSystem;
+
 private:
 	RD3d9SwapChain(const RAppWindow& window);
 	~RD3d9SwapChain();
@@ -43,6 +45,8 @@ public:
 	FORCE_INLINE IDirect3DSwapChain9* GetD3dSwapChain() const { return m_pD3dSwapChain; }
 
 	virtual void Resize(int s32Width, int s32Height, RwgeAppWindow::EDisplayMode mode) override;
+	virtual void Present() override;
+	virtual IDirect3DSurface9* GetD3dSurface() override;
 
 private:
 	IDirect3DSwapChain9*		m_pD3dSwapChain;

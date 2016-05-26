@@ -4,40 +4,40 @@
 #include "RwgeSceneManager.h"
 #include <RwgeLog.h>
 
-Camera::Camera() :
-	m_fFovy							(D3DX_PI * 0.5f),
-	m_fAspect						(800.0f / 600.0f),
-	m_fLookNear						(2.0f),
-	m_fLookFar						(1000.0f),
+RCamera::RCamera() :
+	m_f32Fovy							(D3DX_PI * 0.5f),
+	m_f32Aspect						(800.0f / 600.0f),
+	m_f32LookNear						(2.0f),
+	m_f32LookFar						(1000.0f),
 	m_bCacheViewTransformOutOfDate	(false)
 {
-	m_NodeType = NT_Camera;
+	m_NodeType = ENT_Camera;
 
 	D3DXMatrixIdentity(&m_ViewTransform);
-	D3DXMatrixPerspectiveFovLH(&m_ProjectionTransform, m_fFovy, m_fAspect, m_fLookNear, m_fLookFar);
+	D3DXMatrixPerspectiveFovLH(&m_ProjectionTransform, m_f32Fovy, m_f32Aspect, m_f32LookNear, m_f32LookFar);
 }
 
-Camera::~Camera()
+RCamera::~RCamera()
 {
 
 }
 
-void Camera::SetPerspective(float fFovy, float fAspect, float fLookNear, float fLookFar)
+void RCamera::SetPerspective(float f32Fovy, float f32Aspect, float f32LookNear, float f32LookFar)
 {
-	m_fFovy = fFovy;
-	m_fAspect = fAspect;
-	m_fLookNear = fLookNear;
-	m_fLookFar = fLookFar;
+	m_f32Fovy = f32Fovy;
+	m_f32Aspect = f32Aspect;
+	m_f32LookNear = f32LookNear;
+	m_f32LookFar = f32LookFar;
 
-	D3DXMatrixPerspectiveFovLH(&m_ProjectionTransform, fFovy, fAspect, fLookNear, fLookFar);
+	D3DXMatrixPerspectiveFovLH(&m_ProjectionTransform, f32Fovy, f32Aspect, f32LookNear, f32LookFar);
 }
 
-void Camera::SetOrthogonal(float fW, float fH, float fLookNear, float fLookFar)
+void RCamera::SetOrthogonal(float fW, float fH, float fLookNear, float fLookFar)
 {
 	D3DXMatrixOrthoLH(&m_ProjectionTransform, fW, fH, fLookNear, fLookFar);
 }
 
-const D3DXMATRIX* Camera::GetViewTransform() const
+const D3DXMATRIX* RCamera::GetViewTransform() const
 {
 	if (m_bCachedWorldTransformOutOfDate || m_bCacheViewTransformOutOfDate)
 	{
@@ -47,12 +47,12 @@ const D3DXMATRIX* Camera::GetViewTransform() const
 	return &m_ViewTransform;
 }
 
-const D3DXMATRIX* Camera::GetProjectionTransform() const
+const D3DXMATRIX* RCamera::GetProjectionTransform() const
 {
 	return &m_ProjectionTransform;
 }
 
-void Camera::UpdateCachedWorldTransform() const
+void RCamera::UpdateCachedWorldTransform() const
 {
 	__super::UpdateCachedWorldTransform();
 
@@ -60,7 +60,7 @@ void Camera::UpdateCachedWorldTransform() const
 	m_bCacheViewTransformOutOfDate = true;
 }
 
-void Camera::UpdateCachedViewTransform() const
+void RCamera::UpdateCachedViewTransform() const
 {
 	if (m_bCachedWorldTransformOutOfDate)
 	{
@@ -72,10 +72,10 @@ void Camera::UpdateCachedViewTransform() const
 	m_bCacheViewTransformOutOfDate = false;
 }
 
-void Camera::RenderScene(Viewport* pViewport)
+void RCamera::GetSceneShot(RD3d9Viewport* pViewport, RD3d9RenderQueue& renderQueue)
 {
 	if (m_pSceneManager)
 	{
-		m_pSceneManager->RenderScene(pViewport);
+		m_pSceneManager->RenderScene(this, pViewport, renderQueue);
 	}
 }

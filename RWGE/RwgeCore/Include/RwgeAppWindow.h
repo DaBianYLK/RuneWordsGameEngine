@@ -2,8 +2,9 @@
    【CREATE】	
 	AUTH :	大便一箩筐																			   DATE : 2016-01-12
 	DESC :	
-	1.	基于Windows API 封装得到的窗口类，用于显示渲染结果。
-	2.	窗口只能由Application 生成和释放，并禁止其他类继承，刚生成的窗口默认不显示
+	1.	基于Windows API 封装得到的窗口类，它可以显示渲染到RenderTarget中的图像
+
+	2.	窗口只能由Application 生成和释放，并禁止其他类继承，刚生成的窗口默认是隐藏的
 
 	3.	关于窗口监听器与OnCreate：
 		为了保证RAII原则，RWindow不使用二段构造，所以无法在RWindow构造前注册监听器，也就是说在RAII原则下监听窗口的构
@@ -32,18 +33,21 @@
 #include "RwgeEnumAsByte.h"
 #include "RwgeObject.h"
 #include "RwgeAppWindowListener.h"
+#include "RwgeCoreDef.h"
 
 class RD3d9RenderTarget;
+class RD3d9Viewport;
+class RCamera;
 
 class RAppWindow : public RObject
 {
 	friend class RApplication;
-	friend class RInputManager;
 
 private:
 	RAppWindow(HINSTANCE hAppInstance, const char* strName);
 	~RAppWindow();
 
+public:
 	// ================ 其他模块可能会调用系统API修改窗口，所以窗口参数需要在响应函数中同步 ================
 	void OnShow();
 	void OnHide();
@@ -54,9 +58,6 @@ private:
 	void OnKeyUp(unsigned int u32Key);
 	void OnKeyDown(unsigned int u32Key);
 
-public:
-	void SetRenderTarget(RD3d9RenderTarget* pRenderTarget);
-
 	void Resize(int s32X, int s32Y, int s32Width, int s32Height, RwgeAppWindow::EDisplayMode mode = RwgeAppWindow::EDM_Windowed);
 	void Show(bool bShow = true);
 
@@ -66,20 +67,24 @@ public:
 	void RegKeyBoardListener(RwgeAppWindow::KeyBoardListener* pListener);
 	void DeRegKeyBoardListener(RwgeAppWindow::KeyBoardListener* pListener);
 	
-	const char* GetName()			const	{ return m_strName.c_str(); };
-	HWND		GetHandle()			const	{ return m_hWnd; };
-	int			GetX()				const	{ return m_s32X; };
-	int			GetY()				const	{ return m_s32Y; };
-	int			GetWidth()			const	{ return m_s32Width; };
-	int			GetHeight()			const	{ return m_s32Height; };
-	bool		IsShow()			const	{ return m_bShow; }
-	bool		IsFakeFullScreen()	const	{ return m_DisplayMode == RwgeAppWindow::EDM_FakeFullScreen; }
-	bool		IsTrueFullScreen()	const	{ return m_DisplayMode == RwgeAppWindow::EDM_TrueFullScreen; }
+	FORCE_INLINE const char*	GetName()			const	{ return m_strName.c_str(); };
+	FORCE_INLINE HWND			GetHandle()			const	{ return m_hWnd; };
+	FORCE_INLINE int			GetX()				const	{ return m_s32X; };
+	FORCE_INLINE int			GetY()				const	{ return m_s32Y; };
+	FORCE_INLINE int			GetWidth()			const	{ return m_s32Width; };
+	FORCE_INLINE int			GetHeight()			const	{ return m_s32Height; };
+	FORCE_INLINE bool			IsShow()			const	{ return m_bShow; }
+	FORCE_INLINE bool			IsFakeFullScreen()	const	{ return m_DisplayMode == RwgeAppWindow::EDM_FakeFullScreen; }
+	FORCE_INLINE bool			IsTrueFullScreen()	const	{ return m_DisplayMode == RwgeAppWindow::EDM_TrueFullScreen; }
 
-	bool IsFullScreen()	const
+	FORCE_INLINE bool IsFullScreen()	const
 	{
 		return m_DisplayMode == RwgeAppWindow::EDM_FakeFullScreen || m_DisplayMode == RwgeAppWindow::EDM_TrueFullScreen;
 	};
+
+	void AddViewport(RD3d9Viewport* pViewport);
+	void RemoveViewport(RD3d9Viewport* pViewport);
+	void SetCamera(RCamera* pCamera);
 
 private:
 	HWND m_hWnd;

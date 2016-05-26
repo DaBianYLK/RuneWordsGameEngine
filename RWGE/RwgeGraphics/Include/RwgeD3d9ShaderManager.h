@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------------------------------------------------*\
    【CREATE】	
-	AUTH :	大便一箩筐																			   DATE : 2016-03-01
+	AUTH :	大便一箩筐																			   DATE : 2016-05-03
 	DESC :	
 	1.	这个类负责了着色器的编译与管理工作
 	2.	关于着色器的管理
@@ -8,41 +8,47 @@
 		B.	需要获取Shader时，首先根据材质和环境得到ShaderKey ，使用ShaderKey 在一个全局的<ShaderKey, Shader> hash表
 			中查找，查找成功时返回Shader，否则根据ShaderKey 从资源文件中加载着色器，加载失败时再重新编译着色器。
 	3.	着色器管理器必须指定D3D9Device，且一旦指定后就不能变更。因为所有的Shader都是与Device绑定的，更换Device意味着
-		需要重新加载所有的Shader。
+		需要重新加载所有的Shader
 \*--------------------------------------------------------------------------------------------------------------------*/
 
 
 #pragma once
 
-#include <string>
-#include <hash_map>
+#include <RwgeCoreDef.h>
 #include <RwgeSingleton.h>
 #include <RwgeObject.h>
 #include "RwgeShaderKey.h"
-#include "RwgeShader.h"
-#include "RwgeMaterial.h"
-#include "RwgeLight.h"
-#include "RwgeD3d9Device.h"
+#include "RwgeD3d9Shader.h"
 
-class RShaderManager : 
+#define USING_HASH_MAP		1		// 是否使用hahs表储存Shader	
+
+#if USING_HASH_MAP
+#	include <unordered_map>
+typedef std::unordered_map<RShaderKey, RD3d9Shader*, RShaderKey::Hash, RShaderKey::Equal> ShaderMap;
+#else
+#	include <map>
+typedef std::map<RShaderKey, RShader*> ShaderMap;
+#endif
+
+class RD3d9ShaderManager : 
 	public RObject,
-	public Singleton<RShaderManager>
+	public Singleton<RD3d9ShaderManager>
 {
 public:
-	RShaderManager();
-	~RShaderManager();
-
-	__forceinline static const MaterialKey& GetMaterialKey(const RMaterial* pMaterial)
-	{
-		return pMaterial->GetMaterialKey();
-	};
-
-	static const EnvironmentKey& GetEnvironmentKey(const Light* pLight);
-	static RShaderKey GetShaderKey(const MaterialKey& matKey, const EnvironmentKey& envKey);
+	RD3d9ShaderManager();
+	~RD3d9ShaderManager();
 
 	static bool CompileShader(const RShaderKey& key);
+	RD3d9Shader* GetShader(const RShaderKey& key);
+
+	RD3d9Shader* GetSharedShader();				// 返回着色器映射表中的第一个着色器，如果映射表为空则返回nullptr
 
 private:
-	std::hash_map<RShaderKey, RShader> m_hashShaders;
+	RD3d9Shader*		m_pSharedShader;		// 用于设置共享常量的Shader
+	ShaderMap			m_mapShaders;
+
+	LPD3DXEFFECTPOOL	m_pEffectPool;			// 用于在Shader之间共享常量
+
+	static bool			m_bRecompileShader;		// 是否在游戏启动时重新编译所有的Shader
 };
 

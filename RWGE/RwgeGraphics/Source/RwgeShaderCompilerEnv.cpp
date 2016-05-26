@@ -1,16 +1,31 @@
 #include "RwgeShaderCompilerEnv.h"
 
-using namespace std;
+#include "RwgeMaterialExpressionID.h"
+#include <RwgeLog.h>
 
-string	RShaderCompilerEnvironment::m_strFxcPath				= "shaders\\fxc.exe";
-string	RShaderCompilerEnvironment::m_strTargetVersion			= "fxc_2_0";						// fxc_2_0 = Shader Model 3.0
-string	RShaderCompilerEnvironment::m_strDebugInfoPrefix		= "shaders\\log\\CompilerInfo_";
-string	RShaderCompilerEnvironment::m_strDebugInfoExtension		= ".log";
-string	RShaderCompilerEnvironment::m_strShaderBinaryPrefix		= "shaders\\bin\\Shader_";
-string	RShaderCompilerEnvironment::m_strShaderBinaryExtension	= ".bin";
-string	RShaderCompilerEnvironment::m_strShaderSourcePath		= "shaders\\src\\BaseForwardingShading.hlsl";
-bool	RShaderCompilerEnvironment::m_bEnableDebugInfo			= true;
-bool	RShaderCompilerEnvironment::m_bEnableDx9Compiler		= true;
+using namespace std;
+using namespace Rwge;
+
+const TCHAR*	RShaderCompilerEnvironment::m_szFxcPath					= TEXT("shaders\\fxc.exe");
+const TCHAR*	RShaderCompilerEnvironment::m_szTargetVersion			= TEXT("fx_2_0");						// fx_2_0 = Shader Model 3.0
+const TCHAR*	RShaderCompilerEnvironment::m_szDebugInfoPrefix			= TEXT("shaders\\log\\CompilerInfo_");
+const TCHAR*	RShaderCompilerEnvironment::m_szDebugInfoExtension		= TEXT(".log");
+const TCHAR*	RShaderCompilerEnvironment::m_szShaderBinaryPrefix		= TEXT("shaders\\bin\\Shader_");
+const TCHAR*	RShaderCompilerEnvironment::m_szShaderBinaryExtension	= TEXT(".bin");
+const TCHAR*	RShaderCompilerEnvironment::m_szShaderAssemblyPrefix	= TEXT("shaders\\asm\\Shader_");;
+const TCHAR*	RShaderCompilerEnvironment::m_szShaderAssemblyExtension = TEXT(".asm");
+const TCHAR*	RShaderCompilerEnvironment::m_szShaderSourcePath		= TEXT("shaders\\src\\BaseForwardShading.hlsl");
+bool			RShaderCompilerEnvironment::m_bEnableDebugInfo			= true;
+bool			RShaderCompilerEnvironment::m_bEnableDx9Compiler		= true;
+TCHAR			RShaderCompilerEnvironment::m_szBuffer128[128];
+TCHAR			RShaderCompilerEnvironment::m_szBuffer1024[1024];
+
+#ifdef _DEBUG
+bool			RShaderCompilerEnvironment::m_bOutputAssemblyFile		= true;
+#else
+bool			RShaderCompilerEnvironment::m_bOutputAssemblyFile		= false;
+#endif
+
 
 RShaderCompilerEnvironment::RShaderCompilerEnvironment()
 {
@@ -32,28 +47,22 @@ void RShaderCompilerEnvironment::EnableDx9Compiler(bool bEnable)
 	m_bEnableDx9Compiler = bEnable;
 }
 
-string RShaderCompilerEnvironment::GetShaderBinaryPath(const RShaderKey& key)
+const TCHAR* RShaderCompilerEnvironment::GetShaderBinaryPath(const RShaderKey& inKey)
 {
-	char arrayBuffer[128];
+	_tcscpy_s(m_szBuffer128, m_szShaderBinaryPrefix);
+	_tcscat_s(m_szBuffer128, inKey.ToHexString());
+	_tcscat_s(m_szBuffer128, m_szShaderBinaryExtension);
 
-	arrayBuffer[0] = '\0';
-	strcat_s(arrayBuffer, m_strShaderBinaryPrefix.c_str());
-	strcat_s(arrayBuffer, key.ToHexString());
-	strcat_s(arrayBuffer, m_strShaderBinaryExtension.c_str());
-
-	return string(arrayBuffer);
+	return m_szBuffer128;
 }
 
-string RShaderCompilerEnvironment::GetShaderDebugInfoPath(const RShaderKey& key)
+const TCHAR* RShaderCompilerEnvironment::GetShaderDebugInfoPath(const RShaderKey& inKey)
 {
-	char arrayBuffer[128];
+	_tcscpy_s(m_szBuffer128, m_szDebugInfoPrefix);
+	_tcscat_s(m_szBuffer128, inKey.ToHexString());
+	_tcscat_s(m_szBuffer128, m_szDebugInfoExtension);
 
-	arrayBuffer[0] = '\0';
-	strcat_s(arrayBuffer, m_strDebugInfoPrefix.c_str());
-	strcat_s(arrayBuffer, key.ToHexString());
-	strcat_s(arrayBuffer, m_strDebugInfoExtension.c_str());
-
-	return string(arrayBuffer);
+	return m_szBuffer128;
 }
 
 void RShaderCompilerEnvironment::SetShaderKey(const RShaderKey& key)
@@ -72,82 +81,146 @@ void RShaderCompilerEnvironment::SetShaderKey(const RShaderKey& key)
 	SetDefine("MATERIAL_SHADING_MODE",		key.GetShadingModeKey());
 	SetDefine("MATERIAL_TWO_SIDED",			key.GetTwoSidedKey());
 	SetDefine("MATERIAL_NONMETAL",			key.GetNonMetalKey());
+	SetDefine("TEXTURE_COUNT",				key.GetTextureCountKey());
 	SetDefine("MATERIAL_FULLY_ROUGH",		key.GetFullyRoughKey());
 	SetDefine("LIGHT_TYPE",					key.GetLightTypeKey());
+
+	const RTexturesToTextureUnitsMap* pTextureMap = RShaderKey::GetTexturesToTextureUnitsMap(key.GetTextureMapHashKey());
+	if (pTextureMap != nullptr)
+	{
+		const RTexturesToTextureUnitsMap& texturesToTextureUnitsMap = *pTextureMap;
+		unsigned short u16TextureIndex = 0;
+
+		// BaseColor ==================================================
+		if (key.GetBaseColorKey() == EME_2dTextureSampleRGB)
+		{
+			SetDefine("BASE_COLOR_TEXTURE_ID", static_cast<unsigned int>(texturesToTextureUnitsMap[u16TextureIndex]));
+			++u16TextureIndex;
+		}
+
+		// EmissiveColor ==================================================
+		if (key.GetEmissiveColorKey() == EME_2dTextureSampleRGB)
+		{
+			SetDefine("EMISSIVE_COLOR_TEXTURE_ID", static_cast<unsigned int>(texturesToTextureUnitsMap[u16TextureIndex]));
+			++u16TextureIndex;
+		}
+
+		// Normal ==================================================
+		if (key.GetNormalKey() == EME_2dTextureSampleRGB)
+		{
+			SetDefine("NORMAL_TEXTURE_ID", static_cast<unsigned int>(texturesToTextureUnitsMap[u16TextureIndex]));
+			++u16TextureIndex;
+		}
+
+		// Metallic ==================================================
+		if (key.GetMetallicKey() >= EME_2dTextureSampleR && key.GetMetallicKey() <= EME_2dTextureSampleA)
+		{
+			SetDefine("METALLIC_TEXTURE_ID", static_cast<unsigned int>(texturesToTextureUnitsMap[u16TextureIndex]));
+			++u16TextureIndex;
+		}
+
+		// Specular ==================================================
+		if (key.GetSpecularKey() >= EME_2dTextureSampleR && key.GetSpecularKey() <= EME_2dTextureSampleA)
+		{
+			SetDefine("SPECULAR_TEXTURE_ID", static_cast<unsigned int>(texturesToTextureUnitsMap[u16TextureIndex]));
+			++u16TextureIndex;
+		}
+
+		// Roughness ==================================================
+		if (key.GetRoughnessKey() >= EME_2dTextureSampleR && key.GetRoughnessKey() <= EME_2dTextureSampleA)
+		{
+			SetDefine("ROUGHNESS_TEXTURE_ID", static_cast<unsigned int>(texturesToTextureUnitsMap[u16TextureIndex]));
+			++u16TextureIndex;
+		}
+
+		// Opacity ==================================================
+		if (key.GetOpacityKey() >= EME_2dTextureSampleR && key.GetOpacityKey() <= EME_2dTextureSampleA)
+		{
+			SetDefine("OPACITY_TEXTURE_ID", static_cast<unsigned int>(texturesToTextureUnitsMap[u16TextureIndex]));
+			++u16TextureIndex;
+		}
+
+		// OpacityMask ==================================================
+		if (key.GetOpacityMaskKey() >= EME_2dTextureSampleR && key.GetOpacityMaskKey() <= EME_2dTextureSampleA)
+		{
+			SetDefine("OPACITY_MASK_TEXTURE_ID", static_cast<unsigned int>(texturesToTextureUnitsMap[u16TextureIndex]));
+			RwgeAssert(++u16TextureIndex == texturesToTextureUnitsMap.GetTextureCount());
+		}
+	}
 }
 
-void RShaderCompilerEnvironment::SetDefine(const char* pDefine, const char* pValue)
+void RShaderCompilerEnvironment::SetDefine(const TCHAR* pDefine, const TCHAR* pValue)
 {
 	m_mapDefinitions[pDefine] = pValue;
 }
 
-void RShaderCompilerEnvironment::SetDefine(const char* pDefine, unsigned u32Value)
+void RShaderCompilerEnvironment::SetDefine(const TCHAR* pDefine, unsigned u32Value)
 {
-	char arrayBuffer[16];
-	sprintf_s(arrayBuffer, "%u", u32Value);
-	m_mapDefinitions[pDefine] = arrayBuffer;
+	_stprintf_s(m_szBuffer128, "%u", u32Value);
+	m_mapDefinitions[pDefine] = m_szBuffer128;
 }
 
-void RShaderCompilerEnvironment::SetDefine(const char* pDefine, float f32Value)
+void RShaderCompilerEnvironment::SetDefine(const TCHAR* pDefine, float f32Value)
 {
-	char arrayBuffer[16];
-	sprintf_s(arrayBuffer, "%f", f32Value);
-	m_mapDefinitions[pDefine] = arrayBuffer;
+	_stprintf_s(m_szBuffer128, "%f", f32Value);
+	m_mapDefinitions[pDefine] = m_szBuffer128;
 }
 
-void RShaderCompilerEnvironment::SetDefine(const char* pDefine, unsigned char u8Value)
+void RShaderCompilerEnvironment::SetDefine(const TCHAR* pDefine, unsigned char u8Value)
 {
 	SetDefine(pDefine, static_cast<unsigned int>(u8Value));
 }
 
-void RShaderCompilerEnvironment::SetDefine(const char* pDefine, bool bValue)
+void RShaderCompilerEnvironment::SetDefine(const TCHAR* pDefine, bool bValue)
 {
 	SetDefine(pDefine, static_cast<unsigned int>(bValue));
 }
 
-string RShaderCompilerEnvironment::GetCompilerCmdLine()
+const TCHAR* RShaderCompilerEnvironment::GetCompilerCmdLine()
 {
-	char arrayCommandBuffer[128];
-	char arrayCmdLineBuffer[1024];
-
 	// FXC可执行文件路径
-	sprintf_s(arrayCmdLineBuffer, "\"%s\"", m_strFxcPath.c_str());
+	_stprintf_s(m_szBuffer1024, TEXT("\"%s\""), m_szFxcPath);
 
 	// 编译着色器的版本
-	sprintf_s(arrayCommandBuffer, " /T %s ", m_strTargetVersion.c_str());
-	strcat_s(arrayCmdLineBuffer, arrayCommandBuffer);
+	_stprintf_s(m_szBuffer128, TEXT(" /T %s "), m_szTargetVersion);
+	_tcscat_s(m_szBuffer1024, m_szBuffer128);
 
 	// 输出着色器二进制文件路径
-	sprintf_s(arrayCommandBuffer, " /Fo %s%s%s ", m_strShaderBinaryPrefix.c_str(), m_ShaderKey.ToHexString(), m_strShaderBinaryExtension.c_str());
-	strcat_s(arrayCmdLineBuffer, arrayCommandBuffer);
+	_stprintf_s(m_szBuffer128, TEXT(" /Fo %s%s%s "), m_szShaderBinaryPrefix, m_ShaderKey.ToHexString(), m_szShaderBinaryExtension);
+	_tcscat_s(m_szBuffer1024, m_szBuffer128);
+
+	// 输出着色器汇编文件路径
+	if (m_bOutputAssemblyFile)
+	{
+		_stprintf_s(m_szBuffer128, TEXT(" /Fh %s%s%s "), m_szShaderAssemblyPrefix, m_ShaderKey.ToHexString(), m_szShaderAssemblyExtension);
+		_tcscat_s(m_szBuffer1024, m_szBuffer128);
+	}
 
 	if (m_bEnableDebugInfo)
 	{
-		strcat_s(arrayCmdLineBuffer, " /Zi ");	// 开启调试信息	
+		_tcscat_s(m_szBuffer1024, TEXT(" /Zi "));	// 开启调试信息	
 	}
 	
 	if (m_bEnableDx9Compiler)
 	{
-		strcat_s(arrayCmdLineBuffer, " /LD ");	// 使用遗留编译器（DX9编译器）编译
+		_tcscat_s(m_szBuffer1024, TEXT(" /LD "));	// 使用遗留编译器（DX9编译器）编译
 	}
 	
-	for (pair<const string, string>& pairDefinition : m_mapDefinitions)
+	for (pair<const tstring, tstring>& pairDefinition : m_mapDefinitions)
 	{
-		strcat_s(arrayCmdLineBuffer, GetDefinitionText(pairDefinition));
+		_tcscat_s(m_szBuffer1024, GetDefinitionText(pairDefinition));
 	}
 
 	// HLSL文件路径
-	sprintf_s(arrayCommandBuffer, "\"%s\"", m_strShaderSourcePath.c_str());
-	strcat_s(arrayCmdLineBuffer, arrayCommandBuffer);
+	_stprintf_s(m_szBuffer128, TEXT("\"%s\""), m_szShaderSourcePath);
+	_tcscat_s(m_szBuffer1024, m_szBuffer128);
 
-	return string(arrayCmdLineBuffer);
+	return m_szBuffer1024;
 }
 
-const char* RShaderCompilerEnvironment::GetDefinitionText(const std::pair<std::string, std::string>& pairDefinition)
+const TCHAR* RShaderCompilerEnvironment::GetDefinitionText(const std::pair<tstring, tstring>& pairDefinition)
 {
-	static char arrayBuffer[64];
+	_stprintf_s(m_szBuffer128, TEXT(" /D %s=%s "), pairDefinition.first.c_str(), pairDefinition.second.c_str());
 
-	sprintf_s(arrayBuffer, " /D %s=%s ", pairDefinition.first.c_str(), pairDefinition.second.c_str());
-
-	return arrayBuffer;
+	return m_szBuffer128;
 }

@@ -1,22 +1,36 @@
+/*--------------------------------------------------------------------------------------------------------------------*\
+   【CREATE】	
+	AUTH :	大便一箩筐																			   DATE : 2016-05-18
+	DESC :	
+	1.	用于生成顶点声明
+
+	ToDo：
+	2016-05-18
+		暂时只支持通过VertexDeclarationTemplate生成顶点声明，还需要提供从文件加载顶点声明的功能
+\*--------------------------------------------------------------------------------------------------------------------*/
+
+
 #pragma once
 
-#include "RwgeVertexDeclarationType.h"
 #include <string>
 #include <map>
+#include <RwgeObject.h>
 #include <RwgeSingleton.h>
+#include "RwgeD3d9VertexDeclaration.h"
 
-class VertexDeclarationManager : public Singleton<VertexDeclarationManager>
+class RVertexDeclarationManager : 
+	public RObject,
+	public Singleton<RVertexDeclarationManager>
 {
 public:
-	VertexDeclarationManager();
-	~VertexDeclarationManager();
+	RVertexDeclarationManager();
+	~RVertexDeclarationManager();
 
-	void GenerateDefaultVertexDeclaration();
-	VertexDeclarationType* GetDefaultVertexDeclaration();
-	VertexDeclarationType* GetVertexDeclaration(const std::string& strDeclarationName);
+	RD3d9VertexDeclaration* GetDefaultVertexDeclaration();
 
 private:
-	static char* m_DefaultVertexDeclarationName;
+	void GenerateDefaultVertexDeclaration();
 
-	std::map<std::string, VertexDeclarationType*>	m_mapVertexDeclarations;	// <顶点声明名称，顶点声明>
+private:
+	std::map<std::string, RD3d9VertexDeclaration*> m_mapVertexDeclarations;
 };

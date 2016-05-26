@@ -2,6 +2,8 @@
 
 #include "RwgeAssert.h"
 #include "RwgeMessageDef.h"
+#include <RwgeD3d9RenderTarget.h>
+#include <RwgeD3d9RenderSystem.h>
 
 using namespace std;
 using namespace RwgeAppWindow;
@@ -67,19 +69,26 @@ void RAppWindow::Resize(int s32X, int s32Y, int s32Width, int s32Height, EDispla
 	switch (mode)
 	{
 	default:
-	case EDM_Windowed :
-		SetWindowPos(
-			m_hWnd,				// 窗口句柄
-			nullptr,			// 窗口的显示层次，例：HWND_TOP
-			s32X,				// 窗口左上角X坐标（基于屏幕像素）
-			s32Y,				// 窗口左上角Y坐标（基于屏幕像素）
-			s32Width,			// 窗口宽度
-			s32Height,			// 窗口高度
-			0);					// 其他操作，如显示、隐藏、刷新窗口等，例：SWP_SHOWWINDOW
+	case EDM_Windowed:
+		{
+			SetWindowPos(
+				m_hWnd,				// 窗口句柄
+				nullptr,			// 窗口的显示层次，例：HWND_TOP
+				s32X,				// 窗口左上角X坐标（基于屏幕像素）
+				s32Y,				// 窗口左上角Y坐标（基于屏幕像素）
+				s32Width,			// 窗口宽度
+				s32Height,			// 窗口高度
+				0);					// 其他操作，如显示、隐藏、刷新窗口等，例：SWP_SHOWWINDOW
+
+			if (m_pRenderTarget != nullptr)
+			{
+				m_pRenderTarget->Resize(s32Width, s32Height, mode);
+			}
+		}
 		break;
 
 	case EDM_FakeFullScreen :
-		// 非独占全屏模式需要使用Windows API设置窗口
+		// 非独占全屏模式需要使用Windows API设置
 		{
 			RECT rect;
 			GetWindowRect(GetDesktopWindow(), &rect);
@@ -99,13 +108,19 @@ void RAppWindow::Resize(int s32X, int s32Y, int s32Width, int s32Height, EDispla
 				rect.bottom,			// 窗口高度
 				SWP_NOSENDCHANGING);	// 其他操作，如显示、隐藏、刷新窗口等，例：SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE
 
+			if (m_pRenderTarget != nullptr)
+			{
+				m_pRenderTarget->Resize(rect.right, rect.bottom, mode);
+			}
+
+			// 发送消息，调用监听器函数
 			SendMessage(m_hWnd, WM_SIZE, WPARAM(SIZE_FAKE_FULLSCREEN), MAKELONG(rect.right, rect.bottom));
 			SendMessage(m_hWnd, WM_MOVE, 0, 0);
 		}
 		break;
 
 	case EDM_TrueFullScreen:
-		// 独占全屏模式通过在回调函数中调用D3D API实现，发送消息给监听的Device即可
+		// 独占全屏模式通过调用D3D API实现，
 		{
 			if (m_listWindowListeners.empty())
 			{
@@ -115,6 +130,12 @@ void RAppWindow::Resize(int s32X, int s32Y, int s32Width, int s32Height, EDispla
 			RECT rect;
 			GetWindowRect(GetDesktopWindow(), &rect);
 
+			if (m_pRenderTarget != nullptr)
+			{
+				m_pRenderTarget->Resize(rect.right, rect.bottom, mode);
+			}
+
+			// 发送消息，调用监听器函数
 			SendMessage(m_hWnd, WM_SIZE, WPARAM(SIZE_TRUE_FULLSCREEN), MAKELONG(rect.right, rect.bottom));
 			SendMessage(m_hWnd, WM_MOVE, 0, 0);
 		}
@@ -246,11 +267,6 @@ void RAppWindow::OnKeyDown(unsigned int u32Key)
 	}
 }
 
-void RAppWindow::SetRenderTarget(RD3dRenderTarget* pRenderTarget)
-{
-	m_pRenderTarget = pRenderTarget;
-}
-
 void RAppWindow::RegKeyBoardListener(KeyBoardListener* pListener)
 {
 #ifdef _DEBUG
@@ -279,4 +295,19 @@ void RAppWindow::DeRegKeyBoardListener(KeyBoardListener* pListener)
 #endif // _DEBUG
 
 	m_listKeyBoardListeners.remove(pListener);
+}
+
+void RAppWindow::AddViewport(RD3d9Viewport* pViewport)
+{
+	m_pRenderTarget->AddViewport(pViewport);
+}
+
+void RAppWindow::RemoveViewport(RD3d9Viewport* pViewport)
+{
+	m_pRenderTarget->RemoveViewport(pViewport);
+}
+
+void RAppWindow::SetCamera(RCamera* pCamera)
+{
+	m_pRenderTarget->SetDefaultCamera(pCamera);
 }

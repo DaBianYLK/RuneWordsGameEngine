@@ -2,11 +2,11 @@
 
 #include "RwgeMesh.h"
 #include "RwgeMaterialFactory.h"
-#include "RwgeRenderPrimitive.h"
+#include "RwgeRenderUnit.h"
 #include "RwgeVertexDeclarationManager.h"
 #include "RwgeVertexStream.h"
 #include "RwgeIndexStream.h"
-#include "RwgeVertexDeclarationType.h"
+#include "RwgeD3d9VertexDeclaration.h"
 #include <fstream>
 
 using namespace std;
@@ -33,22 +33,22 @@ struct VertexData
 	}
 };
 
-Model* ModelFactory::CreateTriangle()
+RModel* ModelFactory::CreateTriangle()
 {
-	Model* pModel = new Model();
+	RModel* pModel = new RModel();
 
-	Mesh* pMesh = new Mesh();
+	RMesh* pMesh = new RMesh();
 	pModel->AddMesh(pMesh);
 
 	pMesh->SetMaterial(MaterialFactory::CreateWhiteMaterial());
 	
-	RenderPrimitive* pPrimitive = new RenderPrimitive();
+	RRenderUnit* pRenderUnit = new RRenderUnit();
 	
-	pPrimitive->SetVertexDeclaration(VertexDeclarationManager::GetInstance().GetDefaultVertexDeclaration());
-	pPrimitive->SetPrimitiveType(D3DPT_TRIANGLELIST);
-	pPrimitive->SetPrimitiveCount(1);
+	pRenderUnit->SetVertexDeclaration(RVertexDeclarationManager::GetInstance().GetDefaultVertexDeclaration());
+	pRenderUnit->SetPrimitiveType(D3DPT_TRIANGLELIST);
+	pRenderUnit->SetPrimitiveCount(1);
 
-	const unsigned int uVertexSize = pPrimitive->GetVertexDeclarationType()->GetStreamVertexSize(0);
+	const unsigned int uVertexSize = pRenderUnit->GetVertexDeclaration()->GetVertexSize();
 	const unsigned int uVertexCount = 3;
 	VertexData* pVertexData = new VertexData[uVertexSize * uVertexCount];
 	pVertexData[0] = VertexData(D3DXVECTOR3(0, 0, 0), D3DXVECTOR2(0, 0), D3DXVECTOR3(0, 0, 1), D3DXVECTOR3(1, 0, 0));
@@ -63,30 +63,31 @@ Model* ModelFactory::CreateTriangle()
 	pIndexData[2] = 2;
 	IndexStream* pIndexStream = new IndexStream(uIndexCount, pIndexData);
 
-	pPrimitive->AddVertexStream(pVertexStream);
-	pPrimitive->SetIndexStream(pIndexStream);
+	pRenderUnit->AddVertexStream(pVertexStream);
+	pRenderUnit->SetIndexStream(pIndexStream);
+	pRenderUnit->BindStreamToBuffer();
 
-	pMesh->AddRenderPrimitive(pPrimitive);
+	pMesh->AddRenderUnit(pRenderUnit);
 
 	return pModel;
 }
 
-Model* ModelFactory::CreatePanel()
+RModel* ModelFactory::CreatePanel()
 {
-	Model* pModel = new Model();
+	RModel* pModel = new RModel();
 
-	Mesh* pMesh = new Mesh();
+	RMesh* pMesh = new RMesh();
 	pModel->AddMesh(pMesh);
 
 	pMesh->SetMaterial(MaterialFactory::CreateBackgroundMaterial());
 
-	RenderPrimitive* pPrimitive = new RenderPrimitive();
+	RRenderUnit* pRenderUnit = new RRenderUnit();
 
-	pPrimitive->SetVertexDeclaration(VertexDeclarationManager::GetInstance().GetDefaultVertexDeclaration());
-	pPrimitive->SetPrimitiveType(D3DPT_TRIANGLELIST);
-	pPrimitive->SetPrimitiveCount(2);
+	pRenderUnit->SetVertexDeclaration(RVertexDeclarationManager::GetInstance().GetDefaultVertexDeclaration());
+	pRenderUnit->SetPrimitiveType(D3DPT_TRIANGLELIST);
+	pRenderUnit->SetPrimitiveCount(2);
 
-	const unsigned int uVertexSize = pPrimitive->GetVertexDeclarationType()->GetStreamVertexSize(0);
+	const unsigned int uVertexSize = pRenderUnit->GetVertexDeclaration()->GetVertexSize();
 	const unsigned int uVertexCount = 4;
 	VertexData* pVertexData = new VertexData[uVertexSize * uVertexCount];
 	pVertexData[0] = VertexData(D3DXVECTOR3( 720, 0,  450), D3DXVECTOR2(1, 0), D3DXVECTOR3(0, 1, 0), D3DXVECTOR3(1, 0, 0));
@@ -105,30 +106,31 @@ Model* ModelFactory::CreatePanel()
 	pIndexData[5] = 1;
 	IndexStream* pIndexStream = new IndexStream(uIndexCount, pIndexData);
 
-	pPrimitive->AddVertexStream(pVertexStream);
-	pPrimitive->SetIndexStream(pIndexStream);
+	pRenderUnit->AddVertexStream(pVertexStream);
+	pRenderUnit->SetIndexStream(pIndexStream);
+	pRenderUnit->BindStreamToBuffer();
 
-	pMesh->AddRenderPrimitive(pPrimitive);
+	pMesh->AddRenderUnit(pRenderUnit);
 
 	return pModel;
 }
 
-Model* ModelFactory::CreateBox()
+RModel* ModelFactory::CreateBox()
 {
-	Model* pModel = new Model();
+	RModel* pModel = new RModel();
 
-	Mesh* pMesh = new Mesh();
+	RMesh* pMesh = new RMesh();
 	pModel->AddMesh(pMesh);
 
 	pMesh->SetMaterial(MaterialFactory::CreateWoodenBoxMaterial());
 
-	RenderPrimitive* pPrimitive = new RenderPrimitive();
+	RRenderUnit* pRenderUnit = new RRenderUnit();
 
-	pPrimitive->SetVertexDeclaration(VertexDeclarationManager::GetInstance().GetDefaultVertexDeclaration());
-	pPrimitive->SetPrimitiveType(D3DPT_TRIANGLELIST);
-	pPrimitive->SetPrimitiveCount(12);
+	pRenderUnit->SetVertexDeclaration(RVertexDeclarationManager::GetInstance().GetDefaultVertexDeclaration());
+	pRenderUnit->SetPrimitiveType(D3DPT_TRIANGLELIST);
+	pRenderUnit->SetPrimitiveCount(12);
 
-	const unsigned int uVertexSize = pPrimitive->GetVertexDeclarationType()->GetStreamVertexSize(0);
+	const unsigned int uVertexSize = pRenderUnit->GetVertexDeclaration()->GetVertexSize();
 	const unsigned int uVertexCount = 24;		// 由于法线和纹理坐标的原因，不同面中的顶点不能共用
 	VertexData* pVertexData = new VertexData[uVertexSize * uVertexCount];
 
@@ -192,17 +194,18 @@ Model* ModelFactory::CreateBox()
 
 	IndexStream* pIndexStream = new IndexStream(uIndexCount, pIndexData);
 
-	pPrimitive->AddVertexStream(pVertexStream);
-	pPrimitive->SetIndexStream(pIndexStream);
+	pRenderUnit->AddVertexStream(pVertexStream);
+	pRenderUnit->SetIndexStream(pIndexStream);
+	pRenderUnit->BindStreamToBuffer();
 
-	pMesh->AddRenderPrimitive(pPrimitive);
+	pMesh->AddRenderUnit(pRenderUnit);
 
 	return pModel;
 }
 
-Mesh* ModelFactory::LoadMesh(const string& strPath)
+RMesh* ModelFactory::LoadMesh(const string& strPath)
 {
-	Mesh* pMesh = new Mesh();
+	RMesh* pMesh = new RMesh();
 
 	ifstream meshFile(strPath, ios::in | ios::binary);
 
@@ -211,13 +214,13 @@ Mesh* ModelFactory::LoadMesh(const string& strPath)
 	meshFile.read(reinterpret_cast<char*>(&uVertexCount), sizeof(uVertexCount));
 	meshFile.read(reinterpret_cast<char*>(&uFaceCount), sizeof(uFaceCount));
 
-	RenderPrimitive* pPrimitive = new RenderPrimitive();
+	RRenderUnit* pRenderUnit = new RRenderUnit();
 
-	pPrimitive->SetVertexDeclaration(VertexDeclarationManager::GetInstance().GetDefaultVertexDeclaration());
-	pPrimitive->SetPrimitiveType(D3DPT_TRIANGLELIST);
-	pPrimitive->SetPrimitiveCount(uFaceCount);
+	pRenderUnit->SetVertexDeclaration(RVertexDeclarationManager::GetInstance().GetDefaultVertexDeclaration());
+	pRenderUnit->SetPrimitiveType(D3DPT_TRIANGLELIST);
+	pRenderUnit->SetPrimitiveCount(uFaceCount);
 
-	const unsigned int uVertexSize = pPrimitive->GetVertexDeclarationType()->GetStreamVertexSize(0);
+	const unsigned int uVertexSize = pRenderUnit->GetVertexDeclaration()->GetVertexSize();
 	unsigned int uVertexDataSize = uVertexSize * uVertexCount;
 	VertexData* pVertexData = new VertexData[uVertexDataSize];
 
@@ -231,19 +234,20 @@ Mesh* ModelFactory::LoadMesh(const string& strPath)
 
 	IndexStream* pIndexStream = new IndexStream(uIndexCount, pIndexData);
 
-	pPrimitive->AddVertexStream(pVertexStream);
-	pPrimitive->SetIndexStream(pIndexStream);
+	pRenderUnit->AddVertexStream(pVertexStream);
+	pRenderUnit->SetIndexStream(pIndexStream);
+	pRenderUnit->BindStreamToBuffer();
 
-	pMesh->AddRenderPrimitive(pPrimitive);
+	pMesh->AddRenderUnit(pRenderUnit);
 
 	meshFile.close();
 
 	return pMesh;
 }
 
-Model* ModelFactory::CreateZhanHun()
+RModel* ModelFactory::CreateZhanHun()
 {
-	Model* pModel = new Model();
+	RModel* pModel = new RModel();
 
 	pModel->AddMesh(LoadMesh("meshes/对象05.mesh"));
 	pModel->AddMesh(LoadMesh("meshes/对象01.mesh"));
@@ -251,7 +255,7 @@ Model* ModelFactory::CreateZhanHun()
 	pModel->AddMesh(LoadMesh("meshes/man_hand02.mesh"));
 	pModel->AddMesh(LoadMesh("meshes/man_head04.mesh"));
 
-	list<Mesh*>& plistMeshes = pModel->GetMeshes();
+	list<RMesh*>& plistMeshes = pModel->GetMeshes();
 	auto itMeshPtr = plistMeshes.begin();
 	(*itMeshPtr++)->SetMaterial(MaterialFactory::CreateZhanHunBodyMaterial());
 	(*itMeshPtr++)->SetMaterial(MaterialFactory::CreateZhanHunShoulderMaterial());
@@ -262,9 +266,9 @@ Model* ModelFactory::CreateZhanHun()
 	return pModel;
 }
 
-Model* ModelFactory::LoadModel(const string& strPath)
+RModel* ModelFactory::LoadModel(const string& strPath)
 {
-	Model* pModel = new Model();
+	RModel* pModel = new RModel();
 
 	return pModel;
 }

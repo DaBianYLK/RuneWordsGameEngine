@@ -1,24 +1,27 @@
 #pragma once
 
 #include <d3dx9.h>
+#include <RwgeD3d9Device.h>
 
 enum EBlendMode
 {
-	BM_Opaque,
-	BM_Translucent,
-	BM_Additive,
-	BM_Modulative,
-	BM_Masked,
+	EBM_Opaque,
+	EBM_Translucent,
+	EBM_Additive,
+	EBM_Modulative,
+	EBM_Masked,
 
-	BlendMode_MAX
+	EBlendMode_MAX
 };
 
 enum EShadingMode
 {
-	SM_Unlit,
-	SM_Default,
+	ESM_Default,
+	ESM_Unlit,
 
-	ShadingMode_MAX
+	EShadingMode_MAX
 };
 
-#define D3d9SafeRelease(ptr)	if (ptr) { ptr->Release(); ptr = nullptr; }
+#define g_RwgeDevice				RD3d9Device::GetInstance()							// RWGEµÄDevice
+#define g_pD3d9Device				RD3d9Device::GetInstance().GetD3dDevice()			// D3D9µÄDevice
+#define g_RwgeRenderSystem			RRenderSystem::GetInstance()

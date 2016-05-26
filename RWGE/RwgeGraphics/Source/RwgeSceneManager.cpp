@@ -1,152 +1,100 @@
 #include "RwgeSceneManager.h"
 
-#include "RwgeCamera.h"
-#include "RwgeViewport.h"
-#include "RwgeD3d9RenderSystem.h"
-#include "RwgeModel.h"
-#include "RwgeMesh.h"
-#include "RwgeMath.h"
-#include "RwgeShaderManager.h"
 #include <RwgeLog.h>
+#include "RwgeCamera.h"
+#include "RwgeD3d9Viewport.h"
+#include "RwgeModel.h"
+#include "RwgeLight.h"
+#include "RwgeD3d9RenderQueue.h"
 
 using namespace std;
 
-SceneManager::SceneManager() :
-	m_pRoot(new SceneNode()), 
+RSceneManager::RSceneManager() :
+	m_pRoot(new RSceneNode()), 
 	m_pLight(nullptr), 
 	m_pActiveCamera(nullptr), 
-	m_bEnvironmentChanged(false)
+	m_bSceneChanged(false)
 {
 	m_pRoot->m_pSceneManager = this;
 }
 
-SceneManager::~SceneManager()
+RSceneManager::~RSceneManager()
 {
 
 }
 
-SceneNode* SceneManager::GetSceneRoot() const
+RSceneNode* RSceneManager::GetSceneRoot() const
 {
 	return m_pRoot;
 }
 
-void SceneManager::RenderScene(Viewport* pViewport)
+void RSceneManager::RenderScene(RCamera* pCamera, RD3d9Viewport* pViewport, RD3d9RenderQueue& renderQueue)
 {
-	m_pActiveCamera = pViewport->GetCamera();
-
-	RenderTarget* pRenderTarget = pViewport->GetRenderTarget();
-
-	bool bSceneChanged = pRenderTarget->GetActiveSceneManager() != this;
-	if (bSceneChanged)
-	{
-		pRenderTarget->SetActiveSceneManager(this);
-	}
+	m_pActiveCamera = pCamera;
 
 	// 遍历场景树，更新所有的场景节点
 	m_pRoot->UpdateSelfAndAllChildren();
 
-	// ToDo：视锥体裁剪
-
-	// 将渲染图元加入渲染队列
-	SetupRenderQueue(m_pActiveCamera, RD3d9RenderSystem::GetInstance().GetRenderQueuePtr(), m_bEnvironmentChanged || bSceneChanged);
-
-	RD3d9RenderSystem::GetInstance().RenderScene(this);
-}
-
-void SceneManager::AddModel(Model* pModel)
-{
-	m_mapModels.insert(make_pair(pModel, pModel));
-}
-
-void SceneManager::RemoveModel(Model* pModel)
-{
-	m_mapModels.erase(pModel);
-}
-
-void SceneManager::AddModelBySceneNode(SceneNode* pNode)
-{
-	if (pNode->m_NodeType == SceneNode::NT_Model)
+	// 遍历场景树，将模型加入到渲染队列
+	// ToDo：这里需要实现空间划分树与视锥体裁剪
+	renderQueue.Clear();
+	renderQueue.SetCamera(pCamera);
+	renderQueue.SetLight(m_pLight);
+	if (m_bSceneChanged)
 	{
-		AddModel(reinterpret_cast<Model*>(pNode));
+		renderQueue.NeedUpdateCachedMaterialShader();
 	}
-
-	for (auto pChild : pNode->m_listChildren)
-	{
-		AddModelBySceneNode(pChild);
-	}
+	renderQueue.SetSceneKey(GetSceneKey());
+	FindModelsInSceneTree(m_pRoot, renderQueue);
 }
 
-void SceneManager::RemoveModelBySceneNode(SceneNode* pNode)
-{
-	if (pNode->m_NodeType == SceneNode::NT_Model)
-	{
-		RemoveModel(reinterpret_cast<Model*>(pNode));
-	}
-
-	for (auto pChild : pNode->m_listChildren)
-	{
-		RemoveModelBySceneNode(pChild);
-	}
-}
-
-void SceneManager::SetLight(Light* pLight)
+void RSceneManager::SetLight(RLight* pLight)
 {
 	m_pLight = pLight;
+	
+	m_bSceneChanged = true;
 }
 
-Light* SceneManager::GetLight()
+const RLight* RSceneManager::GetLight() const
 {
 	return m_pLight;
 }
 
-Camera* SceneManager::GetActiveCamera()
+RCamera* RSceneManager::GetActiveCamera()
 {
 	return m_pActiveCamera;
 }
 
-void SceneManager::SetupRenderQueue(Camera* pCamera, RenderQueue* pRenderQueue, bool bNeedUpdateShader)
+const SceneKey& RSceneManager::GetSceneKey()
 {
-	pRenderQueue->Clear();
-
-	RenderState renderState;
-
-	D3DXMATRIX viewProjMatrix;
-	D3DXMatrixMultiply(&viewProjMatrix, pCamera->GetViewTransform(), pCamera->GetProjectionTransform());
-
-	// auto = pair<Model*, Model*>
-	for (auto& pair : m_mapModels)
+	if (m_bSceneChanged)
 	{
-		// m_mapModels中的Key和Value的值相同，它们指向同一个Model
-		Model* pModel = pair.first;
-
-		renderState.transformWorld = pModel->GetWorldTransform();
-
-		// 计算WVP变换矩阵
-		D3DXMatrixMultiply(&renderState.transformWVP, &renderState.transformWorld, &viewProjMatrix);
-
-		// 使用模型距离摄像机距离的平方代替深度（经过视锥体裁剪后，模型与摄像机的距离可以近似看为深度）
-		renderState.fDepth = RwgeMath::Distance2(pCamera->GetWorldPosition(), pModel->GetWorldPosition());
-
-		// auto = Mesh*
-		for (auto pMesh : pModel->GetMeshes())
+		if (m_pLight)
 		{
-			RMaterial* pMaterial = pMesh->GetMaterialPtr();
-			const list<RenderPrimitive*> listPrimitives = pMesh->GetRenderPrimitives();
-
-			renderState.pMaterial = pMaterial;
-
-			// 如果要更新shader
-			if (bNeedUpdateShader || pMaterial->GetShaderType() == nullptr)
-			{
-				unsigned long long u64ShaderKey = RShaderManager::GetShaderKey(pMaterial->GetMaterialKey(), RShaderManager::GetEnvironmentKey(m_pLight));
-				pMaterial->SetShaderType(RShaderManager::GetInstance().GetShaderType(u64ShaderKey));
-			}
-
-			// auto = RenderPrimitive*
-			for (auto pPrimitive : listPrimitives)
-			{
-				pRenderQueue->AddRenderPrimitive(pPrimitive, renderState);
-			}
+			m_SceneKey.SetLightTypeKey(m_pLight->GetLightType());
 		}
+		else
+		{
+			m_SceneKey.SetLightTypeKey(ELT_NoLight);
+		}
+		
+		m_bSceneChanged = false;
+	}
+
+	return m_SceneKey;
+}
+
+void RSceneManager::FindModelsInSceneTree(RSceneNode* pNode, RD3d9RenderQueue& renderQueue)
+{
+	// 场景节点的插入操作保证了场景树中不可能存在空节点，因此不需要做指针检查
+
+	if (pNode->m_NodeType == RSceneNode::ENT_Model)
+	{
+		renderQueue.InsertModel(reinterpret_cast<RModel*>(pNode));
+	}
+
+	for (RSceneNode* pChildNode : pNode->m_listChildren)
+	{
+		FindModelsInSceneTree(pChildNode, renderQueue);
 	}
 }

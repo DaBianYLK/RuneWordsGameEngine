@@ -1,31 +1,31 @@
 #include "RwgeMesh.h"
 
 
-Mesh::Mesh()
+RMesh::RMesh()
 {
 }
 
 
-Mesh::~Mesh()
+RMesh::~RMesh()
 {
 }
 
-void Mesh::SetMaterial(RMaterial* pMaterial)
+void RMesh::SetMaterial(RMaterial* pMaterial)
 {
 	m_pMaterial = pMaterial;
 }
 
-RMaterial* Mesh::GetMaterialPtr() const
+RMaterial* RMesh::GetMaterial() const
 {
 	return m_pMaterial;
 }
 
-void Mesh::AddRenderPrimitive(RenderPrimitive* pPrimitive)
+void RMesh::AddRenderUnit(RRenderUnit* pPrimitive)
 {
 	m_listPrimitives.push_back(pPrimitive);
 }
 
-std::list<RenderPrimitive*> Mesh::GetRenderPrimitives()
+const std::list<RRenderUnit*>& RMesh::GetRenderUnits()
 {
 	return m_listPrimitives;
 }

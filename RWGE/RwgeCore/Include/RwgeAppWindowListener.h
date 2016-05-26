@@ -16,7 +16,8 @@ namespace RwgeAppWindow
 		EDM_Windowed,			// 窗口模式
 		EDM_FakeFullScreen,		// 非独占全屏
 		EDM_TrueFullScreen,		// 独占全屏
-		EDM_MAX
+
+		EDisplayMode_MAX
 	};
 
 	class WindowListener

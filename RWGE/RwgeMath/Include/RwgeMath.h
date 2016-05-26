@@ -19,6 +19,20 @@ namespace RwgeMath
 	static const D3DXVECTOR3 Vector3UnitY(0.0f, 1.0f, 0.0f);
 	static const D3DXVECTOR3 Vector3UnitZ(0.0f, 0.0f, 1.0f);
 
+	static const char				s8Max	= 0x7F;
+	static const char				s8Min	= -s8Max - 1;
+	static const short				s16Max	= 0x7FFF;
+	static const short				s16Min	= -s16Max - 1;
+	static const int				s32Max	= 0x7FFFFFFF;
+	static const int				s32Min	= -s32Max - 1;
+	static const long long			s64Max	= 0x7FFFFFFFFFFFFFFF;
+	static const long long			s64Min	= -s64Max - 1;
+
+	static const unsigned char		u8Max	= 0xFF;
+	static const unsigned short		u16Max	= 0xFFFF;
+	static const unsigned int		u32Max	= 0xFFFFFFFF;
+	static const unsigned long long	u64Max	= 0xFFFFFFFFFFFFFFFF;
+
 	/*
 	裁剪函数：将value的值控制在[lowerBound, upperBound]范围内，若小于则置为lowerBound，若大于则置为upperBound
 	@Param	

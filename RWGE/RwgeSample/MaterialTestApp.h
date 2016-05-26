@@ -3,12 +3,12 @@
 #include <RwgeApplication.h>
 #include <RwgeAppWindow.h>
 #include <RwgeD3d9RenderTarget.h>
-#include <RwgeViewport.h>
+#include <RwgeD3d9Viewport.h>
 #include <RwgeSceneManager.h>
 #include <RwgeCamera.h>
 #include <RwgeModel.h>
 #include <RwgeLight.h>
-#include <RwgeInputManager.h>
+#include <RwgeInputListener.h>
 
 enum EMovingDirection
 {
@@ -25,14 +25,14 @@ enum EMovingDirection
 
 class MaterialTestApp : 
 	public RApplication::AppDelegate, 
-	public RInputManager::KeyBoardListener
+	public RwgeInput::KeyBoardListener
 {
 public:
 	MaterialTestApp();
 	~MaterialTestApp();
 
 	void OnCreate() override;
-	void OnUpdateFrame(float f32DeltaTime) override;
+	void AfterRenderingFrame(float f32DeltaTime) override;
 	void OnDestroy() override;
 
 	void OnKeyUp(HWND hWnd, unsigned int key) override;
@@ -41,11 +41,11 @@ public:
 private:
 	RAppWindow*			m_pWindow;
 	RenderTarget*		m_pRenderTarget;
-	Viewport*			m_pViewport;
-	SceneManager*		m_pSceneManager;
-	Camera*				m_pCamera;
-	Model*				m_pModel;
-	PointLight*			m_pLight;
+	RD3d9Viewport*		m_pViewport;
+	RSceneManager*		m_pSceneManager;
+	RCamera*			m_pCamera;
+	RModel*				m_pModel;
+	RLight*				m_pLight;
 
 	RMaterial*			m_pWoodenMaterial;
 	RMaterial*			m_pMetalMaterial;
@@ -54,8 +54,8 @@ private:
 	RMaterial*			m_pBodyMaterial;
 	RMaterial*			m_pBodyMaterialWithoutNormalMap;
 
-	SceneNode*			m_pCameraAxis;
-	SceneNode*			m_pLightAxis;
+	RSceneNode*			m_pCameraAxis;
+	RSceneNode*			m_pLightAxis;
 
 	EMovingDirection	m_CameraMovingDirection;
 	EMovingDirection	m_LightMovingDirection;

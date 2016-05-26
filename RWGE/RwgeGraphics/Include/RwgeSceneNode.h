@@ -1,22 +1,35 @@
+/*--------------------------------------------------------------------------------------------------------------------*\
+   【CREATE】	
+	AUTH :	大便一箩筐																			   DATE : 2016-01-08
+	DESC :	
+	1.	场景节点是构成场景树的基本单元，它用于定义场景对象的空间变换
+	2.	描述场景对象空间变换的基坐标系有三种：世界坐标系、父节点坐标系、自身节点坐标系
+	3.	场景节点发生空间变换时，不会马上计算变换后的空间变换矩阵，而是记录下当前的状态变换，必要时才进行更新
+	4.	基于父节点坐标系的空间变换过程：ParentWorldTransform * Translation * Orientation * Scale
+	5.	当场景节点发生空间变换时，需要通知它的父节点，父节点会继续向父节点的父节点传递这个通知，直到通知到树根，这样
+		可以保证场景树更新时只需要遍历发生变化的子树
+	6.	当场景节点发生空间变换时，是否通知子节点有一个性能与实时性取舍问题：
+		A.	如果通知子节点，可以保证空间变换的实时性，但此时需要向子节点的子节点传递这个通知，直到子树被遍历完毕，因
+			此会导致较大的性能开销
+		B.	如果不通知子节点，可以节省遍历子树的开销，但这意味着子树会忽略父节点在本帧中发生的空间变换，所以会导致一
+			帧的位置延迟（渲染前会进行同步，因此即使不通知子节点也不会对渲染结果造成影响）
+		由于不同情况下的取舍不同，因此加入一个编译开关，由开发者自行控制，默认情况下关闭
+	7.	RWGE与DirectX坐标系一致，使用左手坐标系，节点面向方向为Z轴正方向，节点上方为Y轴正方向，节点右方为X轴正方向
+	8.	在左手坐标系中，“物体绕轴A旋转alpha度”等价于“面朝轴A的方向，将物体逆时针旋转alpha度”（右手坐标系时，逆时
+		针变为顺时针），记忆方法：在左手坐标系中，使左手大拇指指向旋转轴，其余四指握拳，四指所指向的方向即为旋转的正
+		方向（右手坐标系中，则换成右手）
+	9.	默认情况下，定义场景节点的正前方为Z轴正方向，正上方为Y轴正方向，正右方为X轴正方向。
+\*--------------------------------------------------------------------------------------------------------------------*/
+
+
 #pragma once
 
 #include <list>
 #include <d3dx9.h>
 #include <RwgeQuaternion.h>
+#include <RwgeObject.h>
 
-/*
-场景节点——组织场景树的基本单元，用于定义场景对象的空间变换
-
-1.	描述场景对象空间变换的基坐标系有三种：世界坐标系、父节点坐标系、自身节点坐标系
-2.	场景节点发生空间变换时，不会马上计算变换后的空间变换矩阵，而是记录下当前的状态变换，必要时才进行更新
-3.	基于父节点坐标系的空间变换过程：ParentWorldTransform * Translation * Orientation * Scale
-4.	一个场景节点发生变化后，需要通知它的父节点（父节点需要继续向父节点的父节点传递这个通知，直到通知到树根）
-	以及它所有的子节点（子节点也需要向子节点的子节点传递这个通知，直到子树被遍历完毕）
-5.	RWGE与DirectX坐标系一致，使用左手坐标系，节点面向方向为Z轴正方向，节点上方为Y轴正方向，节点右方为X轴正方向
-6.	左手坐标系下，“物体绕轴A旋转alpha度”等价于“面朝轴A的方向，将物体逆时针旋转alpha度”（右手坐标系时，逆时针变为顺时针）
-	记忆方法：在左手坐标系中，使左手大拇指指向旋转轴，其余四指握拳，四指所指向的方向即为旋转的正方向（右手坐标系中，则换成右手）
-7.	默认情况下，定义场景节点的正前方为Z轴正方向，正上方为Y轴正方向，正右方为X轴正方向。
-*/
+#define NOTIFY_CHILDREN_WHEN_TRANSFORM	0
 
 enum ETransformSpace
 {
@@ -27,32 +40,32 @@ enum ETransformSpace
 	TransformSpace_MAX
 };
 
-class SceneNode
+class RSceneNode : public RObject
 {
-	friend class SceneManager;
+	friend class RSceneManager;
 
 protected:
 	// 表示节点的类型，用于判断当前节点是否为模型
 	enum ENodeType
 	{
-		NT_Node,
-		NT_Model,
-		NT_Camera,
-		NT_Light,
+		ENT_Node,
+		ENT_Model,
+		ENT_Camera,
+		ENT_Light,
 
-		NodeType_MAX
+		ENodeType_MAX
 	};
 
 public:
-	SceneNode();
-	virtual ~SceneNode();
+	RSceneNode();
+	virtual ~RSceneNode();
 
-	SceneNode* CreateChild();
-	void ReleaseChild(SceneNode* pNode);		// 移除并delete pNode，【注意】pNode的子节点不会被释放
-	void AttachChild(SceneNode* pNode);			// 将pNode绑定到当前节点
-	void RemoveChild(SceneNode* pNode);			// 移除pNode，但是不执行delete
+	RSceneNode* CreateChild();
+	void ReleaseChild(RSceneNode* pNode);		// 移除并delete pNode，【注意】pNode的子节点不会被释放
+	void AttachChild(RSceneNode* pNode);			// 将pNode绑定到当前节点
+	void RemoveChild(RSceneNode* pNode);			// 移除pNode，但是不执行delete
 
-	SceneNode* GetParent() const;
+	RSceneNode* GetParent() const;
 
 	void Translate		(const D3DXVECTOR3& vector,		ETransformSpace space = TS_Parent);
 	void SetPosition	(const D3DXVECTOR3& position,	ETransformSpace space = TS_Parent);
@@ -95,7 +108,7 @@ public:
 		const RQuaternion& rotation, 
 		const D3DXVECTOR3& scale);
 
-	SceneManager* GetAttachedSceneManager() const;
+	RSceneManager* GetAttachedSceneManager() const;
 
 	void SetInheritTranslation(bool bInherit);
 	void SetInheritRotation(bool bInherit);
@@ -105,7 +118,7 @@ public:
 	bool GetInheritScale() const;
 
 protected:
-			SceneManager*			m_pSceneManager;
+			RSceneManager*			m_pSceneManager;
 			ENodeType				m_NodeType;
 
 			D3DXVECTOR3				m_Position;				// 基于父节点的位移
@@ -118,9 +131,9 @@ protected:
 	mutable D3DXVECTOR3				m_WorldScale;			// 基于世界坐标系的缩放
 	mutable D3DXMATRIX				m_WorldTransform;		// 基于世界坐标系的变换矩阵
 
-			SceneNode*				m_pParent;
-			std::list<SceneNode*>	m_listChildren;
-	mutable std::list<SceneNode*>	m_listChildrenToUpdate;
+			RSceneNode*				m_pParent;
+			std::list<RSceneNode*>	m_listChildren;
+	mutable std::list<RSceneNode*>	m_listChildrenToUpdate;
 
 	mutable bool					m_bParentHasNotified;				// 是否已经通知父节点矩阵发生改变
 	mutable bool					m_bNeedAllChildrenUpdate;			// 是否需要更新所有的子节点

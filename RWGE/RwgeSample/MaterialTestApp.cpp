@@ -30,14 +30,14 @@ void MaterialTestApp::OnCreate()
 {
 	m_pWindow = RApplication::GetInstance().CreateAppWindow("Material Test App"); 
 	m_pWindow->Show();
-	m_pRenderTarget = RD3d9RenderSystem::GetInstance().CreateRenderTarget(m_pWindow);
-	m_pViewport = m_pRenderTarget->CreateViewport();
-	m_pSceneManager = new SceneManager();
-	m_pCamera = new Camera();
+
+	m_pSceneManager = new RSceneManager();
+	m_pCamera = new RCamera();
 	m_pModel = ModelFactory::CreateZhanHun();
-	m_pLight = new PointLight();
-	m_pCameraAxis = new SceneNode();
-	m_pLightAxis = new SceneNode();
+	m_pLight = new RPointLight();
+	//m_pLight = new RDirectionalLight();
+	m_pCameraAxis = new RSceneNode();
+	m_pLightAxis = new RSceneNode();
 	
 	m_pModel->SetPosition(D3DXVECTOR3(0, -65, 0));
 	m_pModel->Pitch(RwgeMath::lpPI * 0.5f);
@@ -53,7 +53,7 @@ void MaterialTestApp::OnCreate()
 	m_pCamera->SetOrthogonal(1440.0f, 900.0f, 10.0f, 3000.0f);
 	m_pCamera->SetPosition(D3DXVECTOR3(0.0f, 160.0f, 0.0f));
 	m_pCamera->SetDirection(-RwgeMath::Vector3UnitY);
-	m_pViewport->SetCamera(m_pCamera);
+	m_pWindow->SetCamera(m_pCamera);
 	
 	m_pLight->SetDiffuseColor(FColorRGB(0.6f));
 	m_pLight->SetAmbietnColor(FColorRGB(0.8f));
@@ -61,28 +61,28 @@ void MaterialTestApp::OnCreate()
 	m_pLightAxis->AttachChild(m_pLight);
 	m_pSceneManager->SetLight(m_pLight);
 
-	Model* pLightModel = ModelFactory::CreateBox();
-	Mesh* pLightModelMesh = *pLightModel->GetMeshes().begin();
+	RModel* pLightModel = ModelFactory::CreateBox();
+	RMesh* pLightModelMesh = *pLightModel->GetMeshes().begin();
 	pLightModelMesh->SetMaterial(MaterialFactory::CreateWhiteMaterial());
 	pLightModel->SetScale(D3DXVECTOR3(0.1f, 0.1f, 0.1f));
 	m_pLight->AttachChild(pLightModel);
 
-	m_pWoodenMaterial = (*m_pModel->GetMeshes().begin())->GetMaterialPtr();
+	m_pWoodenMaterial = MaterialFactory::CreateWoodenBoxMaterial();
 	m_pMetalMaterial = MaterialFactory::CreateMetalBoxMaterial();
 	m_pWoodenWithoutNormalMap = MaterialFactory::CreateWoodenBoxMaterialWithoutNormalMap();
 	m_pMetalWithoutNormalMap = MaterialFactory::CreateMetalBoxMaterialWithoutNormalMap();
 
-	m_pBodyMaterial = (*m_pModel->GetMeshes().begin())->GetMaterialPtr();
+	m_pBodyMaterial = (*m_pModel->GetMeshes().begin())->GetMaterial();
 	m_pBodyMaterialWithoutNormalMap = MaterialFactory::CreateZhanHunBodyMaterialWithoutNormalMap();
 
-	Model* pBackgroundModel = ModelFactory::CreatePanel();
+	RModel* pBackgroundModel = ModelFactory::CreatePanel();
 	m_pSceneManager->GetSceneRoot()->AttachChild(pBackgroundModel);
 	pBackgroundModel->SetPosition(D3DXVECTOR3(0, -65, 0));
 
 	RInputManager::GetInstance().RegKeyBoardListener(this);
 }
 
-void MaterialTestApp::OnUpdateFrame(float f32DeltaTime)
+void MaterialTestApp::AfterRenderingFrame(float f32DeltaTime)
 {
 	m_fMovingSpeed = m_fMovingSpeedPerSecond / RApplication::GetInstance().GetCurrentFPS();
 

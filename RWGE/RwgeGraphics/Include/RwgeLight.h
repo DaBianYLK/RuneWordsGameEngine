@@ -6,76 +6,60 @@
 
 enum ELightType
 {
-	LT_NoLight,
-	LT_Directional,
-	LT_Point,
+	ELT_NoLight,
+	ELT_Directional,
+	ELT_Point,
 
-	LightType_MAX
+	ELightType_MAX
 };
 
-class Light
+class RLight : public RSceneNode
 {
-	friend class RShaderManager;
+	friend class RD3d9ShaderManager;
 
 public:
-	Light();
-	virtual ~Light();
+	RLight();
+	virtual ~RLight();
 
-	virtual ELightType GetLightType() const = 0;
-	virtual void UpdateConstantBuffer() const = 0;
-	virtual void GetConstantBuffer(void*& pBuffer, unsigned char& uSize) const = 0;
+	virtual ELightType GetLightType()		const	= 0;
+	virtual void	UpdateConstantBuffer()	const	= 0;
+	unsigned short	GetConstantCount()		const	{ return m_u16ConstantCount; };
+	const float*	GetConstants()			const;
 
 	void SetAmbietnColor(const FColorRGB& color);
 	void SetDiffuseColor(const FColorRGB& color);
-	const FColorRGB& GetAmbientColor() const;
-	const FColorRGB& GetDiffuseColor() const;
+	const FColorRGB& GetAmbientColor()		const	{ return m_AmbientColor; };
+	const FColorRGB& GetDiffuseColor()		const	{ return m_DiffuseColor; };
+
+	virtual void UpdateWorldTransform() const override;
 
 protected:
-	FColorRGB	m_AmbientColor;
-	FColorRGB	m_DiffuseColor;
+	FColorRGB		m_AmbientColor;
+	FColorRGB		m_DiffuseColor;
 
-	mutable bool m_bConstantBufferOutOfDate;
+	unsigned short	m_u16ConstantCount;
+	float*			m_aryConstants;
+
+	mutable bool	m_bConstantBufferOutOfDate;
 };
 
-// 方向光不具备场景节点的属性
-class DirectionalLight : public Light
+// 场景节点对方向光来说唯一有意义的属性是方向
+class RDirectionalLight : public RLight
 {
 public:
-	DirectionalLight();
-	~DirectionalLight();
+	RDirectionalLight();
+	~RDirectionalLight();
 
-	ELightType GetLightType() const override { return LT_Directional; }
-	void UpdateConstantBuffer() const override;
-	void GetConstantBuffer(void*& pBuffer, unsigned char& uSize) const override;
-
-	void SetWorldDirection(const D3DXVECTOR3& direction);
-	const D3DXVECTOR3& GetWorldDirection() const;
-
-private:
-	D3DXVECTOR3 m_WorldDirection;
-
-	mutable unsigned char m_ConstantBuffer[36];
+	virtual ELightType GetLightType() const override { return ELT_Directional; }
+	virtual void UpdateConstantBuffer() const override;
 };
 
-// 点光源具备场景节点的属性
-class PointLight : public Light, public SceneNode
+class RPointLight : public RLight
 {
 public:
-	PointLight();
-	~PointLight();
+	RPointLight();
+	~RPointLight();
 
-	ELightType GetLightType() const override { return LT_Point; }
-	void UpdateConstantBuffer() const override;
-	void GetConstantBuffer(void*& pBuffer, unsigned char& uSize) const override;
-	void UpdateWorldTransform() const override;
-
-private:
-	struct PointLightConstantBuffer
-	{
-		FColorRGB ambientColor;
-		FColorRGB diffuseColor;
-		D3DXVECTOR3 position;
-	};
-
-	mutable PointLightConstantBuffer m_ConstantBuffer;
+	virtual ELightType GetLightType() const override { return ELT_Point; }
+	virtual void UpdateConstantBuffer() const override;
 };

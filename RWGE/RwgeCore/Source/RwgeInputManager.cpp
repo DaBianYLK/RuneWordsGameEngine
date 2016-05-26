@@ -10,7 +10,7 @@ using namespace RwgeAppWindow;
 
 RInputManager::RInputManager()
 {
-	ZeroMemory(m_bIsKeyDown, sizeof(bool) * MAX_KEY_COUNT);
+	RwgeZeroMemory(m_bIsKeyDown, sizeof(bool) * MAX_KEY_COUNT);
 }
 
 RInputManager::~RInputManager()
@@ -24,7 +24,7 @@ LRESULT CALLBACK RInputManager::HandleMessage(HWND hWnd, UINT u32Message, WPARAM
 	{
 	case WM_DESTROY:
 	case WM_CLOSE:
-		if (hWnd == RApplication::GetInstance().GetPrimaryWindow()->GetHandle())
+		if (hWnd == RApplication::GetInstance().GetMainWindow()->GetHandle())
 		{
 			PostQuitMessage(0);
 		}

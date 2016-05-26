@@ -1,25 +1,30 @@
+/*--------------------------------------------------------------------------------------------------------------------*\
+   【CREATE】	
+	AUTH :	大便一箩筐																			   DATE : 2016-05-05
+	DESC :	负责纹理的创建与管理
+\*--------------------------------------------------------------------------------------------------------------------*/
+
+
 #pragma once
 
-#include "RwgeTextureInfo.h"
-#include <hash_map>
 #include <RwgeSingleton.h>
+#include <map>
+#include <RwgeTString.h>
+#include <RwgeObject.h>
 
-class RD3d9Device;
-struct IDirect3DDevice9;
+class RD3d9Texture;
 
-/*
-Texture与Shader类似，因为需要依赖于Device生成实例，所以TextureManager只管理纹理信息
-*/
-
-class TextureManager : public Singleton<TextureManager>
+class RTextureManager : 
+	public RObject,
+	public Singleton<RTextureManager>
 {
 public:
-	TextureManager();
-	~TextureManager();
+	RTextureManager();
+	~RTextureManager();
 
-	TextureInfo* GetTextureInfo(const std::string& strPath);
+	RD3d9Texture* GetTexture(const Rwge::tstring& strPath);
 
 private:
-	std::hash_map<std::string, TextureInfo*> m_hashTextures;
+	std::map<Rwge::tstring, RD3d9Texture> m_mapTextures;
 };
 

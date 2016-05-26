@@ -6,17 +6,17 @@
 
 enum ETimeFormat
 {
-	TF_DigitalOnly,				// 절：20000101112233
-	TF_Standard,				// 절：2000-01-01 11:22:33
-	TF_DigitalWithUnderline,	// 절：2000_01_01_11_22_33
+	ETF_DigitalOnly,				// 절：20000101112233
+	ETF_Standard,				// 절：2000-01-01 11:22:33
+	ETF_DigitalWithUnderline,	// 절：2000_01_01_11_22_33
 
-	TimeFormat_MAX
+	ETimeFormat_MAX
 };
 
-static Rwge::tstring GetCurrentDateTime(ETimeFormat format = TF_DigitalOnly)
+static const TCHAR* GetCurrentDateTime(ETimeFormat format = ETF_DigitalOnly)
 {
 	const unsigned int uBufferSize = 32;
-	TCHAR szBuffer[uBufferSize];
+	static TCHAR szBuffer[uBufferSize];
 	time_t	timeValue = time(nullptr);
 	tm		time;
 
@@ -27,20 +27,20 @@ static Rwge::tstring GetCurrentDateTime(ETimeFormat format = TF_DigitalOnly)
 	switch (format)
 	{
 	default:
-	case TF_DigitalOnly:
+	case ETF_DigitalOnly:
 		szFormat = TEXT("%Y%m%d%H%M%S");
 		break;
 
-	case TF_Standard:
+	case ETF_Standard:
 		szFormat = TEXT("%Y-%m-%d %X");
 		break;
 
-	case TF_DigitalWithUnderline:
+	case ETF_DigitalWithUnderline:
 		szFormat = TEXT("%Y_%m_%d_%H_%M_%S");
 		break;
 	}
 
 	_tcsftime(szBuffer, uBufferSize, szFormat, &time);
 
-	return Rwge::tstring(szBuffer);
+	return szBuffer;
 }

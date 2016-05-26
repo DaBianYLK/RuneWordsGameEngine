@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\RwgeAngle.h" />
+    <ClInclude Include="Include\RwgeBinaryNumber.h" />
     <ClInclude Include="Include\RwgeMath.h" />
     <ClInclude Include="Include\RwgeQuaternion.h" />
   </ItemGroup>

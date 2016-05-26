@@ -14,7 +14,7 @@
 
 class RLog : 
 	public RObject,
-	public Singleton<RLog>
+	public SingletonEagerMode<RLog>
 {
 public:
 	RLog();

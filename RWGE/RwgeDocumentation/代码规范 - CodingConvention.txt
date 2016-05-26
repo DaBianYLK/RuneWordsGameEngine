@@ -9,7 +9,7 @@
 	例：类型声明		- class Name;
 		函数声明		- void  Name();
 		变量声明		- Name  name;
-
+	
 2.	当遇到大写的固定词组或缩写需要与其他单词组合时，若组合后命名中连续大写字母数小于三，则维持正常写法；若连续大写字
 	母数大于或等于三个，则固定词组或缩写只有首字母大写，其余字母小写。(数字算大写字母)
 	例：A B Cde			- ABCde
@@ -21,7 +21,7 @@
 3.	所有继承自RObject 的类需要在类名前加前缀[R] 。
 	例：class RWindow : public RObject
 
-4.	所有struct都不能定义任何成员函数，否则将struct声明改为class声明。
+4.	当一个类型所有的成员都是public时，将这个类型声明为struct。
 
 5.	声明枚举类型时，在枚举类型前加前缀[E] ，枚举类型的值加上枚举类型名中包含的所有大写字母和下划线[_] 作为前缀，并在
 	最后定义一个MAX值。
@@ -29,7 +29,8 @@
 		{
 			EPC_Red,
 			EPC_Green,
-			EPC_MAX
+
+			EPencilColor_MAX
 		};
 
 6.	变量类型是C++ 内建类型、STL 类型或Windows定义类型时，按如下对应关系为变量名前加小写的类型前缀。	
@@ -39,10 +40,10 @@
 	[s64] - long long											[list] - list
 	[u8 ] - unsigned char, BYTE									[que ] - queue
 	[u16] - unsigned short, unsigned wchar_t, WORD				[set ] - set
-	[u32] - unsigned int, unsigned long, DWORD					[map ] - map
-	[u64] - unsigned long long									[hash] - hash_map
-	[f32] - float												[pair] - pair
-	[f64] - double												[h   ] - HANDLE, HINSTANCE, HRESULT
+	[u32] - unsigned int, unsigned long, DWORD					[map ] - map, hash_map, unordered_map
+	[u64] - unsigned long long									[pair] - pair
+	[f32] - float												[h   ] - HANDLE, HINSTANCE, HRESULT
+	[f64] - double												
 	[b  ] - bool
 	遇到上方未定义的typedef 类型或宏时，以解析后的类型为准；遇到模板名或auto时，可以视情况遵循或忽略此规则。
 	例：int			s32Integer;
@@ -59,17 +60,24 @@
 		int			ary2Integer[10][10];
 		int*		aryInteger = new int[10];
 
-	C.	为数组指针变量命名时，忽略变量类型前缀，并为变量名加上前缀[p] 和后缀[Ary]			（多维情况同上）
-	例：int*		pIntegerAry[10];
-		int**		ppIntegerAry2[10][10];
+	C.	为数组指针变量命名时，忽略变量类型前缀，并为变量名加上前缀[p]						（多维情况同上）
+	例：int**		ppIntegers[10];
 
-	D.	为以0 为终止符的字符数组时，忽略变量类型、指针或数组前缀，并为变量名加上前缀[sz]
+	D.	为指针数组变量命名时，忽略变量类型前缀，并为变量名加上前缀[ary]						（多维情况同上）
+	例：int*		ary2Integers[10][10];
+
+	E.	为以0 为终止符的字符数组时，忽略变量类型、指针或数组前缀，并为变量名加上前缀[sz]
 	例：TCHAR*		szName = new char[100];
 		TCHAR		szPath[100];
 		TCHAR**		aryName1 = new char*[10];
 		TCHAR*		szFirstName = aryName1[0];
 		TCHAR		aryName2 = new char[10][100];
 		TCHAR*		szSecondName = aryName2[0];
+
+	F.	为缓冲区变量命名时，忽略变量类型与数组前缀，使用指针变量规则命名（本规则仅适用于非字符串缓冲，否则遵循上一规则）
+	例：char		pBuffer[32];			// 缓冲可能存储各种数据类型
+		char*		pBuffer = new char[32];
+		char		szBuffer[32];			// 缓冲专门用来存储字符串
 
 8.	class的成员变量在上一规则的基础上加前缀[m_]，struct忽略此规则。
 	例：class RWindow : public RObject
@@ -91,6 +99,14 @@
 			return size;
 		}
 
-10.	所有代码中的字符串都需要使用TEXT宏包裹，所有以0 为终止符的字符串声明都需要使用TCHAR类型声明，保证程序在Unicode与
-	多字节字符集环境下切换的兼容性。
+10.	所有代码中的字符串都需要使用TEXT宏包裹，所有以0 为终止符的字符串声明都需要使用TCHAR 类型声明，保证程序在 Unicode
+	与多字节字符集环境下切换的兼容性。
 	例：const TCHAR* szPath = TEXT("C:\\CodingConvention.txt");
+
+11.	禁止在函数中直接返回成员变量的引用，若有直接修改成员变量的需求，直接将变量定义为public或者将调用者设置为友元。
+
+12.	断言Assert、日志 log与错误弹窗ErrorBox的使用规范：
+	A.	断言仅在Debug 模式下生效，它仅用于检查函数的不合法输入（当函数错误产生不合法输出时不应使用断言，而应该使用错
+		误弹窗或打印日志，因为断言在 Release版本不生效，起不到定位错误的作用）
+	B.	错误弹窗用于检查可能引发致命错误（核心模块无法运行，或导致程序宕机）的函数非法输出
+	C.	日志用于标识重要模块的运行是否成功，以及检查只影响局部功能的函数非法输出
